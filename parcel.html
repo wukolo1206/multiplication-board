@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>文旦運費怎麼算 — 四上第二單元</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+     background:#f8fafc;color:#1f2937;-webkit-text-size-adjust:100%}
+.wrap{max-width:940px;margin:0 auto;padding:16px 14px 60px}
+.back{min-height:48px;display:inline-flex;align-items:center;color:#15803d;
+      text-decoration:none;font-size:16px;font-weight:700}
+h1{font-size:24px;margin:4px 0 4px}
+.pg{color:#94a3b8;font-size:14px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
+     font-size:16px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit}
+.tab.on{background:#15803d;border-color:#15803d;color:#fff}
+.panel{display:none}.panel.on{display:block}
+.card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px}
+.stitle{font-size:19px;font-weight:700;margin:0 0 4px}
+.sdesc{color:#64748b;font-size:15px;line-height:1.7;margin:0 0 14px}
+.btn{min-height:48px;padding:0 20px;border-radius:12px;border:none;background:#15803d;color:#fff;
+     font-size:17px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn.ghost{background:#fff;color:#15803d;border:2px solid #15803d}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.msg{margin-top:12px;font-size:16px;line-height:1.8;padding:12px 14px;border-radius:12px;display:none}
+.msg.show{display:block}
+.msg.ok{background:#dcfce7;color:#166534}
+.msg.no{background:#fee2e2;color:#991b1b}
+.msg.tip{background:#e0f2fe;color:#075985}
+.lv{display:inline-block;font-size:13px;background:#dcfce7;color:#166534;padding:3px 10px;
+    border-radius:99px;font-weight:700;margin-bottom:8px}
+.q{font-size:18px;font-weight:700;margin:0 0 12px;line-height:1.7}
+.opt{display:block;width:100%;text-align:left;min-height:48px;margin-bottom:8px;padding:12px 16px;
+     border:2px solid #cbd5e1;background:#fff;border-radius:12px;font-size:17px;
+     font-family:inherit;cursor:pointer}
+.opt.sel{border-color:#15803d;background:#f0fdf4}
+
+/* ── 費率表 ── */
+.poster{background:#fffbeb;border:3px solid #f59e0b;border-radius:14px;padding:14px}
+.poster h3{margin:0 0 4px;font-size:19px;color:#b45309;text-align:center}
+.poster .sub{font-size:13px;color:#92400e;text-align:center;margin-bottom:10px;line-height:1.7}
+table{width:100%;border-collapse:collapse;font-size:16px;background:#fff}
+th,td{border:2px solid #fcd34d;padding:10px 6px;text-align:center}
+th{background:#fef3c7;color:#92400e;font-size:15px}
+td.rate{font-weight:700;font-size:20px;cursor:pointer;min-height:48px}
+td.rate:hover{background:#fef9c3}
+td.rate.hit{background:#15803d;color:#fff}
+td.wcell{background:#fffbeb;font-weight:700;color:#92400e}
+td.wcell.hit,th.hit{background:#bbf7d0}
+.picker{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.picker label{font-size:15px;color:#475569;align-self:center}
+.picker input{min-height:48px;width:110px;font-size:20px;text-align:center;
+              border:2px solid #cbd5e1;border-radius:12px;font-family:inherit}
+.picker input:focus{outline:none;border-color:#15803d}
+.two{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.two input{min-height:48px;width:130px;font-size:22px;text-align:center;
+           border:2px solid #cbd5e1;border-radius:12px;font-family:inherit}
+.two label{font-size:16px;color:#475569;min-width:130px}
+.step{background:#f8fafc;border-radius:12px;padding:12px;margin-bottom:10px}
+.step b{color:#15803d}
+.src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
+.warnbox{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 14px;
+         font-size:14px;line-height:1.8;color:#7c2d12;margin-bottom:14px}
+.prog{font-size:14px;color:#64748b;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 回目錄</a>
+  <h1>文旦運費怎麼算</h1>
+  <div class="pg">課本 p19　開門活動「郵挺柚農」</div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
+    <button class="tab" id="tabQz" onclick="setMode('quiz')">✏️ 練習</button>
+    <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
+  </div>
+
+  <!-- ═══════════ 探索 ═══════════ -->
+  <div class="panel on" id="pEx">
+    <div class="card">
+      <p class="stitle">先看懂這張海報</p>
+      <p class="sdesc">運費要看<b>兩件事</b>：一箱有多重、一共寄幾箱。兩個都對上才找得到單價。</p>
+
+      <div class="picker">
+        <label>一箱重</label>
+        <input id="wIn" type="number" inputmode="numeric" value="8"> <label>公斤，</label>
+        <label>一共</label>
+        <input id="bIn" type="number" inputmode="numeric" value="4"> <label>箱</label>
+        <button class="btn" onclick="lookup()">查表</button>
+      </div>
+
+      <div class="poster">
+        <h3>文旦包裹專案優惠活動</h3>
+        <div class="sub">
+          一、適用期間：自 8 月 15 日起至 12 月 31 日止<br>
+          二、包裹內容：僅限文旦、紅文旦、紅柚、白柚
+        </div>
+        <table>
+          <tr><th>重量規格</th><th>箱數</th><th>每箱運費（元）</th></tr>
+          <tr><td class="wcell" id="w6" rowspan="2">不超過<br>6 公斤</td>
+              <td id="l00">1 箱～50 箱</td><td class="rate" id="r00" onclick="pick(0,0)">65</td></tr>
+          <tr><td id="l01">51 箱以上</td><td class="rate" id="r01" onclick="pick(0,1)">60</td></tr>
+          <tr><td class="wcell" id="w9" rowspan="2">不超過<br>9 公斤</td>
+              <td id="l10">1 箱～50 箱</td><td class="rate" id="r10" onclick="pick(1,0)">75</td></tr>
+          <tr><td id="l11">51 箱以上</td><td class="rate" id="r11" onclick="pick(1,1)">70</td></tr>
+        </table>
+      </div>
+
+      <div class="msg tip show" id="exMsg">
+        填上「一箱幾公斤」和「一共幾箱」，按查表看看是哪一格。
+      </div>
+      <div class="src">
+        表中數值照課本 p19 海報。「不超過 6 公斤」包含剛好 6 公斤；
+        超過 6 公斤、不超過 9 公斤算第二欄。
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 練習 ═══════════ -->
+  <div class="panel" id="pQz">
+    <div class="warnbox">
+      這一頁的重點是<b>兩個步驟</b>：先查表找出「一箱多少元」，再用乘法算出「一共多少元」。
+      查表查錯，後面算得再對也沒用。
+    </div>
+    <div class="card">
+      <div class="prog" id="qProg"></div>
+      <span class="lv" id="qLv"></span>
+      <p class="q" id="qText"></p>
+
+      <div class="step">
+        <b>第 1 步</b>　查表：一箱運費是多少元？
+        <div class="two">
+          <input id="s1" type="number" inputmode="numeric" placeholder="?">
+          <span style="font-size:17px">元</span>
+        </div>
+      </div>
+      <div class="step">
+        <b>第 2 步</b>　算式與答案
+        <div class="two">
+          <label>算式</label>
+          <span id="s2exp" style="font-size:19px;color:#64748b">（先填第 1 步）</span>
+        </div>
+        <div class="two">
+          <label>一共是</label>
+          <input id="s2" type="number" inputmode="numeric" placeholder="?">
+          <span style="font-size:17px">元</span>
+        </div>
+      </div>
+
+      <div class="msg" id="qMsg"></div>
+      <div class="row">
+        <button class="btn" onclick="submitQ()">確定</button>
+        <button class="btn ghost" id="qNext" style="display:none" onclick="nextQ()">下一題 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 挑戰 ═══════════ -->
+  <div class="panel" id="pCh">
+    <div class="warnbox">
+      ⚠️ <b>這一題超出本單元範圍</b>。<br>
+      它是複名數（公斤與公克）的乘法，四上第二單元的課本和習作都沒有這種題型。
+      教師手冊也提醒布題「不逾越課本及習作所設定的題型規範」。<br>
+      放在這裡是<b>標示不刪除</b>，老師可以自行決定要不要跳過。
+    </div>
+    <div class="card">
+      <span class="lv">109 年　四年級　第 13 題</span>
+      <p class="q">1 公斤 45 公克 × 24 ＝ 幾公斤幾公克？</p>
+      <div id="chOpts"></div>
+      <div class="msg" id="chMsg"></div>
+      <div class="row"><button class="btn" onclick="checkCh()">確定</button></div>
+      <div class="src">學力檢測考古題。指標 N-4-2，題幹與選項照考卷原題。</div>
+    </div>
+  </div>
+</div>
+
+<script src="multiplication-core.js"></script>
+<script>
+'use strict';
+var C = MulCore;
+
+function setMode(m){
+  var map={explore:['pEx','tabEx'],quiz:['pQz','tabQz'],chal:['pCh','tabCh']};
+  Object.keys(map).forEach(function(k){
+    document.getElementById(map[k][0]).classList.toggle('on',k===m);
+    document.getElementById(map[k][1]).classList.toggle('on',k===m);
+  });
+}
+
+/* ═══════════ 費率表（數值照課本 p19） ═══════════ */
+var RATE=[[65,60],[75,70]];          // [重量列][箱數欄]
+var WNAME=['不超過 6 公斤','不超過 9 公斤'];
+var BNAME=['1 箱～50 箱','51 箱以上'];
+
+/** 重量 → 列。超過 9 公斤不在表內。 */
+function weightRow(kg){
+  if(kg<=0) return -1;
+  if(kg<=6) return 0;
+  if(kg<=9) return 1;
+  return -2;                          // 超過 9 公斤，海報沒有這一格
+}
+function boxCol(n){ return n<=0 ? -1 : (n<=50 ? 0 : 1); }
+
+function clearHit(){
+  ['r00','r01','r10','r11','w6','w9','l00','l01','l10','l11']
+    .forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.remove('hit'); });
+}
+function pick(r,c){
+  clearHit();
+  document.getElementById('r'+r+c).classList.add('hit');
+  document.getElementById(r===0?'w6':'w9').classList.add('hit');
+  document.getElementById('l'+r+c).classList.add('hit');
+  var m=document.getElementById('exMsg');
+  m.className='msg tip show';
+  m.innerHTML='<b>'+WNAME[r]+'</b>，<b>'+BNAME[c]+'</b> → 每箱 <b>'+RATE[r][c]+'</b> 元。';
+}
+function lookup(){
+  var kg=Number(document.getElementById('wIn').value);
+  var n=Number(document.getElementById('bIn').value);
+  var m=document.getElementById('exMsg');
+  var r=weightRow(kg), c=boxCol(n);
+  clearHit();
+  if(r===-2){
+    m.className='msg no show';
+    m.innerHTML='一箱 '+kg+' 公斤<b>超過 9 公斤</b>，海報上沒有這一格，這張表算不出來。';
+    return;
+  }
+  if(r<0||c<0){
+    m.className='msg no show';
+    m.innerHTML='公斤數和箱數都要填大於 0 的數。';
+    return;
+  }
+  document.getElementById('r'+r+c).classList.add('hit');
+  document.getElementById(r===0?'w6':'w9').classList.add('hit');
+  document.getElementById('l'+r+c).classList.add('hit');
+  var rate=RATE[r][c];
+  m.className='msg ok show';
+  m.innerHTML='一箱 '+kg+' 公斤 → <b>'+WNAME[r]+'</b>　'+
+    n+' 箱 → <b>'+BNAME[c]+'</b><br>每箱 <b>'+rate+'</b> 元，'+
+    n+' 箱就是 '+rate+' × '+n+' ＝ <b>'+(rate*n)+'</b> 元。';
+}
+
+/* ═══════════ 練習：兩步驟 ═══════════ */
+var QS=[
+  {kg:8, n:4,  t:'豆豆和妮妮買了 4 箱文旦，一箱重 8 公斤。他們寄送文旦的運費共是多少元？',
+   lv:'課本 p19 原題'},
+  {kg:5, n:20, t:'柚農寄出 20 箱紅文旦，一箱重 5 公斤。運費共是多少元？', lv:'換一種重量'},
+  {kg:8, n:60, t:'合作社一次寄出 60 箱白柚，一箱重 8 公斤。運費共是多少元？',
+   lv:'箱數超過 50 箱'},
+  {kg:6, n:51, t:'農會寄出 51 箱紅柚，一箱重 6 公斤。運費共是多少元？',
+   lv:'剛好 6 公斤、剛好 51 箱'}
+];
+var qi=0;
+function renderQ(){
+  var c=QS[qi];
+  document.getElementById('qProg').textContent='第 '+(qi+1)+' 題／共 '+QS.length+' 題';
+  document.getElementById('qLv').textContent=c.lv;
+  document.getElementById('qText').textContent=c.t;
+  document.getElementById('s1').value='';
+  document.getElementById('s2').value='';
+  document.getElementById('s2exp').textContent='（先填第 1 步）';
+  document.getElementById('qMsg').className='msg';
+  document.getElementById('qNext').style.display='none';
+}
+document.getElementById('s1').addEventListener('input',function(){
+  var v=this.value, c=QS[qi];
+  document.getElementById('s2exp').textContent = v==='' ? '（先填第 1 步）' : (v+' × '+c.n+' ＝');
+});
+function submitQ(){
+  var c=QS[qi], m=document.getElementById('qMsg');
+  var r=weightRow(c.kg), col=boxCol(c.n), rate=RATE[r][col];
+  var v1=document.getElementById('s1').value, v2=document.getElementById('s2').value;
+  if(v1===''||v2===''){ m.className='msg no show'; m.textContent='兩個步驟都要填。'; return; }
+  v1=Number(v1); v2=Number(v2);
+  if(v1!==rate){
+    m.className='msg no show';
+    m.innerHTML='第 1 步查表就不對了。<br>一箱 '+c.kg+' 公斤，要看<b>'+WNAME[r]+'</b>那一列；'+
+      c.n+' 箱，要看<b>'+BNAME[col]+'</b>那一欄。<br>兩個都對上才是正確的單價。';
+    return;
+  }
+  if(v2!==rate*c.n){
+    m.className='msg no show';
+    m.innerHTML='第 1 步對了，每箱 <b>'+rate+'</b> 元。<br>第 2 步再算一次：'+
+      rate+' × '+c.n+' ＝ ？';
+    return;
+  }
+  m.className='msg ok show';
+  m.innerHTML='答對了。<br>一箱 '+c.kg+' 公斤 → '+WNAME[r]+'；'+c.n+' 箱 → '+BNAME[col]+
+    '，每箱 <b>'+rate+'</b> 元。<br>'+rate+' × '+c.n+' ＝ <b>'+(rate*c.n)+'</b> 元。';
+  if(qi<QS.length-1) document.getElementById('qNext').style.display='';
+  else m.innerHTML+='<br><br><b>四題都完成了。</b>這種題目最容易錯在<b>查表</b>，不是乘法。';
+}
+function nextQ(){ qi++; renderQ(); }
+
+/* ═══════════ 挑戰：109年第13題（超出本單元範圍，標示不刪除） ═══════════ */
+var CH={opts:['2 公斤 80 公克','11 公斤 80 公克','25 公斤 80 公克','34 公斤 80 公克'], ans:2};
+(function(){
+  var box=document.getElementById('chOpts');
+  CH.opts.forEach(function(v,i){
+    var b=document.createElement('button');
+    b.className='opt'; b.textContent=v; b.dataset.i=i;
+    b.onclick=function(){ box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
+                          b.classList.add('sel'); };
+    box.appendChild(b);
+  });
+})();
+function checkCh(){
+  var sel=document.querySelector('#chOpts .opt.sel'), m=document.getElementById('chMsg');
+  if(!sel){ m.className='msg no show'; m.textContent='先選一個答案。'; return; }
+  if(Number(sel.dataset.i)===CH.ans){
+    m.className='msg ok show';
+    m.innerHTML='答對了，<b>25 公斤 80 公克</b>。<br>'+
+      '先化成同一個單位：1 公斤 45 公克 ＝ <b>1045 公克</b>。<br>'+
+      '1045 × 24 ＝ <b>25080</b> 公克 ＝ 25 公斤 80 公克。';
+  }else{
+    m.className='msg no show';
+    m.innerHTML='還不對。<br>提示：公斤和公克<b>不能分開各乘各的</b>，'+
+      '要先把 1 公斤 45 公克化成同一個單位（公克）再乘。';
+  }
+}
+
+renderQ();
+</script>
+</body>
+</html>

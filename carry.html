@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>進位不要漏 — 四上第二單元</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+     background:#f8fafc;color:#1f2937;-webkit-text-size-adjust:100%}
+.wrap{max-width:940px;margin:0 auto;padding:16px 14px 60px}
+.back{min-height:48px;display:inline-flex;align-items:center;color:#0891b2;
+      text-decoration:none;font-size:16px;font-weight:700}
+h1{font-size:24px;margin:4px 0 4px}
+.pg{color:#94a3b8;font-size:14px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
+     font-size:16px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit}
+.tab.on{background:#0891b2;border-color:#0891b2;color:#fff}
+.panel{display:none}.panel.on{display:block}
+.card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px}
+.stitle{font-size:19px;font-weight:700;margin:0 0 4px}
+.sdesc{color:#64748b;font-size:15px;line-height:1.7;margin:0 0 14px}
+.btn{min-height:48px;padding:0 20px;border-radius:12px;border:none;background:#0891b2;color:#fff;
+     font-size:17px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn:disabled{background:#cbd5e1;cursor:default}
+.btn.ghost{background:#fff;color:#0891b2;border:2px solid #0891b2}
+.btn.sm{min-height:44px;font-size:15px;padding:0 14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.msg{margin-top:12px;font-size:16px;line-height:1.8;padding:12px 14px;border-radius:12px;display:none}
+.msg.show{display:block}
+.msg.ok{background:#dcfce7;color:#166534}
+.msg.no{background:#fee2e2;color:#991b1b}
+.msg.tip{background:#e0f2fe;color:#075985}
+.lv{display:inline-block;font-size:13px;background:#cffafe;color:#155e75;padding:3px 10px;
+    border-radius:99px;font-weight:700;margin-bottom:8px}
+.q{font-size:18px;font-weight:700;margin:0 0 12px;line-height:1.6}
+
+/* ── 直式版面 ── */
+.vert{display:inline-block;font-family:"Courier New",monospace;margin:6px 0}
+.vgrid{display:grid;justify-items:center;gap:2px}
+.cell{width:52px;font-size:26px;text-align:center;line-height:1.35}
+.cell.op{color:#64748b}
+.carrycell{width:52px;height:30px;display:flex;align-items:center;justify-content:center}
+.carrycell input,.cell input{width:44px;min-height:48px;font-size:24px;text-align:center;
+     border:2px solid #cbd5e1;border-radius:10px;font-family:inherit;padding:0}
+.carrycell input{min-height:30px;height:30px;font-size:16px;width:32px;
+     border-color:#fbbf24;background:#fffbeb;color:#92400e}
+.carrycell.below{order:99}
+input:focus{outline:none;border-color:#0891b2}
+.hr{grid-column:1/-1;border-top:3px solid #1f2937;height:0;margin:2px 0}
+.rowlabel{font-size:13px;color:#94a3b8;font-family:"Microsoft JhengHei",sans-serif;
+          text-align:right;padding-right:8px;align-self:center}
+.ok{border-color:#16a34a !important;background:#f0fdf4}
+.bad{border-color:#dc2626 !important;background:#fef2f2}
+
+.toggle{display:inline-flex;border:2px solid #cbd5e1;border-radius:12px;overflow:hidden}
+.toggle button{min-height:48px;padding:0 16px;border:none;background:#fff;font-size:15px;
+               font-weight:700;color:#64748b;cursor:pointer;font-family:inherit}
+.toggle button.on{background:#0891b2;color:#fff}
+.note{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 14px;
+      font-size:14px;line-height:1.8;color:#7c2d12;margin-top:12px}
+.rowin{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.rowin input{width:110px;min-height:48px;font-size:22px;text-align:center;
+             border:2px solid #cbd5e1;border-radius:12px;font-family:inherit}
+.rowin select{min-height:48px;font-size:16px;border:2px solid #cbd5e1;border-radius:12px;
+              font-family:inherit;padding:0 8px;background:#fff}
+.rowin label{font-size:15px;color:#475569;min-width:96px}
+.selfchk{background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;margin-top:12px}
+.selfchk h3{margin:0 0 8px;font-size:17px;color:#166534}
+.chk{display:flex;align-items:flex-start;gap:10px;min-height:48px;font-size:15px;
+     line-height:1.6;cursor:pointer}
+.chk input{width:26px;height:26px;margin-top:2px;flex-shrink:0}
+.opt{display:block;width:100%;text-align:left;min-height:48px;margin-bottom:8px;padding:12px 16px;
+     border:2px solid #cbd5e1;background:#fff;border-radius:12px;font-size:17px;
+     font-family:inherit;cursor:pointer}
+.opt.sel{border-color:#0891b2;background:#ecfeff}
+.src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
+.prog{font-size:14px;color:#64748b;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 回目錄</a>
+  <h1>進位不要漏</h1>
+  <div class="pg">課本 p21、p25–28　活動一問3、活動二問6–7、活動三</div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
+    <button class="tab" id="tabQz" onclick="setMode('quiz')">✏️ 練習</button>
+    <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
+  </div>
+
+  <!-- ═══════════ 探索 ═══════════ -->
+  <div class="panel on" id="pEx">
+    <div class="card">
+      <p class="stitle">1426 × 3　一步一步看</p>
+      <p class="sdesc">按「下一步」，看每一位在算什麼。說法照課本 p21 的原文。</p>
+      <div class="vert" id="exVert"></div>
+      <div class="msg tip show" id="exMsg">按下一步開始。</div>
+      <div class="row">
+        <button class="btn" id="exNext" onclick="exStep()">下一步 →</button>
+        <button class="btn ghost" onclick="exReset()">重來</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="stitle">進位的數字記在哪裡？</p>
+      <p class="sdesc">三份教材的說法不一樣，兩種都可以，選一種你們班統一用。</p>
+      <div class="toggle">
+        <button id="tgUp" class="on" onclick="setCarryPos('up')">記在上方</button>
+        <button id="tgDown" onclick="setCarryPos('down')">記在下方</button>
+      </div>
+      <div class="note">
+        <b>課本 p21</b>：「在個位寫 8，在十位<b>上方</b>記 1。」直式圖也畫在上方。<br>
+        <b>課本 p25</b> 教師註記：「記在心裡、手指頭或紙上的其他地方。」<br>
+        <b>教師手冊 印刷頁27</b>：建議記在「進位後的數字的<b>下方</b>」。<br>
+        三處說法不同，所以這裡不寫成「課本規定」。預設用課本 p21 的上方。
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 練習 ═══════════ -->
+  <div class="panel" id="pQz">
+    <div class="card">
+      <div class="prog" id="qProg"></div>
+      <span class="lv" id="qLv"></span>
+      <p class="q" id="qText"></p>
+      <div id="qBody"></div>
+      <div class="msg" id="qMsg"></div>
+      <div id="qExtra"></div>
+      <div class="row">
+        <button class="btn" id="qBtn" onclick="submitQ()">確定</button>
+        <button class="btn ghost" id="qNext" style="display:none" onclick="nextQ()">下一關 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 挑戰 ═══════════ -->
+  <div class="panel" id="pCh">
+    <div class="card">
+      <span class="lv">110 年　四年級　第 1 題</span>
+      <p class="q">墜星的爸爸買了一臺冷氣機，用分期付款的方式付費，每期要付 802 元，
+        共要付 12 期。請問這臺冷氣機一共要付多少元？</p>
+      <div id="chOpts"></div>
+      <div class="msg" id="chMsg"></div>
+      <div class="row"><button class="btn" onclick="checkCh()">確定</button></div>
+      <div class="src">學力檢測考古題。指標 N-4-2，已人工確認屬本單元。選項照考卷原題。</div>
+    </div>
+  </div>
+</div>
+
+<script src="multiplication-core.js"></script>
+<script>
+'use strict';
+var C = MulCore;
+
+function setMode(m){
+  var map={explore:['pEx','tabEx'],quiz:['pQz','tabQz'],chal:['pCh','tabCh']};
+  Object.keys(map).forEach(function(k){
+    document.getElementById(map[k][0]).classList.toggle('on',k===m);
+    document.getElementById(map[k][1]).classList.toggle('on',k===m);
+  });
+}
+
+/* ═══════════ 回饋用語（教學文字集中在這裡，core 只回代碼） ═══════════ */
+var FEEDBACK = {
+  CORRECT: '答對了。',
+  OMIT_CARRY: '九九乘法算對了，但是<b>忘記把進位的數字加上去</b>。',
+  ADD_BEFORE_MUL: '順序反了：要<b>先相乘，再加上進位</b>的數字，不是先加再乘。',
+  ZERO_DIGIT_CARRY_CONFUSION:
+    '這一位的被乘數是 <b>0</b>，0 乘任何數都還是 0；'+
+    '進位的數字是<b>最後加上去</b>的，不是拿來乘的。',
+  FACT_ERROR: '再檢查一次九九乘法。',
+  AMBIGUOUS_CARRY: '這一位再算一次：先乘，再加進位。',
+  NO_SHIFT: '這一列算對了，但是<b>放錯位置</b>。',
+  SUM_ERROR: '兩列都乘對了，是<b>最後相加</b>的地方要再看一次。'
+};
+
+/* ═══════════ 探索：1426×3 逐步 ═══════════ */
+var EX_A=1426, EX_M=3;
+var exSteps=C.digitSteps(EX_A,EX_M), exI=-1, carryPos='up';
+
+function setCarryPos(p){
+  carryPos=p;
+  document.getElementById('tgUp').classList.toggle('on',p==='up');
+  document.getElementById('tgDown').classList.toggle('on',p==='down');
+  drawEx();
+}
+function drawEx(){
+  var n=exSteps.length;                       // 1426×3 → 4 位，無溢出
+  var cols=n+1;
+  var h='<div class="vgrid" style="grid-template-columns:repeat('+cols+',52px)">';
+  // 進位列（上方）
+  if(carryPos==='up'){ h+=carryRow(); }
+  h+=spacer(cols-4)+cell(1)+cell(4)+cell(2)+cell(6);
+  h+=spacer(cols-5)+'<div class="cell op">×</div>'+spacer(3)+cell(EX_M);
+  h+='<div class="hr"></div>';
+  // 答案列
+  var ansCells='';
+  for(var i=n-1;i>=0;i--){
+    ansCells += (exI>=i) ? cell(exSteps[i].write) : cell('');
+  }
+  h+=spacer(cols-n)+ansCells;
+  if(carryPos==='down'){ h+=carryRow(); }
+  h+='</div>';
+  document.getElementById('exVert').innerHTML=h;
+
+  function carryRow(){
+    var s=spacer(cols-n-1);
+    // 進位記在「進位後的那一位」，也就是左邊一位
+    for(var i=n-1;i>=1;i--){
+      var st=exSteps[i-1];
+      var show=(exI>=i-1 && st.carryOut>0);
+      s+='<div class="carrycell">'+(show?'<span style="color:#d97706;font-size:16px">'+st.carryOut+'</span>':'')+'</div>';
+    }
+    s+='<div class="carrycell"></div>';
+    return s;
+  }
+  function cell(v){ return '<div class="cell">'+v+'</div>'; }
+  function spacer(k){ var s=''; for(var i=0;i<k;i++) s+='<div class="cell"></div>'; return s; }
+}
+function exStep(){
+  if(exI>=exSteps.length-1) return;
+  exI++;
+  var s=exSteps[exI];
+  var m=document.getElementById('exMsg');
+  m.className='msg tip show';
+  // 課本 p21 原文四句
+  var TEXT=[
+    '6 個一的 3 倍是 18 個一，在個位寫 8，在十位上方記 1。',
+    '2 個十的 3 倍是 6 個十，和 1 個十合起來是 7 個十，在十位寫 7。',
+    '4 個百的 3 倍是 12 個百，在百位寫 2，在千位上方記 1。',
+    '1 個千的 3 倍是 3 個千，和 1 個千合起來是 4 個千，在千位寫 4。'
+  ];
+  m.innerHTML=TEXT[exI]+'<div style="font-size:13px;color:#64748b;margin-top:6px">— 課本 p21 原文</div>';
+  drawEx();
+  if(exI>=exSteps.length-1){
+    document.getElementById('exNext').disabled=true;
+    m.className='msg ok show';
+    m.innerHTML=TEXT[exI]+'<br>算完了：1426×3＝<b>4278</b>。';
+  }
+}
+function exReset(){ exI=-1; document.getElementById('exNext').disabled=false;
+  document.getElementById('exMsg').className='msg tip show';
+  document.getElementById('exMsg').innerHTML='按下一步開始。'; drawEx(); }
+
+/* ═══════════ 練習 ═══════════
+ * L1 逐位（乘數一位數）：寫入格＋進位格，可細部診斷
+ * L2 列層級（乘數兩位數）：整列輸入，答錯才展開該列 —— 這是「診斷後才給協助」
+ * L3 無格線：紙筆算完只輸入三個關鍵值＋自檢卡
+ */
+var LEVELS=[
+  {mode:'digits',a:1426,m:3,  lv:'L1 有格線、有進位格', pg:'課本 p21',  note:'兩次進位。'},
+  {mode:'digits',a:2009,m:6,  lv:'L1 有格線、有進位格', pg:'課本 p21',  note:'被乘數中間有 0。'},
+  {mode:'rows',  a:28, m:74, lv:'L2 整列輸入、沒有進位格', pg:'課本 p25', note:''},
+  {mode:'rows',  a:53, m:80, lv:'L2 整列輸入、沒有進位格', pg:'課本 p25', note:'乘數的個位是 0。'},
+  {mode:'rows',  a:402,m:36, lv:'L2 整列輸入、沒有進位格', pg:'課本 p27', note:'被乘數中間有 0。'},
+  {mode:'final', a:1265,m:18, lv:'L3 沒有格線，用紙筆算', pg:'課本 p28', note:''},
+  {mode:'final', a:2008,m:21, lv:'L3 沒有格線，用紙筆算', pg:'課本 p28', note:'被乘數中間有 0。'}
+];
+var qi=0, expanded=null;
+
+function renderQ(){
+  var c=LEVELS[qi];
+  expanded=null;
+  document.getElementById('qProg').textContent='第 '+(qi+1)+' 關／共 '+LEVELS.length+' 關';
+  document.getElementById('qLv').textContent=c.lv;
+  document.getElementById('qText').innerHTML=
+    '用直式算算看：<span style="font-size:24px">'+c.a+' × '+c.m+'</span>'+
+    '<span style="font-size:14px;color:#94a3b8;font-weight:400">　'+c.pg+
+    (c.note?'　'+c.note:'')+'</span>';
+  document.getElementById('qMsg').className='msg';
+  document.getElementById('qExtra').innerHTML='';
+  document.getElementById('qBtn').style.display='';
+  document.getElementById('qNext').style.display='none';
+  var b=document.getElementById('qBody');
+  if(c.mode==='digits') b.innerHTML=buildDigits(c);
+  else if(c.mode==='rows') b.innerHTML=buildRows(c);
+  else b.innerHTML=buildFinal(c);
+}
+
+function buildDigits(c){
+  var steps=C.digitSteps(c.a,c.m);
+  var n=steps.length, cols=n+1;
+  var h='<div class="vert"><div class="vgrid" style="grid-template-columns:repeat('+cols+',52px)">';
+  // 進位格（一律放上方，與課本 p21 一致）
+  h+=sp(cols-n);
+  for(var i=n-1;i>=1;i--) h+='<div class="carrycell"><input id="cy'+(i-1)+'" type="number" inputmode="numeric"></div>';
+  h+='<div class="carrycell"></div>';
+  // 被乘數
+  var ds=C.digitsOf(c.a);
+  h+=sp(cols-ds.length);
+  for(var j=ds.length-1;j>=0;j--) h+='<div class="cell">'+ds[j]+'</div>';
+  // 乘數
+  h+=sp(cols-2)+'<div class="cell op">×</div><div class="cell">'+c.m+'</div>';
+  h+='<div class="hr"></div>';
+  // 答案格
+  h+=sp(cols-n);
+  for(var k=n-1;k>=0;k--) h+='<div class="cell"><input id="wr'+k+'" type="number" inputmode="numeric"></div>';
+  h+='</div></div>';
+  h+='<div style="font-size:13px;color:#94a3b8;line-height:1.7">'+
+     '黃色小格填<b>進位</b>的數字（沒有進位就填 0），白色大格填該位<b>寫下</b>的數字。</div>';
+  return h;
+  function sp(k){var s='';for(var x=0;x<k;x++)s+='<div class="cell"></div>';return s;}
+}
+
+function buildRows(c){
+  var rows=C.partialRows(c.a,c.m);
+  var h='';
+  rows.forEach(function(r,i){
+    h+='<div class="rowin">'+
+       '<label>第 '+(i+1)+' 列（'+c.a+'×'+r.digit+'）</label>'+
+       '<input id="rv'+i+'" type="number" inputmode="numeric" placeholder="?">'+
+       '<select id="rs'+i+'">'+
+         '<option value="0">放在個位</option>'+
+         '<option value="1">往左移一位（十位）</option>'+
+       '</select></div>';
+  });
+  h+='<div class="rowin" style="margin-top:6px">'+
+     '<label style="font-weight:700">兩列相加</label>'+
+     '<input id="rsum" type="number" inputmode="numeric" placeholder="?"></div>';
+  h+='<div id="expandBox"></div>';
+  return h;
+}
+
+function buildFinal(c){
+  var rows=C.partialRows(c.a,c.m);
+  return '<div style="font-size:15px;color:#64748b;line-height:1.8;margin-bottom:10px">'+
+    '這一關<b>不給格線</b>。請在紙上用直式算完，再把三個數字填進來。</div>'+
+    '<div class="rowin"><label>第 1 列</label><input id="fv0" type="number" inputmode="numeric" placeholder="?"></div>'+
+    '<div class="rowin"><label>第 2 列</label><input id="fv1" type="number" inputmode="numeric" placeholder="?"></div>'+
+    '<div class="rowin"><label style="font-weight:700">最後的積</label><input id="fp" type="number" inputmode="numeric" placeholder="?"></div>'+
+    '<div style="font-size:13px;color:#94a3b8;line-height:1.7">'+
+    '第 1 列、第 2 列填你在紙上<b>寫出來的數字</b>（第 2 列不用補 0）。</div>';
+}
+
+function val(id){ var e=document.getElementById(id); return e&&e.value!=='' ? Number(e.value) : null; }
+function mark(id,ok){ var e=document.getElementById(id); if(!e)return;
+  e.classList.remove('ok','bad'); e.classList.add(ok?'ok':'bad'); }
+
+function submitQ(){
+  var c=LEVELS[qi], m=document.getElementById('qMsg');
+  if(c.mode==='digits') return submitDigits(c,m);
+  if(c.mode==='rows')   return submitRows(c,m);
+  return submitFinal(c,m);
+}
+
+function submitDigits(c,m){
+  var steps=C.digitSteps(c.a,c.m), n=steps.length;
+  for(var i=0;i<n;i++){
+    if(val('wr'+i)===null){ m.className='msg no show'; m.textContent='還有格子沒填。'; return; }
+  }
+  var firstBad=-1, res=null;
+  for(var k=0;k<n;k++){
+    var st=steps[k];
+    var inW=val('wr'+k);
+    var inC=(k<n-1)? (val('cy'+k)===null?0:val('cy'+k)) : st.carryOut;
+    var r=C.diagnoseDigit({inWrite:inW,inCarry:inC,digit:st.digit,multiplier:st.multiplier,carryIn:st.carryIn});
+    mark('wr'+k, r.code==='CORRECT');
+    if(k<n-1) mark('cy'+k, r.code==='CORRECT');
+    if(r.code!=='CORRECT' && firstBad<0){ firstBad=k; res=r; }
+  }
+  if(firstBad<0){
+    m.className='msg ok show';
+    m.innerHTML=FEEDBACK.CORRECT+'　'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
+    done();
+  }else{
+    var st=steps[firstBad];
+    m.className='msg no show';
+    m.innerHTML='<b>'+st.placeName+'位</b>：'+FEEDBACK[res.code]+
+      '<br><span style="font-size:14px">這一位是 '+st.digit+'×'+st.multiplier+
+      (st.carryIn>0?('，再加上進位的 '+st.carryIn):'')+'。</span>';
+  }
+}
+
+function submitRows(c,m){
+  var rows=C.partialRows(c.a,c.m);
+  for(var i=0;i<rows.length;i++){
+    if(val('rv'+i)===null){ m.className='msg no show'; m.textContent='還有格子沒填。'; return; }
+  }
+  for(var k=0;k<rows.length;k++){
+    var r=C.diagnoseRow({row:rows[k],inValue:val('rv'+k),
+                         inShift:Number(document.getElementById('rs'+k).value)});
+    mark('rv'+k, r.code==='CORRECT');
+    if(r.code==='NO_SHIFT'){
+      m.className='msg no show';
+      m.innerHTML='第 '+(k+1)+' 列：'+FEEDBACK.NO_SHIFT+
+        '<br><span style="font-size:14px">'+c.a+'×'+rows[k].digit+
+        ' 的 '+rows[k].digit+' 在十位，所以這一列是 '+rows[k].value+' 個十 ＝ '+rows[k].shifted+'，要往左移一位。</span>';
+      return;
+    }
+    if(r.code==='EXPAND_ROW'){
+      m.className='msg no show';
+      m.innerHTML='第 '+(k+1)+' 列還不對。<br>把這一列拆開一位一位算算看。';
+      expandRow(c,rows[k],k);
+      return;
+    }
+  }
+  if(val('rsum')===null){ m.className='msg no show'; m.textContent='還沒填兩列相加的結果。'; return; }
+  var s=C.diagnoseRowSum({rows:rows,inSum:val('rsum')});
+  mark('rsum', s.code==='CORRECT');
+  if(s.code==='CORRECT'){
+    m.className='msg ok show';
+    m.innerHTML=FEEDBACK.CORRECT+'　'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
+    if(c.m===80){
+      m.innerHTML+='<br><span style="font-size:14px">課本 p25 也可以直接寫成一列：'+
+        '個位落 0，只算 53×8＝424，是 424 個十。兩種寫法都對。</span>';
+    }
+    done();
+  }else{
+    m.className='msg no show';
+    m.innerHTML=FEEDBACK.SUM_ERROR+
+      '<br><span style="font-size:14px">'+rows.map(function(r){return r.shifted;}).join(' ＋ ')+' ＝ ？</span>';
+  }
+}
+
+/* 答錯才展開該列 —— 診斷之後才給協助，粒度降到出錯的那一位 */
+function expandRow(c,row,idx){
+  var steps=C.digitSteps(c.a,row.digit);
+  var h='<div class="card" style="margin-top:12px;border-color:#fbbf24">'+
+    '<div style="font-weight:700;margin-bottom:8px">把第 '+(idx+1)+' 列拆開：'+c.a+' × '+row.digit+'</div>'+
+    '<div class="vert"><div class="vgrid" style="grid-template-columns:repeat('+(steps.length+1)+',52px)">';
+  var n=steps.length, cols=n+1;
+  h+=sp(cols-n);
+  for(var i=n-1;i>=1;i--) h+='<div class="carrycell"><input id="ecy'+(i-1)+'" type="number" inputmode="numeric"></div>';
+  h+='<div class="carrycell"></div>';
+  var ds=C.digitsOf(c.a);
+  h+=sp(cols-ds.length);
+  for(var j=ds.length-1;j>=0;j--) h+='<div class="cell">'+ds[j]+'</div>';
+  h+=sp(cols-2)+'<div class="cell op">×</div><div class="cell">'+row.digit+'</div>';
+  h+='<div class="hr"></div>';
+  h+=sp(cols-n);
+  for(var k=n-1;k>=0;k--) h+='<div class="cell"><input id="ewr'+k+'" type="number" inputmode="numeric"></div>';
+  h+='</div></div>';
+  h+='<div class="row"><button class="btn sm" onclick="checkExpanded('+idx+')">看這一列對不對</button></div>';
+  h+='<div class="msg" id="eMsg"></div></div>';
+  document.getElementById('expandBox').innerHTML=h;
+  expanded={c:c,row:row,idx:idx,steps:steps};
+  function sp(k){var s='';for(var x=0;x<k;x++)s+='<div class="cell"></div>';return s;}
+}
+function checkExpanded(idx){
+  if(!expanded) return;
+  var steps=expanded.steps, n=steps.length, m=document.getElementById('eMsg');
+  for(var i=0;i<n;i++) if(val('ewr'+i)===null){ m.className='msg no show'; m.textContent='還有格子沒填。'; return; }
+  for(var k=0;k<n;k++){
+    var st=steps[k], inW=val('ewr'+k);
+    var inC=(k<n-1)?(val('ecy'+k)===null?0:val('ecy'+k)):st.carryOut;
+    var r=C.diagnoseDigit({inWrite:inW,inCarry:inC,digit:st.digit,multiplier:st.multiplier,carryIn:st.carryIn});
+    mark('ewr'+k, r.code==='CORRECT');
+    if(k<n-1) mark('ecy'+k, r.code==='CORRECT');
+    if(r.code!=='CORRECT'){
+      m.className='msg no show';
+      m.innerHTML='<b>'+st.placeName+'位</b>：'+FEEDBACK[r.code];
+      return;
+    }
+  }
+  m.className='msg ok show';
+  m.innerHTML='這一列對了：'+expanded.c.a+'×'+expanded.row.digit+'＝<b>'+expanded.row.value+'</b>。'+
+    '<br>把它填回上面，再算整題。';
+}
+
+function submitFinal(c,m){
+  var rows=C.partialRows(c.a,c.m);
+  var v0=val('fv0'), v1=val('fv1'), p=val('fp');
+  if(v0===null||v1===null||p===null){ m.className='msg no show'; m.textContent='三個都要填。'; return; }
+  var o0=(v0===rows[0].value), o1=(v1===rows[1].value), op=(p===c.a*c.m);
+  mark('fv0',o0); mark('fv1',o1); mark('fp',op);
+  if(o0&&o1&&op){
+    m.className='msg ok show';
+    m.innerHTML='全對。'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
+    showSelfCheck();
+    done();
+  }else{
+    m.className='msg no show';
+    if(o0&&o1&&!op) m.innerHTML=FEEDBACK.SUM_ERROR+
+      '<br><span style="font-size:14px">別忘了第 2 列要往左移一位再加。</span>';
+    else m.innerHTML='還不對。紅色的那一格再算一次。';
+  }
+}
+function showSelfCheck(){
+  document.getElementById('qExtra').innerHTML=
+    '<div class="selfchk"><h3>紙筆自檢卡</h3>'+
+    '<label class="chk"><input type="checkbox"><span>第 2 列有沒有<b>空一位</b>（往左移）？</span></label>'+
+    '<label class="chk"><input type="checkbox"><span>每一位的<b>進位</b>有沒有加上去？</span></label>'+
+    '<label class="chk"><input type="checkbox"><span>最後兩列相加，有沒有漏掉<b>加法的進位</b>？</span></label>'+
+    '</div>';
+}
+
+function done(){
+  document.getElementById('qBtn').style.display='none';
+  if(qi<LEVELS.length-1) document.getElementById('qNext').style.display='';
+  else{
+    var m=document.getElementById('qMsg');
+    m.innerHTML+='<br><br><b>七關都完成了。</b>最後兩關沒有格線也算對，'+
+      '表示你在紙上也做得到 —— 這才是真的會了。';
+  }
+}
+function nextQ(){ qi++; renderQ(); }
+
+/* ═══════════ 挑戰 ═══════════ */
+var CH={ans:0, opts:[9624,8184,2424,984]};   // 110年第1題原選項
+(function(){
+  var box=document.getElementById('chOpts');
+  [0,1,2,3].sort(function(){return Math.random()-0.5;}).forEach(function(oi){
+    var b=document.createElement('button');
+    b.className='opt'; b.textContent=CH.opts[oi]+' 元'; b.dataset.i=oi;
+    b.onclick=function(){ box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
+                          b.classList.add('sel'); };
+    box.appendChild(b);
+  });
+})();
+function checkCh(){
+  var sel=document.querySelector('#chOpts .opt.sel'), m=document.getElementById('chMsg');
+  if(!sel){ m.className='msg no show'; m.textContent='先選一個答案。'; return; }
+  if(Number(sel.dataset.i)===CH.ans){
+    m.className='msg ok show';
+    m.innerHTML='答對了，<b>9624</b> 元。<br>802×2＝1604，802×1＝802 要往左移一位變成 8020，'+
+      '1604＋8020＝9624。';
+  }else{
+    m.className='msg no show';
+    m.innerHTML='還不對。<br>① 802×2 和 802×1 兩列都算了嗎？'+
+      '<br>② 第 2 列的 802 是 <b>802 個十</b>，有沒有往左移一位？';
+  }
+}
+
+drawEx();
+renderQ();
+</script>
+</body>
+</html>

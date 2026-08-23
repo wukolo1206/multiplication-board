@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>方格圖與直式 — 四上第二單元</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+     background:#f8fafc;color:#1f2937;-webkit-text-size-adjust:100%}
+.wrap{max-width:940px;margin:0 auto;padding:16px 14px 60px}
+.back{min-height:48px;display:inline-flex;align-items:center;color:#7c3aed;
+      text-decoration:none;font-size:16px;font-weight:700}
+h1{font-size:24px;margin:4px 0 4px}
+.pg{color:#94a3b8;font-size:14px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
+     font-size:16px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit}
+.tab.on{background:#7c3aed;border-color:#7c3aed;color:#fff}
+.panel{display:none}.panel.on{display:block}
+.card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px}
+.hint{background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;padding:12px 14px;
+      font-size:15px;line-height:1.7;margin-bottom:14px}
+.hint b{color:#92400e}
+.stagebar{display:flex;gap:6px;margin-bottom:14px}
+.sdot{flex:1;height:8px;border-radius:99px;background:#e2e8f0}
+.sdot.on{background:#7c3aed}
+.stitle{font-size:19px;font-weight:700;margin:0 0 4px}
+.sdesc{color:#64748b;font-size:15px;line-height:1.7;margin:0 0 14px}
+.stage{display:none}.stage.on{display:block}
+
+.flex{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.col{flex:1;min-width:270px}
+
+/* ── 方格圖 ── */
+.rectwrap{position:relative;padding:26px 0 0 34px}
+.rect{display:grid;grid-template-columns:20fr 4fr;grid-template-rows:10fr 2fr;
+      gap:3px;width:100%;aspect-ratio:24/12;background:#cbd5e1;border:3px solid #94a3b8;border-radius:6px}
+.blk{background:#e0e7ff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+     cursor:pointer;font-weight:700;color:#3730a3;transition:background .15s,transform .1s;
+     min-height:48px;padding:2px;text-align:center;line-height:1.25}
+.blk .bl{font-size:17px}
+.blk .bv{font-size:14px;opacity:.85}
+.blk:active{transform:scale(.98)}
+.blk.hi{background:#7c3aed;color:#fff}
+.blk.pick{background:#a78bfa;color:#fff;outline:3px solid #5b21b6;outline-offset:-3px}
+.blk.dim{opacity:.35}
+.blk.plain{background:#eef2ff;color:#c7d2fe;cursor:default}
+.lbl-top{position:absolute;top:2px;left:34px;right:0;display:grid;
+         grid-template-columns:20fr 4fr;gap:3px;font-size:14px;color:#64748b;text-align:center}
+.lbl-left{position:absolute;left:0;top:26px;bottom:0;display:grid;
+          grid-template-rows:10fr 2fr;gap:3px;font-size:14px;color:#64748b;
+          align-items:center;justify-items:center;width:30px}
+
+/* ── 直式 ── */
+.vert{font-family:"Courier New",monospace;font-size:26px;line-height:1.5;
+      display:inline-block;text-align:right;background:#fff}
+.vrow{padding:1px 6px;border-radius:6px;cursor:pointer;white-space:pre;transition:background .15s}
+.vrow.hi{background:#7c3aed;color:#fff}
+.vrow.dim{opacity:.35}
+.vrow.plain{cursor:default}
+.vline{border-top:3px solid #1f2937;margin:3px 0}
+.vnote{font-size:13px;color:#94a3b8;font-family:inherit;text-align:left;margin-top:6px;line-height:1.7}
+
+.btn{min-height:48px;padding:0 20px;border-radius:12px;border:none;background:#7c3aed;color:#fff;
+     font-size:17px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn:disabled{background:#cbd5e1;cursor:default}
+.btn.ghost{background:#fff;color:#7c3aed;border:2px solid #7c3aed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.inp{min-height:48px;width:120px;font-size:22px;text-align:center;border:2px solid #cbd5e1;
+     border-radius:12px;font-family:inherit;padding:0 8px}
+.inp:focus{outline:none;border-color:#7c3aed}
+.msg{margin-top:12px;font-size:16px;line-height:1.7;padding:12px 14px;border-radius:12px;display:none}
+.msg.show{display:block}
+.msg.ok{background:#dcfce7;color:#166534}
+.msg.no{background:#fee2e2;color:#991b1b}
+.msg.tip{background:#e0f2fe;color:#075985}
+.q{font-size:18px;font-weight:700;margin:0 0 10px;line-height:1.6}
+.lv{display:inline-block;font-size:13px;background:#ede9fe;color:#5b21b6;padding:3px 10px;
+    border-radius:99px;font-weight:700;margin-bottom:8px}
+.warn{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 14px;
+      font-size:14px;line-height:1.7;color:#7c2d12;margin-top:12px}
+.chk{display:flex;align-items:center;gap:10px;min-height:48px;font-size:16px;cursor:pointer}
+.chk input{width:26px;height:26px}
+.opt{display:block;width:100%;text-align:left;min-height:48px;margin-bottom:8px;padding:12px 16px;
+     border:2px solid #cbd5e1;background:#fff;border-radius:12px;font-size:17px;
+     font-family:inherit;cursor:pointer}
+.opt.sel{border-color:#7c3aed;background:#f5f3ff}
+.src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 回目錄</a>
+  <h1>方格圖與直式</h1>
+  <div class="pg">課本 p24–25　活動二 問5、問6</div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
+    <button class="tab" id="tabQz" onclick="setMode('quiz')">✏️ 練習</button>
+    <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
+  </div>
+
+  <!-- ═══════════ 探索 ═══════════ -->
+  <div class="panel on" id="pEx">
+    <div class="hint">
+      🧱 <b>先拿古氏積木排排看</b>：把 24 排成 <b>20 ＋ 4</b>，把 12 排成 <b>10 ＋ 2</b>，
+      排出一個長方形。螢幕上的圖是幫忙對照用的，<b>實際排過的手感才是重點</b>。
+    </div>
+
+    <div class="stagebar">
+      <div class="sdot on" id="d0"></div><div class="sdot" id="d1"></div><div class="sdot" id="d2"></div>
+    </div>
+
+    <!-- 階段一：四列展開，1:1 -->
+    <div class="stage on" id="s0">
+      <div class="card">
+        <p class="stitle">第一步　四塊方格，四列算式</p>
+        <p class="sdesc">課本 p24 把 24×12 拆成四塊。<b>點方格</b>或<b>點算式</b>，另一邊會跟著亮起來。四塊都點過就可以往下。</p>
+        <div class="flex">
+          <div class="col">
+            <div class="rectwrap">
+              <div class="lbl-top"><span>20</span><span>4</span></div>
+              <div class="lbl-left"><span>10</span><span>2</span></div>
+              <div class="rect" id="rect0">
+                <div class="blk" data-b="4"><span class="bl">④</span><span class="bv">20×10</span></div>
+                <div class="blk" data-b="3"><span class="bl">③</span><span class="bv">4×10</span></div>
+                <div class="blk" data-b="2"><span class="bl">②</span><span class="bv">20×2</span></div>
+                <div class="blk" data-b="1"><span class="bl">①</span><span class="bv">4×2</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="vert" id="vert0">
+              <div class="vrow plain">  24</div>
+              <div class="vrow plain">× 12</div>
+              <div class="vline"></div>
+              <div class="vrow" data-b="1">   8</div>
+              <div class="vrow" data-b="2">  40</div>
+              <div class="vrow" data-b="3">  40</div>
+              <div class="vrow" data-b="4"> 200</div>
+              <div class="vline"></div>
+              <div class="vrow plain"> 288</div>
+            </div>
+            <div class="vnote">課本 p24 標的 ①4×2 ②20×2 ③4×10 ④20×10</div>
+          </div>
+        </div>
+        <div class="msg tip show" id="m0">還沒點過的方格：① ② ③ ④</div>
+        <div class="row"><button class="btn" id="b0" disabled onclick="toStage(1)">四塊都看過了，下一步 →</button></div>
+      </div>
+    </div>
+
+    <!-- 階段二：主動合併 -->
+    <div class="stage" id="s1">
+      <div class="card">
+        <p class="stitle">第二步　把兩塊合起來</p>
+        <p class="sdesc" id="s1q">課本的直式只寫兩列，因為它把方格<b>兩塊兩塊合起來</b>。
+          請圈選代表 <b>24×2</b> 的兩個方格，再算算看合起來是多少。</p>
+        <div class="flex">
+          <div class="col">
+            <div class="rectwrap">
+              <div class="lbl-top"><span>20</span><span>4</span></div>
+              <div class="lbl-left"><span>10</span><span>2</span></div>
+              <div class="rect" id="rect1">
+                <div class="blk" data-b="4"><span class="bl">④</span><span class="bv">200</span></div>
+                <div class="blk" data-b="3"><span class="bl">③</span><span class="bv">40</span></div>
+                <div class="blk" data-b="2"><span class="bl">②</span><span class="bv">40</span></div>
+                <div class="blk" data-b="1"><span class="bl">①</span><span class="bv">8</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="row" id="sumrow" style="display:none">
+              <span style="font-size:20px" id="sumexp"></span>
+              <input class="inp" id="sumin" type="number" inputmode="numeric" placeholder="?">
+              <button class="btn" onclick="checkSum()">確定</button>
+            </div>
+            <div class="msg" id="m1"></div>
+          </div>
+        </div>
+        <div class="row"><button class="btn" id="b1" disabled onclick="toStage(2)">下一步 →</button></div>
+      </div>
+    </div>
+
+    <!-- 階段三：兩列標準 -->
+    <div class="stage" id="s2">
+      <div class="card">
+        <p class="stitle">第三步　課本的兩列直式</p>
+        <p class="sdesc">現在點直式的一列，會亮起<b>合起來的那兩塊</b>。48 是 ①②，240 是 ③④。</p>
+        <div class="flex">
+          <div class="col">
+            <div class="rectwrap">
+              <div class="lbl-top"><span>20</span><span>4</span></div>
+              <div class="lbl-left"><span>10</span><span>2</span></div>
+              <div class="rect" id="rect2">
+                <div class="blk" data-b="4"><span class="bl">④</span><span class="bv">200</span></div>
+                <div class="blk" data-b="3"><span class="bl">③</span><span class="bv">40</span></div>
+                <div class="blk" data-b="2"><span class="bl">②</span><span class="bv">40</span></div>
+                <div class="blk" data-b="1"><span class="bl">①</span><span class="bv">8</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="vert" id="vert2">
+              <div class="vrow plain">  24</div>
+              <div class="vrow plain">× 12</div>
+              <div class="vline"></div>
+              <div class="vrow" data-r="0">  48</div>
+              <div class="vrow" data-r="1"> 240</div>
+              <div class="vline"></div>
+              <div class="vrow plain"> 288</div>
+            </div>
+            <div class="vnote">
+              課本 p24 也把 240 記成 24（省略末位的 0）。<br>
+              省略的是<b>寫法</b>，這一列代表的還是 <b>240</b>。
+            </div>
+          </div>
+        </div>
+        <div class="msg tip show" id="m2">點點看直式的 48 和 240。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 練習 ═══════════ -->
+  <div class="panel" id="pQz">
+    <div class="card">
+      <span class="lv" id="lvTag">第 1 關／共 4 關</span>
+      <p class="q" id="qText"></p>
+      <div id="qBody"></div>
+      <div class="msg" id="qMsg"></div>
+      <div class="row">
+        <button class="btn" id="qBtn" onclick="submitQ()">確定</button>
+        <button class="btn ghost" id="qNext" style="display:none" onclick="nextQ()">下一關 →</button>
+      </div>
+    </div>
+    <div class="warn" id="qWarn" style="display:none"></div>
+  </div>
+
+  <!-- ═══════════ 挑戰 ═══════════ -->
+  <div class="panel" id="pCh">
+    <div class="card">
+      <span class="lv">110 年　四年級　第 1 題</span>
+      <p class="q">墜星的爸爸買了一臺冷氣機，用分期付款的方式付費，每期要付 802 元，
+        共要付 12 期。請問這臺冷氣機一共要付多少元？</p>
+      <div id="chOpts"></div>
+      <div class="msg" id="chMsg"></div>
+      <div class="row"><button class="btn" onclick="checkCh()">確定</button></div>
+      <div class="src">學力檢測考古題。指標 N-4-2，已人工確認屬本單元。</div>
+    </div>
+  </div>
+</div>
+
+<script src="multiplication-core.js"></script>
+<script>
+'use strict';
+var C = MulCore;
+
+/* ───────── 分頁 ───────── */
+function setMode(m){
+  var map={explore:['pEx','tabEx'],quiz:['pQz','tabQz'],chal:['pCh','tabCh']};
+  Object.keys(map).forEach(function(k){
+    document.getElementById(map[k][0]).classList.toggle('on',k===m);
+    document.getElementById(map[k][1]).classList.toggle('on',k===m);
+  });
+}
+
+/* ───────── 探索：共用資料 ───────── */
+var A=24, B=12;
+var BLOCKS = C.areaBlocks(A,B);                 // ①②③④
+var ROWS   = C.blocksToRows(A,B);               // [{blocks:['①','②'],sum:48}, ...]
+var LABELS = {1:'①',2:'②',3:'③',4:'④'};
+function blockByN(n){ return BLOCKS[n-1]; }
+
+/* ── 階段一：1:1 雙向高亮 ── */
+var seen={1:false,2:false,3:false,4:false};
+function clearHi(scope){
+  scope.querySelectorAll('.blk,.vrow').forEach(function(e){e.classList.remove('hi','dim');});
+}
+function hi1(n){
+  var s0=document.getElementById('s0');
+  clearHi(s0);
+  s0.querySelectorAll('.blk').forEach(function(e){
+    e.classList.toggle('hi', e.dataset.b===String(n));
+    e.classList.toggle('dim', e.dataset.b!==String(n));
+  });
+  s0.querySelectorAll('.vrow[data-b]').forEach(function(e){
+    e.classList.toggle('hi', e.dataset.b===String(n));
+    e.classList.toggle('dim', e.dataset.b!==String(n));
+  });
+  seen[n]=true;
+  var left=[1,2,3,4].filter(function(k){return !seen[k];});
+  var m=document.getElementById('m0');
+  var bl=blockByN(n);
+  if(left.length){
+    m.className='msg tip show';
+    m.innerHTML=LABELS[n]+'　'+bl.x+' × '+bl.y+' ＝ <b>'+bl.area+'</b>'+
+      '<br>還沒點過的方格：'+left.map(function(k){return LABELS[k];}).join(' ');
+  }else{
+    m.className='msg ok show';
+    m.innerHTML=LABELS[n]+'　'+bl.x+' × '+bl.y+' ＝ <b>'+bl.area+'</b>'+
+      '<br>四塊都看過了。四塊加起來就是 8＋40＋40＋200＝<b>288</b>。';
+    document.getElementById('b0').disabled=false;
+  }
+}
+document.querySelectorAll('#s0 .blk,#s0 .vrow[data-b]').forEach(function(e){
+  e.addEventListener('click',function(){hi1(Number(e.dataset.b));});
+});
+
+/* ── 階段切換 ── */
+function toStage(i){
+  [0,1,2].forEach(function(k){
+    document.getElementById('s'+k).classList.toggle('on',k===i);
+    document.getElementById('d'+k).classList.toggle('on',k<=i);
+  });
+  if(i===1) startMerge(0);
+}
+
+/* ── 階段二：主動合併（不是動畫，要學生自己圈選＋自己算） ── */
+var mergeStep=0;           // 0: 圈 ①②（24×2）  1: 圈 ③④（24×10）
+var picked=[];
+var MERGE=[
+  {need:['1','2'], exp:'8 ＋ 40 ＝', sum:48,  desc:'請圈選代表 <b>24×2</b> 的兩個方格，再算算看合起來是多少。'},
+  {need:['3','4'], exp:'40 ＋ 200 ＝', sum:240,desc:'再來，請圈選代表 <b>24×10</b> 的兩個方格。'}
+];
+function startMerge(k){
+  mergeStep=k; picked=[];
+  var cfg=MERGE[k];
+  document.getElementById('s1q').innerHTML=cfg.desc;
+  document.getElementById('sumrow').style.display='none';
+  document.getElementById('sumin').value='';
+  document.getElementById('m1').className='msg';
+  document.getElementById('rect1').querySelectorAll('.blk')
+    .forEach(function(e){e.classList.remove('pick','hi','dim');});
+}
+document.getElementById('rect1').querySelectorAll('.blk').forEach(function(e){
+  e.addEventListener('click',function(){
+    var b=e.dataset.b, i=picked.indexOf(b);
+    if(i>=0){picked.splice(i,1); e.classList.remove('pick');}
+    else{
+      if(picked.length>=2) return;
+      picked.push(b); e.classList.add('pick');
+    }
+    var cfg=MERGE[mergeStep];
+    var m=document.getElementById('m1');
+    if(picked.length<2){ m.className='msg'; document.getElementById('sumrow').style.display='none'; return; }
+    var ok=cfg.need.slice().sort().join()===picked.slice().sort().join();
+    if(ok){
+      m.className='msg ok show'; m.innerHTML='對了，就是這兩塊。合起來是多少？';
+      document.getElementById('sumexp').textContent=cfg.exp;
+      document.getElementById('sumrow').style.display='flex';
+    }else{
+      m.className='msg no show';
+      m.innerHTML='這兩塊合起來不是 24×'+(mergeStep===0?'2':'10')+'。'+
+        '<br>提示：24 是 20＋4，所以要找<b>橫著相鄰</b>的兩塊。再選選看。';
+      document.getElementById('sumrow').style.display='none';
+    }
+  });
+});
+function checkSum(){
+  var cfg=MERGE[mergeStep];
+  var v=Number(document.getElementById('sumin').value);
+  var m=document.getElementById('m1');
+  if(v===cfg.sum){
+    m.className='msg ok show';
+    if(mergeStep===0){
+      m.innerHTML='<b>48</b>。這就是課本直式的第一列。<br>再做一次，這次找 24×10。';
+      setTimeout(function(){startMerge(1);},1400);
+    }else{
+      m.innerHTML='<b>240</b>。這就是課本直式的第二列。'+
+        '<br>48 ＋ 240 ＝ <b>288</b>，跟四塊全部加起來一樣。';
+      document.getElementById('b1').disabled=false;
+    }
+  }else{
+    m.className='msg no show';
+    m.innerHTML='再算一次：'+cfg.exp+' ？';
+  }
+}
+
+/* ── 階段三：2:1 對應 ── */
+document.querySelectorAll('#s2 .vrow[data-r]').forEach(function(e){
+  e.addEventListener('click',function(){
+    var ri=Number(e.dataset.r), grp=ROWS[ri];
+    var s2=document.getElementById('s2');
+    var want=grp.blocks.map(function(l){ return String(['①','②','③','④'].indexOf(l)+1); });
+    s2.querySelectorAll('.vrow[data-r]').forEach(function(x){
+      x.classList.toggle('hi',x===e); x.classList.toggle('dim',x!==e);
+    });
+    s2.querySelectorAll('.blk').forEach(function(x){
+      var on=want.indexOf(x.dataset.b)>=0;
+      x.classList.toggle('hi',on); x.classList.toggle('dim',!on);
+    });
+    var m=document.getElementById('m2'); m.className='msg tip show';
+    m.innerHTML=(ri===0
+      ? '<b>48</b> ＝ ① 8 ＋ ② 40，也就是 <b>24×2</b>。'
+      : '<b>240</b> ＝ ③ 40 ＋ ④ 200，也就是 <b>24×10</b>。這一列要往左移一位，因為它是 24 個十。');
+  });
+});
+
+/* ───────── 練習：表徵提示遞減 L1→L3 ─────────
+ * 這裡遞減的是「表徵提示」，不是計算格線。
+ * 不可換成 carry.html 的格線／進位格遞減，那會讓這一頁失去面積模型的意義。
+ * 註：三關固定，沒有依學生表現調整，所以不叫鷹架，叫協助遞減。
+ */
+var QS=[
+  { lv:'L1 完整方格', a:24,b:12,
+    q:'直式中的 <b>48</b> 是哪兩塊方格的面積合起來的？點選兩塊。',
+    mode:'pick', need:['1','2'], show:'full',
+    tip:'方格上有標邊長和面積，先看哪兩塊的邊長合起來是 24。'},
+  { lv:'L1 完整方格', a:24,b:12,
+    q:'那 <b>240</b> 呢？點選兩塊。',
+    mode:'pick', need:['3','4'], show:'full',
+    tip:'240 是 24 的 10 倍，要找高是 10 的那兩塊。'},
+  { lv:'L2 只有外框', a:28,b:74,
+    q:'28×74 的直式第一列是 <b>112</b>。這一列代表長方形的哪一塊？點選。',
+    mode:'pick', need:['1','2'], show:'frame',
+    tip:'112 ＝ 28×4，是乘數 74 的個位 4 那一部分。'},
+  { lv:'L3 沒有圖', a:28,b:74,
+    q:'28×74 的直式第二列寫 <b>196</b>。這一列代表哪兩個數相乘？',
+    mode:'opt', opts:['28 × 7','20 × 70','28 × 70'], ans:2,
+    tip:'196 寫在十位那一欄，所以它其實代表 1960。'}
+];
+var qi=0;
+function renderQ(){
+  var c=QS[qi];
+  document.getElementById('lvTag').textContent=c.lv+'　（第 '+(qi+1)+' 關／共 '+QS.length+' 關）';
+  document.getElementById('qText').innerHTML=c.q;
+  document.getElementById('qMsg').className='msg';
+  document.getElementById('qBtn').style.display='';
+  document.getElementById('qNext').style.display='none';
+  document.getElementById('qWarn').style.display='none';
+  var body=document.getElementById('qBody'); body.innerHTML='';
+  if(c.mode==='pick'){
+    var bl=C.areaBlocks(c.a,c.b);
+    var aT=Math.floor(c.a/10)*10,aO=c.a%10,bT=Math.floor(c.b/10)*10,bO=c.b%10;
+    var order=[4,3,2,1];
+    var html='<div class="rectwrap"><div class="lbl-top"><span>'+aT+'</span><span>'+aO+'</span></div>'+
+      '<div class="lbl-left"><span>'+bT+'</span><span>'+bO+'</span></div>'+
+      '<div class="rect" id="qrect" style="grid-template-columns:'+aT+'fr '+aO+'fr;'+
+      'grid-template-rows:'+bT+'fr '+bO+'fr;aspect-ratio:'+c.a+'/'+c.b+'">';
+    order.forEach(function(n){
+      var b=bl[n-1];
+      // L2「只有外框」：不顯示標號與面積，學生只能靠位置推理，
+      // 這正是這一層要撤掉的表徵提示。
+      var inner = c.show==='full'
+        ? '<span class="bl">'+LABELS[n]+'</span><span class="bv">'+b.x+'×'+b.y+'＝'+b.area+'</span>'
+        : '';
+      html+='<div class="blk" data-b="'+n+'">'+inner+'</div>';
+    });
+    html+='</div></div>';
+    body.innerHTML=html;
+    body.querySelectorAll('.blk').forEach(function(e){
+      e.addEventListener('click',function(){ e.classList.toggle('pick'); });
+    });
+  }else{
+    c.opts.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.className='opt'; b.textContent=o; b.dataset.i=i;
+      b.onclick=function(){
+        body.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
+        b.classList.add('sel');
+      };
+      body.appendChild(b);
+    });
+  }
+}
+function submitQ(){
+  var c=QS[qi], m=document.getElementById('qMsg'), ok;
+  if(c.mode==='pick'){
+    var got=[].slice.call(document.querySelectorAll('#qBody .blk.pick'))
+              .map(function(e){return e.dataset.b;}).sort().join();
+    if(!got){ m.className='msg no show'; m.textContent='先點選方格再按確定。'; return; }
+    ok = got===c.need.slice().sort().join();
+  }else{
+    var sel=document.querySelector('#qBody .opt.sel');
+    if(!sel){ m.className='msg no show'; m.textContent='先選一個答案再按確定。'; return; }
+    ok = Number(sel.dataset.i)===c.ans;
+  }
+  if(ok){
+    m.className='msg ok show'; m.innerHTML='答對了。';
+    document.getElementById('qBtn').style.display='none';
+    if(qi<QS.length-1) document.getElementById('qNext').style.display='';
+    else{
+      m.innerHTML='答對了。<br><b>四關都完成了。</b>'+
+        '最後一關沒有圖也答得出來，表示你是<b>想出來</b>的，不是看圖看出來的。';
+      var w=document.getElementById('qWarn');
+      w.style.display='block';
+      w.innerHTML='🧱 <b>最後一件事</b>：拿古氏積木把 28×74 的其中一塊排出來，'+
+        '跟你剛才選的對照一下。螢幕上的圖不等於實際排過。';
+    }
+  }else{
+    m.className='msg no show'; m.innerHTML='還不對。'+(c.tip?'<br>'+c.tip:'');
+  }
+}
+function nextQ(){ qi++; renderQ(); }
+
+/* ───────── 挑戰 ───────── */
+// 選項一律照考卷原題，不可自己算誘答填進去。
+// 110年第1題原選項：9624 / 8184 / 2424 / 984
+var CH={ans:0, opts:[9624, 8184, 2424, 984]};
+(function(){
+  CH.ans=0;
+  var order=[0,1,2,3].sort(function(){return Math.random()-0.5;});
+  var box=document.getElementById('chOpts');
+  order.forEach(function(oi){
+    var b=document.createElement('button');
+    b.className='opt'; b.textContent=CH.opts[oi]+' 元'; b.dataset.i=oi;
+    b.onclick=function(){
+      box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
+      b.classList.add('sel');
+    };
+    box.appendChild(b);
+  });
+})();
+function checkCh(){
+  var sel=document.querySelector('#chOpts .opt.sel'), m=document.getElementById('chMsg');
+  if(!sel){ m.className='msg no show'; m.textContent='先選一個答案。'; return; }
+  var i=Number(sel.dataset.i);
+  if(i===CH.ans){
+    m.className='msg ok show';
+    m.innerHTML='答對了，<b>9624</b> 元。<br>802×2＝1604 是第一列，802×1＝802 要放到十位變成 8020，'+
+      '1604＋8020＝9624。';
+  }else{
+    m.className='msg no show';
+    // 這三個是考卷原本的誘答選項。各自的成因沒有官方命題規格可查，
+    // 因此只給檢查方向，不替學生斷言他錯在哪。
+    m.innerHTML='還不對。<br>兩件事再檢查一次：'+
+      '<br>① 802×2 和 802×1 兩列都算了嗎？'+
+      '<br>② 第二列的 802 是 <b>802 個十</b>，有沒有往左移一位？';
+  }
+}
+
+renderQ();
+</script>
+</body>
+</html>

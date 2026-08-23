@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>找出直式的錯 — 四上第二單元</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+     background:#f8fafc;color:#1f2937;-webkit-text-size-adjust:100%}
+.wrap{max-width:940px;margin:0 auto;padding:16px 14px 60px}
+.back{min-height:48px;display:inline-flex;align-items:center;color:#1d4ed8;
+      text-decoration:none;font-size:16px;font-weight:700}
+h1{font-size:24px;margin:4px 0 4px}
+.pg{color:#94a3b8;font-size:14px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
+     font-size:16px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit}
+.tab.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+.panel{display:none}.panel.on{display:block}
+.card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px}
+.stitle{font-size:19px;font-weight:700;margin:0 0 4px}
+.sdesc{color:#64748b;font-size:15px;line-height:1.7;margin:0 0 14px}
+.btn{min-height:48px;padding:0 20px;border-radius:12px;border:none;background:#1d4ed8;color:#fff;
+     font-size:17px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn.ghost{background:#fff;color:#1d4ed8;border:2px solid #1d4ed8}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.msg{margin-top:12px;font-size:16px;line-height:1.8;padding:12px 14px;border-radius:12px;display:none}
+.msg.show{display:block}
+.msg.ok{background:#dcfce7;color:#166534}
+.msg.no{background:#fee2e2;color:#991b1b}
+.msg.tip{background:#e0f2fe;color:#075985}
+.lv{display:inline-block;font-size:13px;background:#dbeafe;color:#1e40af;padding:3px 10px;
+    border-radius:99px;font-weight:700;margin-bottom:8px}
+.q{font-size:18px;font-weight:700;margin:0 0 12px;line-height:1.6}
+.opt{display:block;width:100%;text-align:left;min-height:48px;margin-bottom:8px;padding:12px 16px;
+     border:2px solid #cbd5e1;background:#fff;border-radius:12px;font-size:16px;line-height:1.6;
+     font-family:inherit;cursor:pointer}
+.opt.sel{border-color:#1d4ed8;background:#eff6ff}
+.vert{display:inline-block;font-family:"Courier New",monospace;font-size:28px;line-height:1.45;
+      text-align:right;background:#fff;padding:10px 16px;border:2px dashed #cbd5e1;border-radius:12px}
+.vert .l{white-space:pre}
+.vert .bar{border-top:3px solid #1f2937;margin:3px 0}
+.wrongbox{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.stamp{display:inline-block;background:#fee2e2;color:#991b1b;font-size:14px;font-weight:700;
+       padding:4px 10px;border-radius:8px;margin-bottom:8px}
+.inp{min-height:48px;width:150px;font-size:24px;text-align:center;border:2px solid #cbd5e1;
+     border-radius:12px;font-family:inherit;padding:0 8px}
+.inp:focus{outline:none;border-color:#1d4ed8}
+.blot{display:inline-block;background:#1f2937;color:#1f2937;border-radius:4px;
+      width:1.1em;text-align:center}
+.src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
+.prog{font-size:14px;color:#64748b;margin-bottom:10px}
+.note{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 14px;
+      font-size:14px;line-height:1.8;color:#7c2d12;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 回目錄</a>
+  <h1>找出直式的錯</h1>
+  <div class="pg">課本 p29　練習百分百（二）第 2 題</div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
+    <button class="tab" id="tabQz" onclick="setMode('quiz')">✏️ 練習</button>
+    <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
+  </div>
+
+  <!-- ═══════════ 探索 ═══════════ -->
+  <div class="panel on" id="pEx">
+    <div class="card">
+      <p class="stitle">課本印出來的兩個錯誤直式</p>
+      <p class="sdesc">課本 p29 要你判斷這兩個直式對不對，再訂正。先看看它們錯在哪裡。</p>
+
+      <div class="wrongbox">
+        <div>
+          <span class="stamp">① 21 × 43</span>
+          <div class="vert">
+            <div class="l">  21</div><div class="l">× 43</div>
+            <div class="bar"></div><div class="l">  83</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:250px">
+          <div class="msg tip show">
+            只寫了<b>一列</b>。83 是把<b>個位×個位</b>（1×3＝3）和<b>十位×十位</b>（2×4＝8）
+            湊起來的。<br>
+            但 43 是 40＋3，21 要分別乘 3 和乘 40，會有<b>兩列</b>。<br>
+            正確：21×3＝63，21×40＝840，63＋840＝<b>903</b>。
+          </div>
+        </div>
+      </div>
+
+      <div class="wrongbox" style="margin-top:18px">
+        <div>
+          <span class="stamp">② 37 × 52</span>
+          <div class="vert">
+            <div class="l">   37</div><div class="l">×  52</div>
+            <div class="bar"></div><div class="l">   74</div>
+            <div class="l">  185</div><div class="bar"></div><div class="l">  259</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:250px">
+          <div class="msg tip show">
+            兩列都<b>乘對了</b>：37×2＝74、37×5＝185。<br>
+            錯在 185 <b>沒有往左移一位</b>。52 的 5 在十位，所以這一列是
+            185 個十 ＝ <b>1850</b>。<br>
+            正確：74＋1850＝<b>1924</b>。
+          </div>
+        </div>
+      </div>
+      <div class="note">
+        這兩題的差別很重要：①是<b>整個做法</b>就錯了，②是<b>算對但放錯位置</b>。
+        找錯的時候要分清楚。
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 練習 ═══════════ -->
+  <div class="panel" id="pQz">
+    <div class="card">
+      <div class="prog" id="qProg"></div>
+      <span class="lv" id="qLv"></span>
+      <p class="q" id="qText"></p>
+      <div id="qVert"></div>
+      <div id="qOpts" style="margin-top:14px"></div>
+      <div class="msg" id="qMsg"></div>
+      <div id="qFix" style="display:none">
+        <div class="row">
+          <span style="font-size:17px;font-weight:700" id="qFixLabel">訂正：</span>
+          <input class="inp" id="qFixIn" type="number" inputmode="numeric" placeholder="?">
+          <button class="btn" onclick="checkFix()">確定</button>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" id="qBtn" onclick="submitQ()">確定</button>
+        <button class="btn ghost" id="qNext" style="display:none" onclick="nextQ()">下一關 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 挑戰 ═══════════ -->
+  <div class="panel" id="pCh">
+    <div class="card">
+      <span class="lv">111 年　四年級　第 2 題</span>
+      <p class="q">下面是「45 乘以三位數」的乘法直式算式，算式中有部分不小心被墨汁弄髒了，
+        請問乘法直式的積是多少？</p>
+      <div class="vert" style="font-size:30px">
+        <div class="l">    4 5</div>
+        <div class="l">×  2<span class="blot">■</span>3</div>
+        <div class="bar"></div>
+        <div class="l">  1 3 5</div>
+        <div class="l">1 8 0  </div>
+        <div class="l"><span class="blot">■</span> 0    </div>
+        <div class="bar"></div>
+        <div class="l"><span class="blot">■■■■■</span></div>
+      </div>
+      <div id="chOpts" style="margin-top:14px"></div>
+      <div class="msg" id="chMsg"></div>
+      <div class="row"><button class="btn" onclick="checkCh()">確定</button></div>
+      <div class="src">學力檢測考古題，直式依原題本重現。指標 N-4-2，已人工確認屬本單元。</div>
+    </div>
+  </div>
+</div>
+
+<script src="multiplication-core.js"></script>
+<script>
+'use strict';
+var C = MulCore;
+
+function setMode(m){
+  var map={explore:['pEx','tabEx'],quiz:['pQz','tabQz'],chal:['pCh','tabCh']};
+  Object.keys(map).forEach(function(k){
+    document.getElementById(map[k][0]).classList.toggle('on',k===m);
+    document.getElementById(map[k][1]).classList.toggle('on',k===m);
+  });
+}
+
+/* ═══════════ 練習：四關，前三關問「算錯在哪」，第四關問法不同 ═══════════
+ * 第四關是 SWAPPED_OPERANDS —— 每一步計算都對，錯在列式結構。
+ * 所以不可以問「第幾步算錯」，學生會找不到。
+ */
+var LV=[
+  {
+    lv:'第 1 關　算錯', pg:'課本 p29 ①',
+    q:'這個直式錯在哪裡？',
+    vert:['  21','× 43','—','  83'],
+    opts:[
+      '只把個位×個位、十位×十位算一算就寫下來了，少算了很多',
+      '有一位忘記加進位',
+      '第二列忘記往左移一位',
+      '被乘數和乘數寫反了'
+    ],
+    ans:0,
+    why:'83 是 1×3＝3 和 2×4＝8 拼起來的。<br>'+
+        '43 是 40＋3，21 要分別乘 3、乘 40，直式會有<b>兩列</b>，不是一列。',
+    fixLabel:'21×43 的正確答案是：', fixAns:903,
+    fixWhy:'21×3＝63，21×40＝840，63＋840＝903。'
+  },
+  {
+    lv:'第 2 關　算錯', pg:'課本 p29 ②',
+    q:'這個直式錯在哪裡？',
+    vert:['   37','×  52','—','   74','  185','—','  259'],
+    opts:[
+      '37×2 算錯了',
+      '37×5 算錯了',
+      '兩列都乘對了，但第二列沒有往左移一位',
+      '被乘數和乘數寫反了'
+    ],
+    ans:2,
+    why:'37×2＝74 對，37×5＝185 也對。<br>'+
+        '52 的 5 在<b>十位</b>，所以第二列是 185 個十 ＝ <b>1850</b>，要往左移一位。',
+    fixLabel:'37×52 的正確答案是：', fixAns:1924,
+    fixWhy:'74＋1850＝1924。'
+  },
+  {
+    lv:'第 3 關　算錯', pg:'數字取自課本 p21',
+    q:'這個直式錯在哪裡？',
+    vert:['  1426','×    3','—','  4268'],
+    opts:[
+      '個位算錯了',
+      '十位算對了 2×3＝6，但忘記加上個位進位的 1',
+      '百位算錯了',
+      '千位忘記加進位'
+    ],
+    ans:1,
+    why:'個位 6×3＝18，寫 8 進 1。<br>'+
+        '十位 2×3＝6，<b>要再加上進位的 1</b>，是 7 才對，卻寫成了 6。',
+    fixLabel:'1426×3 的正確答案是：', fixAns:4278,
+    fixWhy:'6×3＝18 寫8進1；2×3＝6＋1＝7；4×3＝12 寫2進1；1×3＝3＋1＝4。'
+  },
+  {
+    lv:'第 4 關　這一關不一樣', pg:'課本 p22 活動二問2',
+    q:'題目是「每組有 6 人，全部有 28 組，共有幾人？」<br>'+
+      '<span style="font-weight:400;font-size:16px">下面這個直式<b>每一步都算對了</b>，'+
+      '答案也是對的。但是列式跟題目說的不一樣，哪裡不同？</span>',
+    vert:['  28','×  6','—',' 168'],
+    opts:[
+      '把被乘數和乘數對調了，題目是 6×28，這裡寫成 28×6',
+      '有一位忘記加進位',
+      '第二列沒有往左移',
+      '答案算錯了'
+    ],
+    ans:0,
+    why:'6×28 和 28×6 的<b>答案一樣</b>（都是 168），所以不能靠答案判斷。<br>'+
+        '但題目說的是「6 的 28 倍」，被乘數是 6、乘數是 28。<br>'+
+        '教師手冊提醒：這個單元要練的就是<b>一位數×二位數</b>的直式，'+
+        '把它改成二位數×一位數就練不到了，後面學二位數×二位數會接不上。',
+    fixLabel:'照題目應該列成：6 × ',
+    fixAns:28,
+    fixWhy:'6×28＝168。被乘數是 6，乘數是 28。',
+    structural:true
+  }
+];
+var qi=0, phase='find';
+
+function renderQ(){
+  var c=LV[qi]; phase='find';
+  document.getElementById('qProg').textContent='第 '+(qi+1)+' 關／共 '+LV.length+' 關';
+  document.getElementById('qLv').textContent=c.lv+'　'+c.pg;
+  document.getElementById('qText').innerHTML=c.q;
+  var v='<div class="vert">';
+  c.vert.forEach(function(l){ v += (l==='—') ? '<div class="bar"></div>' : '<div class="l">'+l+'</div>'; });
+  v+='</div>';
+  document.getElementById('qVert').innerHTML=v;
+  var box=document.getElementById('qOpts'); box.innerHTML='';
+  c.opts.forEach(function(o,i){
+    var b=document.createElement('button');
+    b.className='opt'; b.innerHTML=o; b.dataset.i=i;
+    b.onclick=function(){ box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
+                          b.classList.add('sel'); };
+    box.appendChild(b);
+  });
+  document.getElementById('qMsg').className='msg';
+  document.getElementById('qFix').style.display='none';
+  document.getElementById('qFixIn').value='';
+  document.getElementById('qBtn').style.display='';
+  document.getElementById('qNext').style.display='none';
+}
+
+function submitQ(){
+  var c=LV[qi], m=document.getElementById('qMsg');
+  var sel=document.querySelector('#qOpts .opt.sel');
+  if(!sel){ m.className='msg no show'; m.textContent='先選一個答案。'; return; }
+  if(Number(sel.dataset.i)===c.ans){
+    m.className='msg ok show'; m.innerHTML='找對了。<br>'+c.why;
+    document.getElementById('qBtn').style.display='none';
+    document.getElementById('qFixLabel').innerHTML=c.fixLabel;
+    document.getElementById('qFix').style.display='block';
+    phase='fix';
+  }else{
+    m.className='msg no show';
+    m.innerHTML='還不是這裡。'+(c.structural
+      ? '<br>提示：先算算看 28×6 是多少，跟題目的答案比比看，你會發現<b>答案沒問題</b>。'
+      : '<br>提示：一步一步對照，看哪一步的結果跟你自己算的不一樣。');
+  }
+}
+
+function checkFix(){
+  var c=LV[qi], m=document.getElementById('qMsg');
+  var v=document.getElementById('qFixIn').value;
+  if(v===''){ m.className='msg no show'; m.textContent='填上訂正的數字。'; return; }
+  if(Number(v)===c.fixAns){
+    m.className='msg ok show'; m.innerHTML='訂正正確。<br>'+c.fixWhy;
+    document.getElementById('qFix').style.display='none';
+    if(qi<LV.length-1) document.getElementById('qNext').style.display='';
+    else m.innerHTML+='<br><br><b>四關都完成了。</b>'+
+      '最後一關提醒我們：<b>答案對，不代表列式對</b>。';
+  }else{
+    m.className='msg no show'; m.innerHTML='再算一次看看。';
+  }
+}
+function nextQ(){ qi++; renderQ(); }
+
+/* ═══════════ 挑戰：111年第2題（直式依原題本重現） ═══════════ */
+var CH={opts:[8935,9935,10935,11935], ans:2};
+(function(){
+  var box=document.getElementById('chOpts');
+  CH.opts.forEach(function(v,i){
+    var b=document.createElement('button');
+    b.className='opt'; b.textContent=v; b.dataset.i=i;
+    b.onclick=function(){ box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
+                          b.classList.add('sel'); };
+    box.appendChild(b);
+  });
+})();
+function checkCh(){
+  var sel=document.querySelector('#chOpts .opt.sel'), m=document.getElementById('chMsg');
+  if(!sel){ m.className='msg no show'; m.textContent='先選一個答案。'; return; }
+  if(Number(sel.dataset.i)===CH.ans){
+    m.className='msg ok show';
+    m.innerHTML='答對了，<b>10935</b>。<br>'+
+      '第二列是 180，180÷45＝4，所以被墨汁蓋住的是 <b>4</b>，乘數是 <b>243</b>。<br>'+
+      '第三列 45×2＝90，蓋住的是 9。<br>'+
+      '135 ＋ 1800 ＋ 9000 ＝ 10935。';
+  }else{
+    m.className='msg no show';
+    m.innerHTML='還不對。<br>先看<b>第二列 180</b>：45 乘以多少會是 180？'+
+      '<br>再看<b>第三列</b>個位是 0，45×2＝90，所以第三列是 9000。';
+  }
+}
+
+renderQ();
+</script>
+</body>
+</html>

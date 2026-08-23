@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>直式的每一步 — 四上第二單元</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+     background:#f8fafc;color:#1f2937;-webkit-text-size-adjust:100%}
+.wrap{max-width:940px;margin:0 auto;padding:16px 14px 60px}
+.back{min-height:48px;display:inline-flex;align-items:center;color:#c2410c;
+      text-decoration:none;font-size:16px;font-weight:700}
+h1{font-size:24px;margin:4px 0 4px}
+.pg{color:#94a3b8;font-size:14px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
+     font-size:16px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit}
+.tab.on{background:#c2410c;border-color:#c2410c;color:#fff}
+.panel{display:none}.panel.on{display:block}
+.card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px}
+.stitle{font-size:19px;font-weight:700;margin:0 0 4px}
+.sdesc{color:#64748b;font-size:15px;line-height:1.7;margin:0 0 14px}
+.btn{min-height:48px;padding:0 20px;border-radius:12px;border:none;background:#c2410c;color:#fff;
+     font-size:17px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn:disabled{background:#cbd5e1;cursor:default}
+.btn.ghost{background:#fff;color:#c2410c;border:2px solid #c2410c}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.msg{margin-top:12px;font-size:16px;line-height:1.8;padding:12px 14px;border-radius:12px;display:none}
+.msg.show{display:block}
+.msg.ok{background:#dcfce7;color:#166534}
+.msg.no{background:#fee2e2;color:#991b1b}
+.msg.tip{background:#e0f2fe;color:#075985}
+.lv{display:inline-block;font-size:13px;background:#ffedd5;color:#9a3412;padding:3px 10px;
+    border-radius:99px;font-weight:700;margin-bottom:8px}
+.q{font-size:18px;font-weight:700;margin:0 0 12px;line-height:1.6}
+.opt{display:block;width:100%;text-align:left;min-height:48px;margin-bottom:8px;padding:12px 16px;
+     border:2px solid #cbd5e1;background:#fff;border-radius:12px;font-size:16px;line-height:1.7;
+     font-family:inherit;cursor:pointer}
+.opt.sel{border-color:#c2410c;background:#fff7ed}
+
+/* ── 一千元紙鈔 ── */
+.bills{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;min-height:60px}
+.bill{width:82px;height:46px;border-radius:6px;background:linear-gradient(135deg,#a7f3d0,#6ee7b7);
+      border:2px solid #059669;color:#065f46;font-size:13px;font-weight:700;
+      display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3}
+.bill.new{animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.billnote{font-size:14px;color:#475569;line-height:1.8}
+
+/* ── 四式並列 ── */
+.four{font-family:"Courier New",monospace;font-size:22px;line-height:2.1}
+.four div{padding:2px 8px;border-radius:8px;cursor:pointer}
+.four div.on{background:#ffedd5}
+.four .zeros{color:#c2410c;font-weight:700}
+
+/* ── 直式 ── */
+.vert{display:inline-block;font-family:"Courier New",monospace;font-size:28px;
+      line-height:1.45;text-align:right;background:#fff}
+.vert .l{white-space:pre}
+.vert .bar{border-top:3px solid #1f2937;margin:3px 0}
+.carry{color:#d97706;font-size:17px;height:22px;white-space:pre}
+.src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
+.orig{font-size:13px;color:#64748b;margin-top:6px}
+.prog{font-size:14px;color:#64748b;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 回目錄</a>
+  <h1>直式的每一步</h1>
+  <div class="pg">課本 p20–21　活動一</div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
+    <button class="tab" id="tabQz" onclick="setMode('quiz')">✏️ 練習</button>
+    <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
+  </div>
+
+  <!-- ═══════════ 探索 ═══════════ -->
+  <div class="panel on" id="pEx">
+    <div class="card">
+      <p class="stitle">3000 × 2　家安每個月存 3000 元</p>
+      <p class="sdesc">課本 p20 問1。3000 元是 <b>3 張一千元</b>，存 2 個月是幾張一千元？</p>
+      <div class="billnote" id="billLabel">第 1 個月：3 張一千元</div>
+      <div class="bills" id="bills"></div>
+      <div class="msg tip show" id="billMsg">
+        3000 元是 <b>3 張一千元</b>。按「再存一個月」看看。
+      </div>
+      <div class="row">
+        <button class="btn" id="billBtn" onclick="addMonth()">再存一個月 →</button>
+        <button class="btn ghost" onclick="resetBills()">重來</button>
+      </div>
+      <div class="orig">
+        課本原話：「3000 元是 3 張一千元，2 個月後是存了 3×2＝6 張一千元。」
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="stitle">從這四個算式，你發現了什麼？</p>
+      <p class="sdesc">課本 p20 問2。點點看每一列。</p>
+      <div class="four" id="four">
+        <div data-i="0">   3 × 2 ＝    6</div>
+        <div data-i="1">  30 × 2 ＝   60</div>
+        <div data-i="2"> 300 × 2 ＝  600</div>
+        <div data-i="3">3000 × 2 ＝ 6000</div>
+      </div>
+      <div class="msg tip show" id="fourMsg">點一列看看。</div>
+      <div class="orig">
+        課本原話：「整十、整百、整千乘以一位數時，只需將『被乘數的最高位數』和『乘數』
+        相乘後得到的『積』，再補上『被乘數中 0 的個數』，即可得到答案。」
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 練習 ═══════════ -->
+  <div class="panel" id="pQz">
+    <div class="card">
+      <div class="prog" id="qProg"></div>
+      <span class="lv" id="qLv"></span>
+      <p class="q" id="qTitle"></p>
+      <div class="vert" id="qVert"></div>
+      <div class="msg tip show" id="qMsg">按「下一步」，一位一位看。</div>
+      <div class="row">
+        <button class="btn" id="qNextStep" onclick="stepNext()">下一步 →</button>
+        <button class="btn ghost" onclick="stepReset()">重來</button>
+        <button class="btn" id="qNextLv" style="display:none" onclick="nextLv()">下一題 →</button>
+      </div>
+      <div class="src">
+        這一頁只<b>看</b>直式怎麼走，不用填格子。<br>
+        想自己動手算、想知道哪一步錯了，到「<a href="carry.html" style="color:#c2410c">進位不要漏</a>」那一頁。
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 挑戰 ═══════════ -->
+  <div class="panel" id="pCh">
+    <div class="card">
+      <span class="lv">108 年　四年級　第 11 題</span>
+      <p class="q">下面是 5673 × 4 ＝ 22692 計算步驟說明，請問下面哪些說明是<b>完全正確</b>的？</p>
+      <div style="font-size:16px;line-height:2;background:#f8fafc;border-radius:12px;padding:14px">
+        <b>甲</b>：左邊算來第一個 2，是因為 5 個萬×4，所以有 20 個萬，可以換成 2 個十萬。<br>
+        <b>乙</b>：左邊算來第一個 2，是因為 5 個千×4，所以有 20 個千，可以換 2 個萬。<br>
+        <b>丙</b>：左邊算來第二個 2，是因為 5 個千×4，所以有 20 個千，可以換成 2 個千。<br>
+        <b>丁</b>：左邊算來第二個 2，是因為 6 個百×4，所以有 24 個百，所以可以換成 2 個千。
+      </div>
+      <div id="chOpts" style="margin-top:14px"></div>
+      <div class="msg" id="chMsg"></div>
+      <div class="row"><button class="btn" onclick="checkCh()">確定</button></div>
+      <div class="src">學力檢測考古題。指標 N-4-2，已人工確認屬本單元。題幹與選項照考卷原題。</div>
+    </div>
+  </div>
+</div>
+
+<script src="multiplication-core.js"></script>
+<script>
+'use strict';
+var C = MulCore;
+
+function setMode(m){
+  var map={explore:['pEx','tabEx'],quiz:['pQz','tabQz'],chal:['pCh','tabCh']};
+  Object.keys(map).forEach(function(k){
+    document.getElementById(map[k][0]).classList.toggle('on',k===m);
+    document.getElementById(map[k][1]).classList.toggle('on',k===m);
+  });
+}
+
+/* ═══════════ 探索一：一千元紙鈔 ═══════════
+ * 具體物層級要正確：這裡是「張一千元」，不是「萬元」。
+ */
+var months=1;
+function drawBills(){
+  var n=3*months;
+  var h='';
+  for(var i=0;i<n;i++) h+='<div class="bill'+(i>=3*(months-1)?' new':'')+'">1000 元</div>';
+  document.getElementById('bills').innerHTML=h;
+  document.getElementById('billLabel').innerHTML=
+    '第 '+months+' 個月：共 <b>'+n+'</b> 張一千元';
+}
+function addMonth(){
+  if(months>=2) return;
+  months=2; drawBills();
+  var m=document.getElementById('billMsg');
+  m.className='msg ok show';
+  m.innerHTML='2 個月後是 <b>3×2＝6 張一千元</b>，也就是 <b>6000</b> 元。'+
+    '<br>所以 3000×2＝6000。';
+  document.getElementById('billBtn').disabled=true;
+}
+function resetBills(){
+  months=1; drawBills();
+  document.getElementById('billBtn').disabled=false;
+  var m=document.getElementById('billMsg');
+  m.className='msg tip show';
+  m.innerHTML='3000 元是 <b>3 張一千元</b>。按「再存一個月」看看。';
+}
+
+/* ═══════════ 探索二：四式並列 ═══════════ */
+var FOUR=[
+  {t:'3 × 2 ＝ 6', z:0, s:'3 的 2 倍是 6。'},
+  {t:'30 × 2 ＝ 60', z:1, s:'3 個十的 2 倍是 6 個十，就是 60。<br>被乘數有 <b>1 個 0</b>，答案就在 6 後面補 <b>1 個 0</b>。'},
+  {t:'300 × 2 ＝ 600', z:2, s:'3 個百的 2 倍是 6 個百，就是 600。<br>被乘數有 <b>2 個 0</b>，答案補 <b>2 個 0</b>。'},
+  {t:'3000 × 2 ＝ 6000', z:3, s:'3 個千的 2 倍是 6 個千，就是 6000。<br>被乘數有 <b>3 個 0</b>，答案補 <b>3 個 0</b>。'}
+];
+document.querySelectorAll('#four div').forEach(function(e){
+  e.addEventListener('click',function(){
+    var i=Number(e.dataset.i);
+    document.querySelectorAll('#four div').forEach(function(x){x.classList.toggle('on',x===e);});
+    var m=document.getElementById('fourMsg');
+    m.className='msg tip show';
+    m.innerHTML=FOUR[i].s+(i===3?'<br><br>看出來了嗎？<b>最高位相乘，再補 0</b>。':'');
+  });
+});
+
+/* ═══════════ 練習：引導式逐步揭示（不填格子） ═══════════ */
+var QLV=[
+  {a:1426,m:3,lv:'課本 p21 問3',title:'老師買了 3 套科學繪本，一套 1426 元，共要付多少元？',
+   text:[
+     '6 個一的 3 倍是 18 個一，在個位寫 8，在十位上方記 1。',
+     '2 個十的 3 倍是 6 個十，和 1 個十合起來是 7 個十，在十位寫 7。',
+     '4 個百的 3 倍是 12 個百，在百位寫 2，在千位上方記 1。',
+     '1 個千的 3 倍是 3 個千，和 1 個千合起來是 4 個千，在千位寫 4。'
+   ]},
+  {a:2009,m:6,lv:'課本 p21 問4',title:'一盒積木重 2009 公克，6 盒積木共重多少公克？',
+   text:[
+     '9 個一的 6 倍是 54 個一，在個位寫 4，在十位上方記 5。',
+     '0 個十的 6 倍是 0 個十，和 5 個十合起來是 5 個十，在十位寫 5。',
+     '0 個百的 6 倍是 0 個百，在百位寫 0。',
+     '2 個千的 6 倍是 12 個千，在千位寫 2，在萬位上方記 1。',
+     '萬位就是進位上來的 1，在萬位寫 1。'
+   ]}
+];
+var lvi=0, si=-1, steps=[];
+
+function renderLv(){
+  var c=QLV[lvi];
+  steps=C.digitSteps(c.a,c.m); si=-1;
+  document.getElementById('qProg').textContent='第 '+(lvi+1)+' 題／共 '+QLV.length+' 題';
+  document.getElementById('qLv').textContent=c.lv;
+  document.getElementById('qTitle').textContent=c.title;
+  document.getElementById('qNextStep').disabled=false;
+  document.getElementById('qNextLv').style.display='none';
+  var m=document.getElementById('qMsg');
+  m.className='msg tip show'; m.innerHTML='按「下一步」，一位一位看。';
+  drawVert();
+}
+function pad(s,w){ while(s.length<w) s=' '+s; return s; }
+function drawVert(){
+  var c=QLV[lvi], n=steps.length, w=n+1;
+  // 進位列（上方，與課本 p21 一致）
+  var carry='';
+  for(var i=n-1;i>=0;i--){
+    var st=steps[i];
+    // 進位標在「進位後那一位」的上方，即左邊一位
+    var prev=steps[i-1];
+    carry += (prev && si>=i-1 && prev.carryOut>0) ? String(prev.carryOut) : ' ';
+  }
+  var ans='';
+  for(var k=n-1;k>=0;k--) ans += (si>=k) ? String(steps[k].write) : ' ';
+  var h='<div class="carry">'+pad(carry,w)+'</div>'+
+        '<div class="l">'+pad(String(c.a),w)+'</div>'+
+        '<div class="l">'+pad('× '+c.m,w)+'</div>'+
+        '<div class="bar"></div>'+
+        '<div class="l">'+pad(ans,w)+'</div>';
+  document.getElementById('qVert').innerHTML=h;
+}
+function stepNext(){
+  var c=QLV[lvi];
+  if(si>=steps.length-1) return;
+  si++;
+  drawVert();
+  var m=document.getElementById('qMsg');
+  m.className='msg tip show';
+  m.innerHTML=(c.text[si]||'')+
+    '<div style="font-size:13px;color:#64748b;margin-top:6px">— 說法照課本 '+c.lv.replace('課本 ','')+'</div>';
+  if(si>=steps.length-1){
+    m.className='msg ok show';
+    m.innerHTML=(c.text[si]||'')+'<br>算完了：'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
+    document.getElementById('qNextStep').disabled=true;
+    if(lvi<QLV.length-1) document.getElementById('qNextLv').style.display='';
+  }
+}
+function stepReset(){ si=-1; document.getElementById('qNextStep').disabled=false;
+  document.getElementById('qNextLv').style.display='none';
+  var m=document.getElementById('qMsg'); m.className='msg tip show';
+  m.innerHTML='按「下一步」，一位一位看。'; drawVert(); }
+function nextLv(){ lvi++; renderLv(); }
+
+/* ═══════════ 挑戰：108年第11題 ═══════════ */
+var CH={opts:['甲','甲、丙','乙、丁','甲、乙、丁'], ans:2};
+(function(){
+  var box=document.getElementById('chOpts');
+  CH.opts.forEach(function(v,i){
+    var b=document.createElement('button');
+    b.className='opt'; b.textContent=v; b.dataset.i=i;
+    b.onclick=function(){ box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
+                          b.classList.add('sel'); };
+    box.appendChild(b);
+  });
+})();
+function checkCh(){
+  var sel=document.querySelector('#chOpts .opt.sel'), m=document.getElementById('chMsg');
+  if(!sel){ m.className='msg no show'; m.textContent='先選一個答案。'; return; }
+  if(Number(sel.dataset.i)===CH.ans){
+    m.className='msg ok show';
+    m.innerHTML='答對了，<b>乙、丁</b>。<br>'+
+      '22692 從左邊算來第一個 2 是<b>萬位</b>，第二個 2 是<b>千位</b>。<br>'+
+      '<b>乙 ✓</b>　5673 的 5 在千位，5 個千×4＝20 個千＝2 個萬。<br>'+
+      '<b>丁 ✓</b>　6 個百×4＝24 個百，其中 20 個百換成 2 個千。<br>'+
+      '<b>甲 ✗</b>　5673 的 5 在<b>千位</b>，不是萬位。<br>'+
+      '<b>丙 ✗</b>　20 個千要換成 2 個<b>萬</b>，不是 2 個千。';
+  }else{
+    m.className='msg no show';
+    m.innerHTML='還不對。<br>先確定 22692 裡，左邊第一個 2 和第二個 2 各在<b>哪一位</b>，'+
+      '再看 5673 的每個數字各在哪一位。';
+  }
+}
+
+drawBills();
+renderLv();
+</script>
+</body>
+</html>

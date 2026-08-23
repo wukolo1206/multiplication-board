@@ -1,10 +1,10 @@
 ---
 project: 乘法直式板（四上第二單元）
 category: 學科工具集
-status: 開發中
-version: "v1.0 五頁完成，核心 74 項＋端到端 52 項全過 2026-08-23"
+status: 已上線
+version: "v1.0 已發佈 GitHub Pages，線上端到端驗證通過 2026-08-23"
 url: https://wukolo1206.github.io/multiplication-board/
-next_action: 建 GitHub repo 並 push，開啟 Pages，再做實機驗收（教師大屏＋學生 iPad）
+next_action: 實機驗收（教師觸控大屏＋學生 iPad 手感），並設計 L3 無協助正確率的收集方式
 updated: 2026-08-23
 ---
 

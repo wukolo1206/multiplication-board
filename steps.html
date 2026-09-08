@@ -54,13 +54,30 @@ h1{font-size:24px;margin:4px 0 4px}
 .four div.on{background:#ffedd5}
 .four .zeros{color:#c2410c;font-weight:700}
 
-/* ── 直式 ── */
+/* ── 直式與定位板 ── */
 .vert{display:inline-block;font-family:"Courier New",monospace;margin:6px 0}
 .vgrid{display:grid;justify-items:center}
-.vgrid .cell{width:36px;font-size:28px;text-align:center;line-height:1.4}
+.vgrid .cell{width:44px;font-size:28px;text-align:center;line-height:1.4;box-sizing:border-box}
 .vgrid .cell.op{color:#1f2937}
-.vgrid .carrycell{width:36px;height:26px;font-size:17px;color:#d97706;display:flex;align-items:center;justify-content:center}
+.vgrid.with-pv .cell.col-line{border-left:1px dashed #cbd5e1}
+.vgrid .carrycell{width:44px;height:26px;font-size:17px;color:#d97706;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.vgrid.with-pv .carrycell.col-line{border-left:1px dashed #cbd5e1}
 .vgrid .hr{grid-column:1/-1;border-top:3px solid #1f2937;height:0;margin:3px 0;width:100%;justify-self:stretch}
+
+/* 定位板表頭 */
+.vgrid .pvcell{
+  width:44px;height:28px;font-size:13px;font-weight:700;
+  color:#0369a1;background:#e0f2fe;border:1.5px solid #bae6fd;
+  border-radius:6px 6px 0 0;display:flex;align-items:center;
+  justify-content:center;margin-bottom:4px;box-sizing:border-box;
+  letter-spacing:-0.5px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+  transition:all .2s;
+}
+.vgrid .pvcell.op{background:transparent;border:none}
+.vgrid .pvcell.hi{
+  background:#fef08a;color:#854d0e;border-color:#facc15;
+  box-shadow:0 0 0 2px rgba(250,204,21,0.3);transform:scale(1.04);
+}
 .vconcept{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 16px;
           font-size:15px;line-height:1.7;color:#9a3412;margin-bottom:14px}
 .qsub{font-size:14px;color:#0369a1;background:#f0f9ff;border-left:4px solid #0284c7;
@@ -135,10 +152,13 @@ h1{font-size:24px;margin:4px 0 4px}
       <div class="qsub" id="qSub"></div>
       <div class="vert" id="qVert"></div>
       <div id="qRowLeg" class="rowleg" style="display:none"></div>
-      <div id="qZeroToggle" style="display:none;margin-top:10px;align-items:center;gap:8px" class="row">
-        <span style="font-size:14px;color:#64748b;font-weight:700">第二列末位：</span>
-        <button class="btn sm" id="btnZeroOmit" onclick="setZeroMode(false)">省略 0（課本記法）</button>
-        <button class="btn sm ghost" id="btnZeroShow" onclick="setZeroMode(true)">補 0（完整值）</button>
+      <div id="qTools" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="btn sm" id="btnPvToggle" onclick="togglePv()">定位板：開</button>
+        <div id="qZeroToggle" style="display:none;align-items:center;gap:8px">
+          <span style="font-size:14px;color:#64748b;font-weight:700">第二列末位：</span>
+          <button class="btn sm" id="btnZeroOmit" onclick="setZeroMode(false)">省略 0（課本記法）</button>
+          <button class="btn sm ghost" id="btnZeroShow" onclick="setZeroMode(true)">補 0（完整值）</button>
+        </div>
       </div>
       <div class="msg tip show" id="qMsg">按「下一步」，一位一位看。</div>
       <div class="row">
@@ -290,7 +310,7 @@ var QLV=[
   }
 ];
 
-var lvi=0, si=-1, steps=[], showZero=false;
+var lvi=0, si=-1, steps=[], showZero=false, showPv=true;
 
 function maxStepsFor(c){
   return c.m < 10 ? steps.length : 3;
@@ -300,6 +320,16 @@ function setZeroMode(sz){
   showZero = sz;
   document.getElementById('btnZeroOmit').classList.toggle('ghost', sz);
   document.getElementById('btnZeroShow').classList.toggle('ghost', !sz);
+  drawVert();
+}
+
+function togglePv(){
+  showPv = !showPv;
+  var b = document.getElementById('btnPvToggle');
+  if (b) {
+    b.textContent = showPv ? '定位板：開' : '定位板：關';
+    b.classList.toggle('ghost', !showPv);
+  }
   drawVert();
 }
 
@@ -335,28 +365,43 @@ function drawVert(){
 
 function drawVert1(c){
   var n = steps.length, cols = n + 1;
-  var h = '<div class="vgrid" style="grid-template-columns:repeat(' + cols + ',36px)">';
-  // 進位列（上方，與課本 p21 一致）
+  var h = '<div class="vgrid' + (showPv ? ' with-pv' : '') + '" style="grid-template-columns:repeat(' + cols + ',44px)">';
+
+  // 1. 定位板標題列
+  if (showPv) {
+    h += '<div class="pvcell op"></div>';
+    for (var k = n - 1; k >= 0; k--) {
+      var isHi = (si === k);
+      h += '<div class="pvcell' + (isHi ? ' hi' : '') + '">' + C.placeName(k) + '位</div>';
+    }
+  }
+
+  // 2. 進位列（上方，與課本 p21 一致）
   for (var x = 0; x < cols - n; x++) h += '<div class="carrycell"></div>';
   for (var i = n - 1; i >= 1; i--) {
     var prev = steps[i - 1];
     var show = (si >= i - 1 && prev && prev.carryOut > 0);
-    h += '<div class="carrycell">' + (show ? prev.carryOut : '') + '</div>';
+    h += '<div class="carrycell col-line">' + (show ? prev.carryOut : '') + '</div>';
   }
-  h += '<div class="carrycell"></div>';
-  // 被乘數
+  h += '<div class="carrycell col-line"></div>';
+
+  // 3. 被乘數
   var ds = C.digitsOf(c.a);
-  for (var x = 0; x < cols - ds.length; x++) h += '<div class="cell"></div>';
-  for (var j = ds.length - 1; j >= 0; j--) h += '<div class="cell">' + ds[j] + '</div>';
-  // 乘數：× 在最左側，乘數在個位
+  for (var x = 0; x < cols - ds.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+  for (var j = ds.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + ds[j] + '</div>';
+
+  // 4. 乘數：× 在最左側，乘數在個位
   h += '<div class="cell op">×</div>';
-  for (var x = 0; x < cols - 2; x++) h += '<div class="cell"></div>';
-  h += '<div class="cell">' + c.m + '</div>';
-  // 橫線
+  for (var x = 0; x < cols - 2; x++) h += '<div class="cell col-line"></div>';
+  h += '<div class="cell col-line">' + c.m + '</div>';
+
+  // 5. 橫線
   h += '<div class="hr"></div>';
-  // 答案列
-  for (var x = 0; x < cols - n; x++) h += '<div class="cell"></div>';
-  for (var k = n - 1; k >= 0; k--) h += '<div class="cell">' + (si >= k ? steps[k].write : '') + '</div>';
+
+  // 6. 答案列
+  for (var x = 0; x < cols - n; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+  for (var k = n - 1; k >= 0; k--) h += '<div class="cell col-line">' + (si >= k ? steps[k].write : '') + '</div>';
+
   h += '</div>';
   document.getElementById('qVert').innerHTML = h;
 }
@@ -366,49 +411,61 @@ function drawVert2(c){
   var rows = C.partialRows(c.a, c.m);
   var dsProd = C.digitsOf(prod);
   var cols = dsProd.length + 1;
-  var h = '<div class="vgrid" style="grid-template-columns:repeat(' + cols + ',36px)">';
+  var numCols = cols - 1;
+  var h = '<div class="vgrid' + (showPv ? ' with-pv' : '') + '" style="grid-template-columns:repeat(' + cols + ',44px)">';
 
-  // 被乘數
+  // 1. 定位板標題列
+  if (showPv) {
+    h += '<div class="pvcell op"></div>';
+    for (var k = numCols - 1; k >= 0; k--) {
+      var isHi = false;
+      if (si === 0 && k === 0) isHi = true; // 第一列主要看個位乘數
+      if (si === 1 && k === 1) isHi = true; // 第二列主要看十位乘數
+      h += '<div class="pvcell' + (isHi ? ' hi' : '') + '">' + C.placeName(k) + '位</div>';
+    }
+  }
+
+  // 2. 被乘數
   var dsA = C.digitsOf(c.a);
-  for (var x = 0; x < cols - dsA.length; x++) h += '<div class="cell"></div>';
-  for (var j = dsA.length - 1; j >= 0; j--) h += '<div class="cell">' + dsA[j] + '</div>';
+  for (var x = 0; x < cols - dsA.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+  for (var j = dsA.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsA[j] + '</div>';
 
-  // 乘數：× 在最左側，乘數靠右對齊
+  // 3. 乘數：× 在最左側，乘數靠右對齊
   h += '<div class="cell op">×</div>';
   var dsM = C.digitsOf(c.m);
-  for (var x = 0; x < cols - 1 - dsM.length; x++) h += '<div class="cell"></div>';
-  for (var j = dsM.length - 1; j >= 0; j--) h += '<div class="cell">' + dsM[j] + '</div>';
+  for (var x = 0; x < cols - 1 - dsM.length; x++) h += '<div class="cell col-line"></div>';
+  for (var j = dsM.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsM[j] + '</div>';
 
-  // 第一條橫線
+  // 4. 第一條橫線
   h += '<div class="hr"></div>';
 
-  // 第一列部分積（個位乘數）
+  // 5. 第一列部分積（個位乘數）
   var dsR0 = C.digitsOf(rows[0].value);
-  for (var x = 0; x < cols - dsR0.length; x++) h += '<div class="cell"></div>';
-  for (var j = dsR0.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 0 ? dsR0[j] : '') + '</div>';
+  for (var x = 0; x < cols - dsR0.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+  for (var j = dsR0.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 0 ? dsR0[j] : '') + '</div>';
 
-  // 第二列部分積（十位乘數，向左移一位）
+  // 6. 第二列部分積（十位乘數，向左移一位）
   var dsR1 = C.digitsOf(rows[1].value);
   if (showZero) {
     var dsR1s = C.digitsOf(rows[1].shifted);
-    for (var x = 0; x < cols - dsR1s.length; x++) h += '<div class="cell"></div>';
-    for (var j = dsR1s.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 1 ? dsR1s[j] : '') + '</div>';
+    for (var x = 0; x < cols - dsR1s.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+    for (var j = dsR1s.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 1 ? dsR1s[j] : '') + '</div>';
   } else {
-    for (var x = 0; x < cols - 1 - dsR1.length; x++) h += '<div class="cell"></div>';
-    for (var j = dsR1.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 1 ? dsR1[j] : '') + '</div>';
-    h += '<div class="cell ' + (si >= 1 ? 'dimzero' : '') + '">' + (si >= 1 ? ' ' : '') + '</div>';
+    for (var x = 0; x < cols - 1 - dsR1.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+    for (var j = dsR1.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 1 ? dsR1[j] : '') + '</div>';
+    h += '<div class="cell col-line ' + (si >= 1 ? 'dimzero' : '') + '">' + (si >= 1 ? ' ' : '') + '</div>';
   }
 
-  // 第二條橫線（兩列相加線）
+  // 7. 第二條橫線（兩列相加線）
   if (si >= 2) {
     h += '<div class="hr"></div>';
   } else {
     h += '<div style="grid-column:1/-1;height:2px"></div>';
   }
 
-  // 相加答案列
-  for (var x = 0; x < cols - dsProd.length; x++) h += '<div class="cell"></div>';
-  for (var j = dsProd.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 2 ? dsProd[j] : '') + '</div>';
+  // 8. 相加答案列
+  for (var x = 0; x < cols - dsProd.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+  for (var j = dsProd.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 2 ? dsProd[j] : '') + '</div>';
 
   h += '</div>';
   document.getElementById('qVert').innerHTML = h;

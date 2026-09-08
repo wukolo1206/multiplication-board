@@ -353,8 +353,9 @@ function buildRows(c){
     var pName = (i===0 ? '個位' : (i===1 ? '十位' : '百位'));
     var pUnit = (i===0 ? '個一' : (i===1 ? '個十' : '個百'));
     var repCount = (i===0 ? r.digit : r.digit*10);
+    var rowRole = (i===0 ? '第一行：重複個位數 ' + r.digit + ' 次' : '第二行：重複次數是十次（' + repCount + ' 次）');
     h+='<div class="rowin">'+
-       '<label>第 '+(i+1)+' 列（'+c.a+'×'+pName+' '+r.digit+'：'+c.a+' 的 '+r.digit+' '+pUnit+'倍，重複 '+repCount+' 次）</label>'+
+       '<label>第 '+(i+1)+' 列【'+rowRole+'】（'+c.a+'×'+pName+' '+r.digit+'：'+c.a+' 的 '+r.digit+' '+pUnit+'倍）</label>'+
        '<input id="rv'+i+'" type="number" inputmode="numeric" placeholder="?">'+
        '<select id="rs'+i+'">'+
          '<option value="0">放在個位（'+r.value+' 個一）</option>'+
@@ -372,9 +373,9 @@ function buildFinal(c){
   var rows=C.partialRows(c.a,c.m);
   return '<div style="font-size:15px;color:#64748b;line-height:1.8;margin-bottom:10px">'+
     '這一關<b>不給格線</b>。請在紙上用直式算完，再把三個數字填進來。</div>'+
-    '<div class="rowin"><label>第 1 列</label><input id="fv0" type="number" inputmode="numeric" placeholder="?"></div>'+
-    '<div class="rowin"><label>第 2 列</label><input id="fv1" type="number" inputmode="numeric" placeholder="?"></div>'+
-    '<div class="rowin"><label style="font-weight:700">最後的積</label><input id="fp" type="number" inputmode="numeric" placeholder="?"></div>'+
+    '<div class="rowin"><label>第 1 列（第一行：重複個位數次）</label><input id="fv0" type="number" inputmode="numeric" placeholder="?"></div>'+
+    '<div class="rowin"><label>第 2 列（第二行：重複次數是十次）</label><input id="fv1" type="number" inputmode="numeric" placeholder="?"></div>'+
+    '<div class="rowin"><label style="font-weight:700">最後的積（兩行合起來）</label><input id="fp" type="number" inputmode="numeric" placeholder="?"></div>'+
     '<div style="font-size:13px;color:#94a3b8;line-height:1.7">'+
     '第 1 列、第 2 列填你在紙上<b>寫出來的數字</b>（第 2 列不用補 0）。</div>';
 }
@@ -430,9 +431,9 @@ function submitRows(c,m){
     mark('rv'+k, r.code==='CORRECT');
     if(r.code==='NO_SHIFT'){
       m.className='msg no show';
-      m.innerHTML='第 '+(k+1)+' 列：'+FEEDBACK.NO_SHIFT+
-        '<br><span style="font-size:14px">'+c.a+'×'+rows[k].digit+
-        ' 的 '+rows[k].digit+' 在十位（代表 '+rows[k].digit+' 個十，重複 '+(rows[k].digit*10)+' 次），所以這一列是 '+rows[k].value+' 個十 ＝ '+rows[k].shifted+'，要往左移一位。</span>';
+      m.innerHTML='<b>第 '+(k+1)+' 列【第二行：重複次數是十次】</b>：'+FEEDBACK.NO_SHIFT+
+        '<br><span style="font-size:14px">因為是重複幾十次（'+c.a+' × '+(rows[k].digit*10)+
+        '＝'+rows[k].shifted+'），所以要往左移一位對齊十位。</span>';
       return;
     }
     if(r.code==='EXPAND_ROW'){
@@ -449,7 +450,7 @@ function submitRows(c,m){
     m.className='msg ok show';
     m.innerHTML=FEEDBACK.CORRECT+'　'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
     if(rows.length===2){
-      m.innerHTML+='<br><span style="font-size:14px">第 1 列是 '+c.a+' 的 '+rows[0].digit+' 倍（'+rows[0].value+' 個一）；第 2 列是 '+c.a+' 的 '+rows[1].digit+' 個十倍（'+rows[1].value+' 個十 ＝ '+rows[1].shifted+'）。合起來是 '+(c.a*c.m)+'。</span>';
+      m.innerHTML+='<br><span style="font-size:14px">第一行（重複個位數 '+rows[0].digit+' 次）是 '+c.a+' 的 '+rows[0].digit+' 倍（'+rows[0].value+' 個一）；第二行（重複次數是十次：'+(rows[1].digit*10)+' 次）是 '+c.a+' 的 '+rows[1].digit+' 個十倍（'+rows[1].value+' 個十 ＝ '+rows[1].shifted+'）。兩行合起來是 '+(c.a*c.m)+'。</span>';
     }
     if(c.m===80){
       m.innerHTML+='<br><span style="font-size:14px">課本 p25 也可以直接寫成一列：'+
@@ -466,8 +467,9 @@ function submitRows(c,m){
 /* 答錯才展開該列 —— 診斷之後才給協助，粒度降到出錯的那一位 */
 function expandRow(c,row,idx){
   var steps=C.digitSteps(c.a,row.digit);
+  var rowName=(idx===0?'第一行：重複個位數 '+row.digit+' 次':'第二行：重複次數是十次（'+(row.digit*10)+' 次）');
   var h='<div class="card" style="margin-top:12px;border-color:#fbbf24">'+
-    '<div style="font-weight:700;margin-bottom:8px">把第 '+(idx+1)+' 列拆開：'+c.a+' × '+row.digit+'</div>'+
+    '<div style="font-weight:700;margin-bottom:8px">把第 '+(idx+1)+' 列【'+rowName+'】拆開：'+c.a+' × '+row.digit+'</div>'+
     '<div class="vert"><div class="vgrid" style="grid-template-columns:repeat('+(steps.length+1)+',52px)">';
   var n=steps.length, cols=n+1;
   // 定位板標題列

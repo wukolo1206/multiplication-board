@@ -55,11 +55,12 @@ h1{font-size:24px;margin:4px 0 4px}
 .four .zeros{color:#c2410c;font-weight:700}
 
 /* ── 直式 ── */
-.vert{display:inline-block;font-family:"Courier New",monospace;font-size:28px;
-      line-height:1.45;text-align:right;background:#fff}
-.vert .l{white-space:pre}
-.vert .bar{border-top:3px solid #1f2937;margin:3px 0}
-.carry{color:#d97706;font-size:17px;height:22px;white-space:pre}
+.vert{display:inline-block;font-family:"Courier New",monospace;margin:6px 0}
+.vgrid{display:grid;justify-items:center}
+.vgrid .cell{width:36px;font-size:28px;text-align:center;line-height:1.4}
+.vgrid .cell.op{color:#1f2937}
+.vgrid .carrycell{width:36px;height:26px;font-size:17px;color:#d97706;display:flex;align-items:center;justify-content:center}
+.vgrid .hr{grid-column:1/-1;border-top:3px solid #1f2937;height:0;margin:3px 0;width:100%}
 .src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
 .orig{font-size:13px;color:#64748b;margin-top:6px}
 .prog{font-size:14px;color:#64748b;margin-bottom:10px}
@@ -243,24 +244,31 @@ function renderLv(){
   m.className='msg tip show'; m.innerHTML='按「下一步」，一位一位看。';
   drawVert();
 }
-function pad(s,w){ while(s.length<w) s=' '+s; return s; }
 function drawVert(){
-  var c=QLV[lvi], n=steps.length, w=n+1;
+  var c=QLV[lvi], n=steps.length, cols=n+1;
+  var h='<div class="vgrid" style="grid-template-columns:repeat('+cols+',36px)">';
   // 進位列（上方，與課本 p21 一致）
-  var carry='';
-  for(var i=n-1;i>=0;i--){
-    var st=steps[i];
-    // 進位標在「進位後那一位」的上方，即左邊一位
+  for(var x=0;x<cols-n;x++) h+='<div class="carrycell"></div>';
+  for(var i=n-1;i>=1;i--){
     var prev=steps[i-1];
-    carry += (prev && si>=i-1 && prev.carryOut>0) ? String(prev.carryOut) : ' ';
+    var show=(si>=i-1 && prev && prev.carryOut>0);
+    h+='<div class="carrycell">'+(show?prev.carryOut:'')+'</div>';
   }
-  var ans='';
-  for(var k=n-1;k>=0;k--) ans += (si>=k) ? String(steps[k].write) : ' ';
-  var h='<div class="carry">'+pad(carry,w)+'</div>'+
-        '<div class="l">'+pad(String(c.a),w)+'</div>'+
-        '<div class="l">'+pad('× '+c.m,w)+'</div>'+
-        '<div class="bar"></div>'+
-        '<div class="l">'+pad(ans,w)+'</div>';
+  h+='<div class="carrycell"></div>';
+  // 被乘數
+  var ds=C.digitsOf(c.a);
+  for(var x=0;x<cols-ds.length;x++) h+='<div class="cell"></div>';
+  for(var j=ds.length-1;j>=0;j--) h+='<div class="cell">'+ds[j]+'</div>';
+  // 乘數：× 在最左側，乘數在個位
+  h+='<div class="cell op">×</div>';
+  for(var x=0;x<cols-2;x++) h+='<div class="cell"></div>';
+  h+='<div class="cell">'+c.m+'</div>';
+  // 橫線
+  h+='<div class="hr"></div>';
+  // 答案列
+  for(var x=0;x<cols-n;x++) h+='<div class="cell"></div>';
+  for(var k=n-1;k>=0;k--) h+='<div class="cell">'+(si>=k?steps[k].write:'')+'</div>';
+  h+='</div>';
   document.getElementById('qVert').innerHTML=h;
 }
 function stepNext(){

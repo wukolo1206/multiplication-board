@@ -193,8 +193,10 @@ function drawEx(){
   var h='<div class="vgrid" style="grid-template-columns:repeat('+cols+',52px)">';
   // 進位列（上方）
   if(carryPos==='up'){ h+=carryRow(); }
-  h+=spacer(cols-4)+cell(1)+cell(4)+cell(2)+cell(6);
-  h+=spacer(cols-5)+'<div class="cell op">×</div>'+spacer(3)+cell(EX_M);
+  var ds=C.digitsOf(EX_A);
+  h+=spacer(cols-ds.length);
+  for(var j=ds.length-1;j>=0;j--) h+=cell(ds[j]);
+  h+='<div class="cell op">×</div>'+spacer(cols-2)+cell(EX_M);
   h+='<div class="hr"></div>';
   // 答案列
   var ansCells='';
@@ -207,8 +209,9 @@ function drawEx(){
   document.getElementById('exVert').innerHTML=h;
 
   function carryRow(){
-    var s=spacer(cols-n-1);
-    // 進位記在「進位後的那一位」，也就是左邊一位
+    var s='';
+    for(var x=0;x<cols-n;x++) s+='<div class="carrycell"></div>';
+    // 進位記在「進位後那一位」，也就是左邊一位
     for(var i=n-1;i>=1;i--){
       var st=exSteps[i-1];
       var show=(exI>=i-1 && st.carryOut>0);
@@ -285,7 +288,7 @@ function buildDigits(c){
   var n=steps.length, cols=n+1;
   var h='<div class="vert"><div class="vgrid" style="grid-template-columns:repeat('+cols+',52px)">';
   // 進位格（一律放上方，與課本 p21 一致）
-  h+=sp(cols-n);
+  h+=spc(cols-n);
   for(var i=n-1;i>=1;i--) h+='<div class="carrycell"><input id="cy'+(i-1)+'" type="number" inputmode="numeric"></div>';
   h+='<div class="carrycell"></div>';
   // 被乘數
@@ -293,7 +296,7 @@ function buildDigits(c){
   h+=sp(cols-ds.length);
   for(var j=ds.length-1;j>=0;j--) h+='<div class="cell">'+ds[j]+'</div>';
   // 乘數
-  h+=sp(cols-2)+'<div class="cell op">×</div><div class="cell">'+c.m+'</div>';
+  h+='<div class="cell op">×</div>'+sp(cols-2)+'<div class="cell">'+c.m+'</div>';
   h+='<div class="hr"></div>';
   // 答案格
   h+=sp(cols-n);
@@ -303,6 +306,7 @@ function buildDigits(c){
      '黃色小格填<b>進位</b>的數字（沒有進位就填 0），白色大格填該位<b>寫下</b>的數字。</div>';
   return h;
   function sp(k){var s='';for(var x=0;x<k;x++)s+='<div class="cell"></div>';return s;}
+  function spc(k){var s='';for(var x=0;x<k;x++)s+='<div class="carrycell"></div>';return s;}
 }
 
 function buildRows(c){
@@ -422,13 +426,13 @@ function expandRow(c,row,idx){
     '<div style="font-weight:700;margin-bottom:8px">把第 '+(idx+1)+' 列拆開：'+c.a+' × '+row.digit+'</div>'+
     '<div class="vert"><div class="vgrid" style="grid-template-columns:repeat('+(steps.length+1)+',52px)">';
   var n=steps.length, cols=n+1;
-  h+=sp(cols-n);
+  h+=spc(cols-n);
   for(var i=n-1;i>=1;i--) h+='<div class="carrycell"><input id="ecy'+(i-1)+'" type="number" inputmode="numeric"></div>';
   h+='<div class="carrycell"></div>';
   var ds=C.digitsOf(c.a);
   h+=sp(cols-ds.length);
   for(var j=ds.length-1;j>=0;j--) h+='<div class="cell">'+ds[j]+'</div>';
-  h+=sp(cols-2)+'<div class="cell op">×</div><div class="cell">'+row.digit+'</div>';
+  h+='<div class="cell op">×</div>'+sp(cols-2)+'<div class="cell">'+row.digit+'</div>';
   h+='<div class="hr"></div>';
   h+=sp(cols-n);
   for(var k=n-1;k>=0;k--) h+='<div class="cell"><input id="ewr'+k+'" type="number" inputmode="numeric"></div>';
@@ -438,6 +442,7 @@ function expandRow(c,row,idx){
   document.getElementById('expandBox').innerHTML=h;
   expanded={c:c,row:row,idx:idx,steps:steps};
   function sp(k){var s='';for(var x=0;x<k;x++)s+='<div class="cell"></div>';return s;}
+  function spc(k){var s='';for(var x=0;x<k;x++)s+='<div class="carrycell"></div>';return s;}
 }
 function checkExpanded(idx){
   if(!expanded) return;

@@ -61,6 +61,15 @@ h1{font-size:24px;margin:4px 0 4px}
 .vgrid .cell.op{color:#1f2937}
 .vgrid .carrycell{width:36px;height:26px;font-size:17px;color:#d97706;display:flex;align-items:center;justify-content:center}
 .vgrid .hr{grid-column:1/-1;border-top:3px solid #1f2937;height:0;margin:3px 0;width:100%;justify-self:stretch}
+.vconcept{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 16px;
+          font-size:15px;line-height:1.7;color:#9a3412;margin-bottom:14px}
+.qsub{font-size:14px;color:#0369a1;background:#f0f9ff;border-left:4px solid #0284c7;
+      padding:8px 12px;border-radius:0 8px 8px 0;margin:0 0 12px;line-height:1.6}
+.rowleg{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.rleg{font-size:14px;color:#64748b;padding:4px 10px;border-radius:8px;background:#f8fafc;
+      border:1px solid #e2e8f0;transition:all .2s}
+.rleg.on{background:#fef3c7;border-color:#f59e0b;color:#92400e;font-weight:700}
+.dimzero{color:#cbd5e1}
 .src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
 .orig{font-size:13px;color:#64748b;margin-top:6px}
 .prog{font-size:14px;color:#64748b;margin-bottom:10px}
@@ -70,7 +79,7 @@ h1{font-size:24px;margin:4px 0 4px}
 <div class="wrap">
   <a class="back" href="index.html">← 回目錄</a>
   <h1>直式的每一步</h1>
-  <div class="pg">課本 p20–21　活動一</div>
+  <div class="pg">課本 p20–25　活動一「四位數×一位數」、活動二「一、二位數×二位數」</div>
 
   <div class="tabs">
     <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
@@ -86,7 +95,7 @@ h1{font-size:24px;margin:4px 0 4px}
       <div class="billnote" id="billLabel">第 1 個月：3 張一千元</div>
       <div class="bills" id="bills"></div>
       <div class="msg tip show" id="billMsg">
-        3000 元是 <b>3 張一千元</b>。按「再存一個月」看看。
+        3000 元是 <b>3 個一千元</b>。按「再存一個月」看看。
       </div>
       <div class="row">
         <button class="btn" id="billBtn" onclick="addMonth()">再存一個月 →</button>
@@ -117,10 +126,20 @@ h1{font-size:24px;margin:4px 0 4px}
   <!-- ═══════════ 練習 ═══════════ -->
   <div class="panel" id="pQz">
     <div class="card">
+      <div class="vconcept">
+        💡 <b>位值核心概念</b>：將被乘數拆成<b>幾個千、幾個百、幾個十、幾個一</b>，各自乘以乘數幾倍（重複幾次），再把每一步的結果合起來。
+      </div>
       <div class="prog" id="qProg"></div>
       <span class="lv" id="qLv"></span>
       <p class="q" id="qTitle"></p>
+      <div class="qsub" id="qSub"></div>
       <div class="vert" id="qVert"></div>
+      <div id="qRowLeg" class="rowleg" style="display:none"></div>
+      <div id="qZeroToggle" style="display:none;margin-top:10px;align-items:center;gap:8px" class="row">
+        <span style="font-size:14px;color:#64748b;font-weight:700">第二列末位：</span>
+        <button class="btn sm" id="btnZeroOmit" onclick="setZeroMode(false)">省略 0（課本記法）</button>
+        <button class="btn sm ghost" id="btnZeroShow" onclick="setZeroMode(true)">補 0（完整值）</button>
+      </div>
       <div class="msg tip show" id="qMsg">按「下一步」，一位一位看。</div>
       <div class="row">
         <button class="btn" id="qNextStep" onclick="stepNext()">下一步 →</button>
@@ -197,10 +216,10 @@ function resetBills(){
 
 /* ═══════════ 探索二：四式並列 ═══════════ */
 var FOUR=[
-  {t:'3 × 2 ＝ 6', z:0, s:'3 的 2 倍是 6。'},
-  {t:'30 × 2 ＝ 60', z:1, s:'3 個十的 2 倍是 6 個十，就是 60。<br>被乘數有 <b>1 個 0</b>，答案就在 6 後面補 <b>1 個 0</b>。'},
-  {t:'300 × 2 ＝ 600', z:2, s:'3 個百的 2 倍是 6 個百，就是 600。<br>被乘數有 <b>2 個 0</b>，答案補 <b>2 個 0</b>。'},
-  {t:'3000 × 2 ＝ 6000', z:3, s:'3 個千的 2 倍是 6 個千，就是 6000。<br>被乘數有 <b>3 個 0</b>，答案補 <b>3 個 0</b>。'}
+  {t:'3 × 2 ＝ 6', z:0, s:'3 個一的 2 倍（重複 2 次）是 6 個一，也就是 <b>6</b>。'},
+  {t:'30 × 2 ＝ 60', z:1, s:'3 個十的 2 倍是 6 個十，也就是 <b>60</b>。<br>被乘數有 <b>1 個 0</b>（十位），答案就在 6 後面補 <b>1 個 0</b>。'},
+  {t:'300 × 2 ＝ 600', z:2, s:'3 個百的 2 倍是 6 個百，也就是 <b>600</b>。<br>被乘數有 <b>2 個 0</b>（百位），答案補 <b>2 個 0</b>。'},
+  {t:'3000 × 2 ＝ 6000', z:3, s:'3 個千的 2 倍是 6 個千，也就是 <b>6000</b>。<br>被乘數有 <b>3 個 0</b>（千位），答案補 <b>3 個 0</b>。'}
 ];
 document.querySelectorAll('#four div').forEach(function(e){
   e.addEventListener('click',function(){
@@ -208,90 +227,237 @@ document.querySelectorAll('#four div').forEach(function(e){
     document.querySelectorAll('#four div').forEach(function(x){x.classList.toggle('on',x===e);});
     var m=document.getElementById('fourMsg');
     m.className='msg tip show';
-    m.innerHTML=FOUR[i].s+(i===3?'<br><br>看出來了嗎？<b>最高位相乘，再補 0</b>。':'');
+    m.innerHTML=FOUR[i].s+(i===3?'<br><br>看出來了嗎？<b>幾個一、幾個十、幾個百、幾個千相乘，再補上 0</b>。':'');
   });
 });
 
 /* ═══════════ 練習：引導式逐步揭示（不填格子） ═══════════ */
 var QLV=[
-  {a:1426,m:3,lv:'課本 p21 問3',title:'老師買了 3 套科學繪本，一套 1426 元，共要付多少元？',
-   text:[
-     '6 個一的 3 倍是 18 個一，在個位寫 8，在十位上方記 1。',
-     '2 個十的 3 倍是 6 個十，和 1 個十合起來是 7 個十，在十位寫 7。',
-     '4 個百的 3 倍是 12 個百，在百位寫 2，在千位上方記 1。',
-     '1 個千的 3 倍是 3 個千，和 1 個千合起來是 4 個千，在千位寫 4。'
-   ]},
-  {a:2009,m:6,lv:'課本 p21 問4',title:'一盒積木重 2009 公克，6 盒積木共重多少公克？',
-   text:[
-     '9 個一的 6 倍是 54 個一，在個位寫 4，在十位上方記 5。',
-     '0 個十的 6 倍是 0 個十，和 5 個十合起來是 5 個十，在十位寫 5。',
-     '0 個百的 6 倍是 0 個百，在百位寫 0。',
-     '2 個千的 6 倍是 12 個千，在千位寫 2，在萬位上方記 1。',
-     '萬位就是進位上來的 1，在萬位寫 1。'
-   ]}
+  // ── 活動一：四位數 × 一位數 ──
+  {
+    a:1426, m:3, lv:'活動一　課本 p21 問3',
+    title:'老師買了 3 套科學繪本，一套 1426 元，共要付多少元？',
+    sub:'把 1426 拆成 1個千、4個百、2個十、6個一，各自乘以 3 倍（重複 3 次）。',
+    text:[
+      '6 個一的 3 倍（6 個一重複 3 次）是 18 個一，在個位寫 8，在十位上方記 1。',
+      '2 個十的 3 倍是 6 個十，和進位的 1 個十合起來是 7 個十，在十位寫 7。',
+      '4 個百的 3 倍是 12 個百，在百位寫 2，在千位上方記 1。',
+      '1 個千的 3 倍是 3 個千，和進位的 1 個千合起來是 4 個千，在千位寫 4。'
+    ]
+  },
+  {
+    a:2009, m:6, lv:'活動一　課本 p21 問4',
+    title:'一盒積木重 2009 公克，6 盒積木共重多少公克？',
+    sub:'被乘數中間有 0：拆成 2個千、0個百、0個十、9個一，各自乘以 6 倍。',
+    text:[
+      '9 個一的 6 倍（9 個一重複 6 次）是 54 個一，在個位寫 4，在十位上方記 5。',
+      '0 個十的 6 倍是 0 個十，和進位的 5 個十合起來是 5 個十，在十位寫 5。',
+      '0 個百的 6 倍是 0 個百，在百位寫 0。',
+      '2 個千的 6 倍是 12 個千，在千位寫 2，在萬位上方記 1。',
+      '萬位就是進位上來的 1，在萬位寫 1。'
+    ]
+  },
+  // ── 活動二：一、二位數 × 二位數 ──
+  {
+    a:6, m:28, lv:'活動二　課本 p22 問2',
+    title:'學校舉辦跳繩比賽，每組有 6 人，全部有 28 組，共有幾人參加比賽？',
+    sub:'6 的 28 倍（6 人重複 28 次）：先算 8 倍（8個一），再算 20 倍（2個十）。',
+    text:[
+      '先算 6 的 8 倍（個位）：6 個一的 8 倍是 48 個一，在第一列寫 48。',
+      '再算 6 的 20 倍（十位）：6 個一的 2 個十倍是 12 個十，也就是 120。<br>在第二列寫 12（往左移一位，120 的「0」可以省略不寫）。',
+      '兩列合起來：48 個一 ＋ 12 個十（120）＝ 168 人。'
+    ]
+  },
+  {
+    a:24, m:12, lv:'活動二　課本 p24 問5',
+    title:'學校健康操表演，一列有 24 人，排成 12 列，共有幾人表演？',
+    sub:'24 的 12 倍（24 人重複 12 次）：拆成 24 的 2 倍與 24 的 1 個十倍（10 倍）。',
+    text:[
+      '先算 24 的 2 倍（個位）：24 的 2 倍是 48 個一，在第一列寫 48。',
+      '再算 24 的 10 倍（十位）：24 的 1 個十倍是 24 個十，也就是 240。<br>在第二列寫 24（往左移一位，240 的「0」可以省略不寫）。',
+      '兩列合起來：48 個一 ＋ 24 個十（240）＝ 288 人。'
+    ]
+  },
+  {
+    a:28, m:74, lv:'活動二　課本 p25 問6',
+    title:'復興國小要影印視力檢查通知單，每班發 28 張，全校有 74 班，共要影印幾張？',
+    sub:'28 的 74 倍（28 張重複 74 次）：拆成 28 的 4 倍與 28 的 7 個十倍（70 倍）。',
+    text:[
+      '先算 28 的 4 倍（個位）：28 的 4 倍是 112 個一，在第一列寫 112。',
+      '再算 28 的 70 倍（十位）：28 的 7 個十倍是 196 個十，也就是 1960。<br>在第二列寫 196（往左移一位，末位「0」可以省略不寫）。',
+      '兩列合起來：112 個一 ＋ 196 個十（1960）＝ 2072 張。'
+    ]
+  }
 ];
-var lvi=0, si=-1, steps=[];
+
+var lvi=0, si=-1, steps=[], showZero=false;
+
+function maxStepsFor(c){
+  return c.m < 10 ? steps.length : 3;
+}
+
+function setZeroMode(sz){
+  showZero = sz;
+  document.getElementById('btnZeroOmit').classList.toggle('ghost', sz);
+  document.getElementById('btnZeroShow').classList.toggle('ghost', !sz);
+  drawVert();
+}
 
 function renderLv(){
-  var c=QLV[lvi];
-  steps=C.digitSteps(c.a,c.m); si=-1;
-  document.getElementById('qProg').textContent='第 '+(lvi+1)+' 題／共 '+QLV.length+' 題';
-  document.getElementById('qLv').textContent=c.lv;
-  document.getElementById('qTitle').textContent=c.title;
-  document.getElementById('qNextStep').disabled=false;
-  document.getElementById('qNextLv').style.display='none';
-  var m=document.getElementById('qMsg');
-  m.className='msg tip show'; m.innerHTML='按「下一步」，一位一位看。';
+  var c = QLV[lvi];
+  steps = c.m < 10 ? C.digitSteps(c.a, c.m) : [];
+  si = -1;
+  document.getElementById('qProg').textContent = '第 ' + (lvi + 1) + ' 題／共 ' + QLV.length + ' 題';
+  document.getElementById('qLv').textContent = c.lv;
+  document.getElementById('qTitle').textContent = c.title;
+  var sub = document.getElementById('qSub');
+  if (sub) sub.innerHTML = c.sub || '';
+  document.getElementById('qNextStep').disabled = false;
+  document.getElementById('qNextLv').style.display = 'none';
+  var zt = document.getElementById('qZeroToggle');
+  if (zt) zt.style.display = (c.m >= 10 && si >= 1) ? 'flex' : 'none';
+  var leg = document.getElementById('qRowLeg');
+  if (leg) leg.style.display = c.m >= 10 ? 'flex' : 'none';
+  var m = document.getElementById('qMsg');
+  m.className = 'msg tip show';
+  m.innerHTML = '按「下一步」，' + (c.m < 10 ? '一位一位看。' : '一步一步看。');
   drawVert();
 }
+
 function drawVert(){
-  var c=QLV[lvi], n=steps.length, cols=n+1;
-  var h='<div class="vgrid" style="grid-template-columns:repeat('+cols+',36px)">';
-  // 進位列（上方，與課本 p21 一致）
-  for(var x=0;x<cols-n;x++) h+='<div class="carrycell"></div>';
-  for(var i=n-1;i>=1;i--){
-    var prev=steps[i-1];
-    var show=(si>=i-1 && prev && prev.carryOut>0);
-    h+='<div class="carrycell">'+(show?prev.carryOut:'')+'</div>';
+  var c = QLV[lvi];
+  if (c.m < 10) {
+    drawVert1(c);
+  } else {
+    drawVert2(c);
   }
-  h+='<div class="carrycell"></div>';
-  // 被乘數
-  var ds=C.digitsOf(c.a);
-  for(var x=0;x<cols-ds.length;x++) h+='<div class="cell"></div>';
-  for(var j=ds.length-1;j>=0;j--) h+='<div class="cell">'+ds[j]+'</div>';
-  // 乘數：× 在最左側，乘數在個位
-  h+='<div class="cell op">×</div>';
-  for(var x=0;x<cols-2;x++) h+='<div class="cell"></div>';
-  h+='<div class="cell">'+c.m+'</div>';
-  // 橫線
-  h+='<div class="hr"></div>';
-  // 答案列
-  for(var x=0;x<cols-n;x++) h+='<div class="cell"></div>';
-  for(var k=n-1;k>=0;k--) h+='<div class="cell">'+(si>=k?steps[k].write:'')+'</div>';
-  h+='</div>';
-  document.getElementById('qVert').innerHTML=h;
 }
+
+function drawVert1(c){
+  var n = steps.length, cols = n + 1;
+  var h = '<div class="vgrid" style="grid-template-columns:repeat(' + cols + ',36px)">';
+  // 進位列（上方，與課本 p21 一致）
+  for (var x = 0; x < cols - n; x++) h += '<div class="carrycell"></div>';
+  for (var i = n - 1; i >= 1; i--) {
+    var prev = steps[i - 1];
+    var show = (si >= i - 1 && prev && prev.carryOut > 0);
+    h += '<div class="carrycell">' + (show ? prev.carryOut : '') + '</div>';
+  }
+  h += '<div class="carrycell"></div>';
+  // 被乘數
+  var ds = C.digitsOf(c.a);
+  for (var x = 0; x < cols - ds.length; x++) h += '<div class="cell"></div>';
+  for (var j = ds.length - 1; j >= 0; j--) h += '<div class="cell">' + ds[j] + '</div>';
+  // 乘數：× 在最左側，乘數在個位
+  h += '<div class="cell op">×</div>';
+  for (var x = 0; x < cols - 2; x++) h += '<div class="cell"></div>';
+  h += '<div class="cell">' + c.m + '</div>';
+  // 橫線
+  h += '<div class="hr"></div>';
+  // 答案列
+  for (var x = 0; x < cols - n; x++) h += '<div class="cell"></div>';
+  for (var k = n - 1; k >= 0; k--) h += '<div class="cell">' + (si >= k ? steps[k].write : '') + '</div>';
+  h += '</div>';
+  document.getElementById('qVert').innerHTML = h;
+}
+
+function drawVert2(c){
+  var prod = c.a * c.m;
+  var rows = C.partialRows(c.a, c.m);
+  var dsProd = C.digitsOf(prod);
+  var cols = dsProd.length + 1;
+  var h = '<div class="vgrid" style="grid-template-columns:repeat(' + cols + ',36px)">';
+
+  // 被乘數
+  var dsA = C.digitsOf(c.a);
+  for (var x = 0; x < cols - dsA.length; x++) h += '<div class="cell"></div>';
+  for (var j = dsA.length - 1; j >= 0; j--) h += '<div class="cell">' + dsA[j] + '</div>';
+
+  // 乘數：× 在最左側，乘數靠右對齊
+  h += '<div class="cell op">×</div>';
+  var dsM = C.digitsOf(c.m);
+  for (var x = 0; x < cols - 1 - dsM.length; x++) h += '<div class="cell"></div>';
+  for (var j = dsM.length - 1; j >= 0; j--) h += '<div class="cell">' + dsM[j] + '</div>';
+
+  // 第一條橫線
+  h += '<div class="hr"></div>';
+
+  // 第一列部分積（個位乘數）
+  var dsR0 = C.digitsOf(rows[0].value);
+  for (var x = 0; x < cols - dsR0.length; x++) h += '<div class="cell"></div>';
+  for (var j = dsR0.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 0 ? dsR0[j] : '') + '</div>';
+
+  // 第二列部分積（十位乘數，向左移一位）
+  var dsR1 = C.digitsOf(rows[1].value);
+  if (showZero) {
+    var dsR1s = C.digitsOf(rows[1].shifted);
+    for (var x = 0; x < cols - dsR1s.length; x++) h += '<div class="cell"></div>';
+    for (var j = dsR1s.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 1 ? dsR1s[j] : '') + '</div>';
+  } else {
+    for (var x = 0; x < cols - 1 - dsR1.length; x++) h += '<div class="cell"></div>';
+    for (var j = dsR1.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 1 ? dsR1[j] : '') + '</div>';
+    h += '<div class="cell ' + (si >= 1 ? 'dimzero' : '') + '">' + (si >= 1 ? ' ' : '') + '</div>';
+  }
+
+  // 第二條橫線（兩列相加線）
+  if (si >= 2) {
+    h += '<div class="hr"></div>';
+  } else {
+    h += '<div style="grid-column:1/-1;height:2px"></div>';
+  }
+
+  // 相加答案列
+  for (var x = 0; x < cols - dsProd.length; x++) h += '<div class="cell"></div>';
+  for (var j = dsProd.length - 1; j >= 0; j--) h += '<div class="cell">' + (si >= 2 ? dsProd[j] : '') + '</div>';
+
+  h += '</div>';
+  document.getElementById('qVert').innerHTML = h;
+
+  // 更新兩列圖例說明
+  var leg = document.getElementById('qRowLeg');
+  if (leg) {
+    leg.style.display = 'flex';
+    leg.innerHTML =
+      '<div class="rleg ' + (si === 0 ? 'on' : '') + '">① <b>' + c.a + ' × ' + rows[0].digit + ' ＝ ' + rows[0].value + '</b>（' + rows[0].value + ' 個一）</div>' +
+      '<div class="rleg ' + (si === 1 ? 'on' : '') + '">② <b>' + c.a + ' × ' + (rows[1].digit * 10) + ' ＝ ' + rows[1].shifted + '</b>（' + rows[1].value + ' 個十，' + (showZero ? '補0' : '末位0省略') + '）</div>' +
+      '<div class="rleg ' + (si === 2 ? 'on' : '') + '">③ <b>' + rows[0].value + ' ＋ ' + rows[1].shifted + ' ＝ ' + prod + '</b>（兩列合起來）</div>';
+  }
+}
+
 function stepNext(){
-  var c=QLV[lvi];
-  if(si>=steps.length-1) return;
+  var c = QLV[lvi];
+  var maxS = maxStepsFor(c);
+  if (si >= maxS - 1) return;
   si++;
   drawVert();
-  var m=document.getElementById('qMsg');
-  m.className='msg tip show';
-  m.innerHTML=(c.text[si]||'')+
-    '<div style="font-size:13px;color:#64748b;margin-top:6px">— 說法照課本 '+c.lv.replace('課本 ','')+'</div>';
-  if(si>=steps.length-1){
-    m.className='msg ok show';
-    m.innerHTML=(c.text[si]||'')+'<br>算完了：'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
-    document.getElementById('qNextStep').disabled=true;
-    if(lvi<QLV.length-1) document.getElementById('qNextLv').style.display='';
+  var zt = document.getElementById('qZeroToggle');
+  if (zt) zt.style.display = (c.m >= 10 && si >= 1) ? 'flex' : 'none';
+  var m = document.getElementById('qMsg');
+  m.className = 'msg tip show';
+  m.innerHTML = (c.text[si] || '') +
+    '<div style="font-size:13px;color:#64748b;margin-top:6px">— ' + c.lv + '</div>';
+  if (si >= maxS - 1){
+    m.className = 'msg ok show';
+    m.innerHTML = (c.text[si] || '') + '<br>算完了：' + c.a + ' × ' + c.m + ' ＝ <b>' + (c.a * c.m) + '</b>';
+    document.getElementById('qNextStep').disabled = true;
+    if (lvi < QLV.length - 1) document.getElementById('qNextLv').style.display = '';
   }
 }
-function stepReset(){ si=-1; document.getElementById('qNextStep').disabled=false;
-  document.getElementById('qNextLv').style.display='none';
-  var m=document.getElementById('qMsg'); m.className='msg tip show';
-  m.innerHTML='按「下一步」，一位一位看。'; drawVert(); }
-function nextLv(){ lvi++; renderLv(); }
+function stepReset(){
+  si = -1;
+  document.getElementById('qNextStep').disabled = false;
+  document.getElementById('qNextLv').style.display = 'none';
+  var zt = document.getElementById('qZeroToggle');
+  if (zt) zt.style.display = 'none';
+  var m = document.getElementById('qMsg');
+  m.className = 'msg tip show';
+  m.innerHTML = '按「下一步」，' + (QLV[lvi].m < 10 ? '一位一位看。' : '一步一步看。');
+  drawVert();
+}
+function nextLv(){
+  lvi++;
+  renderLv();
+}
 
 /* ═══════════ 挑戰：108年第11題 ═══════════ */
 var CH={opts:['甲','甲、丙','乙、丁','甲、乙、丁'], ans:2};

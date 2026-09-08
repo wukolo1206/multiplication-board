@@ -32,7 +32,7 @@ python run-tests.py
 |---|---|---|
 | knowledge-map | `5374295` | 已推送，遠端 SHA 已驗證 |
 | beike-ai 上層 | `50d2f8c` | 已推送（gitlink 推進 ＋ 設計文件） |
-| multiplication-board | `bcf753f` | 已推送（修復直式乘號、Grid對齊與橫線顯現），Pages 部署中 |
+| multiplication-board | `de5a258` | 已推送（強化全教具「幾個千/百/十/一重複幾次」位值表徵，補足活動二 1、2位數×2位數兩列直式，修復 Grid 錯位與橫線顯現），Pages 部署中 |
 
 ## 未完成／待確認
 

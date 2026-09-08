@@ -271,8 +271,13 @@ var ROWS   = C.blocksToRows(A,B);               // [{blocks:['①','②'],sum:48
 var LABELS = {1:'①',2:'②',3:'③',4:'④'};
 function blockByN(n){ return BLOCKS[n-1]; }
 
-/* ── 階段一：1:1 雙向高亮 ── */
 var seen={1:false,2:false,3:false,4:false};
+var BL_DESC = {
+  1: '4 個一重複 2 次（4 的 2 倍）＝ 8 個一',
+  2: '2 個十重複 2 次（20 的 2 倍）＝ 4 個十（40）',
+  3: '4 個一重複 10 次（4 的 1 個十倍）＝ 4 個十（40）',
+  4: '2 個十重複 10 次（20 的 1 個十倍）＝ 2 個百（200）'
+};
 function clearHi(scope){
   scope.querySelectorAll('.blk,.vrow').forEach(function(e){e.classList.remove('hi','dim');});
 }
@@ -294,11 +299,11 @@ function hi1(n){
   if(left.length){
     m.className='msg tip show';
     m.innerHTML=LABELS[n]+'　'+bl.x+' × '+bl.y+' ＝ <b>'+bl.area+'</b>'+
-      '<br>還沒點過的方格：'+left.map(function(k){return LABELS[k];}).join(' ');
+      '（'+BL_DESC[n]+'）<br>還沒點過的方格：'+left.map(function(k){return LABELS[k];}).join(' ');
   }else{
     m.className='msg ok show';
     m.innerHTML=LABELS[n]+'　'+bl.x+' × '+bl.y+' ＝ <b>'+bl.area+'</b>'+
-      '<br>四塊都看過了。四塊加起來就是 8＋40＋40＋200＝<b>288</b>。';
+      '（'+BL_DESC[n]+'）<br>四塊都看過了。四塊加起來就是 8＋40＋40＋200＝<b>288</b>。';
     document.getElementById('b0').disabled=false;
   }
 }
@@ -319,8 +324,8 @@ function toStage(i){
 var mergeStep=0;           // 0: 圈 ①②（24×2）  1: 圈 ③④（24×10）
 var picked=[];
 var MERGE=[
-  {need:['1','2'], exp:'8 ＋ 40 ＝', sum:48,  desc:'請圈選代表 <b>24×2</b> 的兩個方格，再算算看合起來是多少。'},
-  {need:['3','4'], exp:'40 ＋ 200 ＝', sum:240,desc:'再來，請圈選代表 <b>24×10</b> 的兩個方格。'}
+  {need:['1','2'], exp:'8 ＋ 40 ＝', sum:48,  desc:'請圈選代表 <b>24×2</b>（24 重複 2 次，4 個一×2 ＋ 2 個十×2）的兩個方格，再算算看合起來是多少。'},
+  {need:['3','4'], exp:'40 ＋ 200 ＝', sum:240,desc:'再來，請圈選代表 <b>24×10</b>（24 重複 10 次，24 個十）的兩個方格。'}
 ];
 function startMerge(k){
   mergeStep=k; picked=[];
@@ -363,10 +368,10 @@ function checkSum(){
   if(v===cfg.sum){
     m.className='msg ok show';
     if(mergeStep===0){
-      m.innerHTML='<b>48</b>。這就是課本直式的第一列。<br>再做一次，這次找 24×10。';
+      m.innerHTML='<b>48</b>（24 的 2 倍，重複 2 次 ＝ 48 個一）。這就是課本直式的第一列。<br>再做一次，這次找 24×10。';
       setTimeout(function(){startMerge(1);},1400);
     }else{
-      m.innerHTML='<b>240</b>。這就是課本直式的第二列。'+
+      m.innerHTML='<b>240</b>（24 的 1 個十倍，重複 10 次 ＝ 24 個十 ＝ 240）。這就是課本直式的第二列。'+
         '<br>48 ＋ 240 ＝ <b>288</b>，跟四塊全部加起來一樣。';
       document.getElementById('b1').disabled=false;
     }
@@ -391,8 +396,8 @@ document.querySelectorAll('#s2 .vrow[data-r]').forEach(function(e){
     });
     var m=document.getElementById('m2'); m.className='msg tip show';
     m.innerHTML=(ri===0
-      ? '<b>48</b> ＝ ① 8 ＋ ② 40，也就是 <b>24×2</b>。'
-      : '<b>240</b> ＝ ③ 40 ＋ ④ 200，也就是 <b>24×10</b>。這一列要往左移一位，因為它是 24 個十。');
+      ? '<b>48</b> ＝ ① 8 ＋ ② 40，也就是 <b>24×2</b>（24 的 2 個一倍，重複 2 次 ＝ 48 個一）。'
+      : '<b>240</b> ＝ ③ 40 ＋ ④ 200，也就是 <b>24×10</b>（24 的 1 個十倍，重複 10 次 ＝ 24 個十 ＝ 240）。這一列要往左移一位，因為它是 24 個十。');
   });
 });
 
@@ -405,19 +410,19 @@ var QS=[
   { lv:'L1 完整方格', a:24,b:12,
     q:'直式中的 <b>48</b> 是哪兩塊方格的面積合起來的？點選兩塊。',
     mode:'pick', need:['1','2'], show:'full',
-    tip:'方格上有標邊長和面積，先看哪兩塊的邊長合起來是 24。'},
+    tip:'48 是 24 的 2 倍（重複 2 次，4 個一×2 ＋ 2 個十×2），先看哪兩塊的邊長合起來是 24×2。'},
   { lv:'L1 完整方格', a:24,b:12,
     q:'那 <b>240</b> 呢？點選兩塊。',
     mode:'pick', need:['3','4'], show:'full',
-    tip:'240 是 24 的 10 倍，要找高是 10 的那兩塊。'},
+    tip:'240 是 24 的 10 倍（重複 10 次 ＝ 24 個十），要找高是 10 的那兩塊（24×10）。'},
   { lv:'L2 只有外框', a:28,b:74,
     q:'28×74 的直式第一列是 <b>112</b>。這一列代表長方形的哪一塊？點選。',
     mode:'pick', need:['1','2'], show:'frame',
-    tip:'112 ＝ 28×4，是乘數 74 的個位 4 那一部分。'},
+    tip:'112 ＝ 28×4，是 28 的 4 個一倍（重複 4 次），乘數 74 的個位 4 那一部分。'},
   { lv:'L3 沒有圖', a:28,b:74,
     q:'28×74 的直式第二列寫 <b>196</b>。這一列代表哪兩個數相乘？',
     mode:'opt', opts:['28 × 7','20 × 70','28 × 70'], ans:2,
-    tip:'196 寫在十位那一欄，所以它其實代表 1960。'}
+    tip:'196 寫在十位那一欄，代表 196 個十（28 的 7 個十倍，重複 70 次 ＝ 1960）。'}
 ];
 var qi=0;
 function renderQ(){
@@ -517,15 +522,15 @@ function checkCh(){
   var i=Number(sel.dataset.i);
   if(i===CH.ans){
     m.className='msg ok show';
-    m.innerHTML='答對了，<b>9624</b> 元。<br>802×2＝1604 是第一列，802×1＝802 要放到十位變成 8020，'+
+    m.innerHTML='答對了，<b>9624</b> 元。<br>第一列 802×2＝1604（802 的 2 個一倍，重複 2 次）；第二列 802×1＝802 個十（802 的 1 個十倍，重複 10 次 ＝ 8020），'+
       '1604＋8020＝9624。';
   }else{
     m.className='msg no show';
     // 這三個是考卷原本的誘答選項。各自的成因沒有官方命題規格可查，
     // 因此只給檢查方向，不替學生斷言他錯在哪。
     m.innerHTML='還不對。<br>兩件事再檢查一次：'+
-      '<br>① 802×2 和 802×1 兩列都算了嗎？'+
-      '<br>② 第二列的 802 是 <b>802 個十</b>，有沒有往左移一位？';
+      '<br>① 802×2（802 的 2 個一倍）和 802×1（802 的 1 個十倍）兩列都算了嗎？'+
+      '<br>② 第二列的 802 是 <b>802 個十</b>（重複 10 次＝8020），有沒有往左移一位？';
   }
 }
 

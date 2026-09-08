@@ -77,6 +77,8 @@ input:focus{outline:none;border-color:#0891b2}
 .opt.sel{border-color:#0891b2;background:#ecfeff}
 .src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
 .prog{font-size:14px;color:#64748b;margin-bottom:10px}
+.vconcept{background:#ecfeff;border:2px solid #a5f3fc;border-radius:12px;padding:12px 14px;
+          font-size:15px;line-height:1.8;color:#155e75;margin-bottom:14px}
 </style>
 </head>
 <body>
@@ -93,9 +95,18 @@ input:focus{outline:none;border-color:#0891b2}
 
   <!-- ═══════════ 探索 ═══════════ -->
   <div class="panel on" id="pEx">
+    <div class="vconcept">
+      💡 <b>位值核心概念</b>：1426 是 <b>1 個千、4 個百、2 個十、6 個一</b>。<br>
+      乘以 3 就是各個位值都<b>重複 3 次（乘 3 倍）</b>：<br>
+      ・個位：6 個一重複 3 次（3 倍）＝ 18 個一（寫 8 進 1 個十）<br>
+      ・十位：2 個十重複 3 次（3 倍）＝ 6 個十，加 1 個十 ＝ 7 個十（寫 7）<br>
+      ・百位：4 個百重複 3 次（3 倍）＝ 12 個百（寫 2 進 1 個千）<br>
+      ・千位：1 個千重複 3 次（3 倍）＝ 3 個千，加 1 個千 ＝ 4 個千（寫 4）
+    </div>
+
     <div class="card">
       <p class="stitle">1426 × 3　一步一步看</p>
-      <p class="sdesc">按「下一步」，看每一位在算什麼。說法照課本 p21 的原文。</p>
+      <p class="sdesc">按「下一步」，看每一位在算什麼。說法照課本 p21 的原文（強調幾個千、百、十、一重複 3 次）。</p>
       <div class="vert" id="exVert"></div>
       <div class="msg tip show" id="exMsg">按下一步開始。</div>
       <div class="row">
@@ -229,14 +240,14 @@ function exStep(){
   var s=exSteps[exI];
   var m=document.getElementById('exMsg');
   m.className='msg tip show';
-  // 課本 p21 原文四句
+  // 課本 p21 原文四句（強調重複幾次／幾倍）
   var TEXT=[
-    '6 個一的 3 倍是 18 個一，在個位寫 8，在十位上方記 1。',
-    '2 個十的 3 倍是 6 個十，和 1 個十合起來是 7 個十，在十位寫 7。',
-    '4 個百的 3 倍是 12 個百，在百位寫 2，在千位上方記 1。',
-    '1 個千的 3 倍是 3 個千，和 1 個千合起來是 4 個千，在千位寫 4。'
+    '6 個一重複 3 次（3 倍）是 18 個一，在個位寫 8，在十位上方記 1。',
+    '2 個十重複 3 次（3 倍）是 6 個十，和 1 個十合起來是 7 個十，在十位寫 7。',
+    '4 個百重複 3 次（3 倍）是 12 個百，在百位寫 2，在千位上方記 1。',
+    '1 個千重複 3 次（3 倍）是 3 個千，和 1 個千合起來是 4 個千，在千位寫 4。'
   ];
-  m.innerHTML=TEXT[exI]+'<div style="font-size:13px;color:#64748b;margin-top:6px">— 課本 p21 原文</div>';
+  m.innerHTML=TEXT[exI]+'<div style="font-size:13px;color:#64748b;margin-top:6px">— 課本 p21 原文（依位值表徵加強）</div>';
   drawEx();
   if(exI>=exSteps.length-1){
     document.getElementById('exNext').disabled=true;
@@ -313,12 +324,15 @@ function buildRows(c){
   var rows=C.partialRows(c.a,c.m);
   var h='';
   rows.forEach(function(r,i){
+    var pName = (i===0 ? '個位' : (i===1 ? '十位' : '百位'));
+    var pUnit = (i===0 ? '個一' : (i===1 ? '個十' : '個百'));
+    var repCount = (i===0 ? r.digit : r.digit*10);
     h+='<div class="rowin">'+
-       '<label>第 '+(i+1)+' 列（'+c.a+'×'+r.digit+'）</label>'+
+       '<label>第 '+(i+1)+' 列（'+c.a+'×'+pName+' '+r.digit+'：'+c.a+' 的 '+r.digit+' '+pUnit+'倍，重複 '+repCount+' 次）</label>'+
        '<input id="rv'+i+'" type="number" inputmode="numeric" placeholder="?">'+
        '<select id="rs'+i+'">'+
-         '<option value="0">放在個位</option>'+
-         '<option value="1">往左移一位（十位）</option>'+
+         '<option value="0">放在個位（'+r.value+' 個一）</option>'+
+         '<option value="1">往左移一位（'+r.value+' 個十 ＝ '+r.shifted+'）</option>'+
        '</select></div>';
   });
   h+='<div class="rowin" style="margin-top:6px">'+
@@ -373,8 +387,9 @@ function submitDigits(c,m){
     var st=steps[firstBad];
     m.className='msg no show';
     m.innerHTML='<b>'+st.placeName+'位</b>：'+FEEDBACK[res.code]+
-      '<br><span style="font-size:14px">這一位是 '+st.digit+'×'+st.multiplier+
-      (st.carryIn>0?('，再加上進位的 '+st.carryIn):'')+'。</span>';
+      '<br><span style="font-size:14px">這一位是 '+st.digit+' 個'+st.placeName+'重複 '+st.multiplier+' 次（'+st.digit+'×'+st.multiplier+
+      '＝'+(st.digit*st.multiplier)+' 個'+st.placeName+'）'+
+      (st.carryIn>0?('，再加上進位的 '+st.carryIn+' 個'+st.placeName):'')+'。</span>';
   }
 }
 
@@ -391,7 +406,7 @@ function submitRows(c,m){
       m.className='msg no show';
       m.innerHTML='第 '+(k+1)+' 列：'+FEEDBACK.NO_SHIFT+
         '<br><span style="font-size:14px">'+c.a+'×'+rows[k].digit+
-        ' 的 '+rows[k].digit+' 在十位，所以這一列是 '+rows[k].value+' 個十 ＝ '+rows[k].shifted+'，要往左移一位。</span>';
+        ' 的 '+rows[k].digit+' 在十位（代表 '+rows[k].digit+' 個十，重複 '+(rows[k].digit*10)+' 次），所以這一列是 '+rows[k].value+' 個十 ＝ '+rows[k].shifted+'，要往左移一位。</span>';
       return;
     }
     if(r.code==='EXPAND_ROW'){
@@ -407,6 +422,9 @@ function submitRows(c,m){
   if(s.code==='CORRECT'){
     m.className='msg ok show';
     m.innerHTML=FEEDBACK.CORRECT+'　'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
+    if(rows.length===2){
+      m.innerHTML+='<br><span style="font-size:14px">第 1 列是 '+c.a+' 的 '+rows[0].digit+' 倍（'+rows[0].value+' 個一）；第 2 列是 '+c.a+' 的 '+rows[1].digit+' 個十倍（'+rows[1].value+' 個十 ＝ '+rows[1].shifted+'）。合起來是 '+(c.a*c.m)+'。</span>';
+    }
     if(c.m===80){
       m.innerHTML+='<br><span style="font-size:14px">課本 p25 也可以直接寫成一列：'+
         '個位落 0，只算 53×8＝424，是 424 個十。兩種寫法都對。</span>';
@@ -473,20 +491,21 @@ function submitFinal(c,m){
   mark('fv0',o0); mark('fv1',o1); mark('fp',op);
   if(o0&&o1&&op){
     m.className='msg ok show';
-    m.innerHTML='全對。'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>';
+    m.innerHTML='全對。'+c.a+'×'+c.m+'＝<b>'+(c.a*c.m)+'</b>'+
+      '<br><span style="font-size:14px">第 1 列是 '+c.a+' 的 '+rows[0].digit+' 個一（'+rows[0].value+'）；第 2 列是 '+c.a+' 的 '+rows[1].digit+' 個十（'+rows[1].value+' 個十 ＝ '+rows[1].shifted+'）。兩者相加得到 '+(c.a*c.m)+'。</span>';
     showSelfCheck();
     done();
   }else{
     m.className='msg no show';
     if(o0&&o1&&!op) m.innerHTML=FEEDBACK.SUM_ERROR+
-      '<br><span style="font-size:14px">別忘了第 2 列要往左移一位再加。</span>';
+      '<br><span style="font-size:14px">別忘了第 2 列是 '+rows[1].value+' 個十，要往左移一位再加。</span>';
     else m.innerHTML='還不對。紅色的那一格再算一次。';
   }
 }
 function showSelfCheck(){
   document.getElementById('qExtra').innerHTML=
     '<div class="selfchk"><h3>紙筆自檢卡</h3>'+
-    '<label class="chk"><input type="checkbox"><span>第 2 列有沒有<b>空一位</b>（往左移）？</span></label>'+
+    '<label class="chk"><input type="checkbox"><span>第 2 列有沒有<b>空一位</b>（代表幾個十，往左移）？</span></label>'+
     '<label class="chk"><input type="checkbox"><span>每一位的<b>進位</b>有沒有加上去？</span></label>'+
     '<label class="chk"><input type="checkbox"><span>最後兩列相加，有沒有漏掉<b>加法的進位</b>？</span></label>'+
     '</div>';
@@ -520,12 +539,12 @@ function checkCh(){
   if(!sel){ m.className='msg no show'; m.textContent='先選一個答案。'; return; }
   if(Number(sel.dataset.i)===CH.ans){
     m.className='msg ok show';
-    m.innerHTML='答對了，<b>9624</b> 元。<br>802×2＝1604，802×1＝802 要往左移一位變成 8020，'+
+    m.innerHTML='答對了，<b>9624</b> 元。<br>802×2＝1604（802 的 2 個一倍，重複 2 次）；802×1＝802 個十（802 的 1 個十倍，重複 10 次 ＝ 8020），'+
       '1604＋8020＝9624。';
   }else{
     m.className='msg no show';
     m.innerHTML='還不對。<br>① 802×2 和 802×1 兩列都算了嗎？'+
-      '<br>② 第 2 列的 802 是 <b>802 個十</b>，有沒有往左移一位？';
+      '<br>② 第 2 列的 802 是 <b>802 個十</b>（重複 10 次＝8020），有沒有往左移一位？';
   }
 }
 

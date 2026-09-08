@@ -59,3 +59,8 @@ L1/L2/L3 對 `carry.html` 是對的，照抄到 `array.html` 會讓它失去面�
 不可依賴自動折行。另外字串填充法（如 `pad('× '+m, w)`）會把空格補在符號前，
 使 `×` 緊貼乘數，乘號應一律固定於最左側欄位。
 
+## P10　CSS Grid 中橫線 `.hr` 的自適應縮排陷阱
+在包含 `justify-items: center` 的 CSS Grid 容器中，如果橫線元素 `<div class="hr"></div>` 未指定 `justify-self: stretch` 與 `width: 100%`，其預設寬度會縮減為 0，導致直式下方的橫線在畫面上完全消失。
+**教訓**：跨欄格線元素（`grid-column: 1/-1`）在 Grid 容器中必須明確聲明 `width: 100%; justify-self: stretch;`。
+
+

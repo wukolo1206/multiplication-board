@@ -102,6 +102,116 @@
     };
   }
 
+  /**
+   * 二位數乘數直式逐步拆解（每層一個一個數字呈現）。
+   * phase 0: 第一行部分積（被乘數 × 個位乘數）逐位
+   * phase 1: 第二行部分積（被乘數 × 十位乘數）逐位（向左移一位）
+   * phase 2: 兩行相加（第一行 ＋ 第二行）逐位
+   */
+  function multiDigitSteps(multiplicand, multiplier) {
+    if (!Number.isInteger(multiplicand) || multiplicand < 0) throw new RangeError('需要非負整數: ' + multiplicand);
+    if (!Number.isInteger(multiplier) || multiplier < 10) throw new RangeError('multiDigitSteps 需要二位數乘數: ' + multiplier);
+    var ms = digitsOf(multiplier); // [m0, m1]
+    var m0 = ms[0], m1 = ms[1];
+    var steps = [];
+
+    function unitName(p) {
+      return p === 0 ? '個一' : ('個' + placeName(p));
+    }
+
+    // Phase 0: Row 0 (multiplicand x m0)
+    var s0 = digitSteps(multiplicand, m0);
+    for (var i = 0; i < s0.length; i++) {
+      var st = s0[i];
+      var pName = placeName(st.place);
+      var uName = unitName(st.place);
+      var desc = '<b>第一行（重複個位數 ' + m0 + ' 次）</b>：';
+      if (st.digit > 0 || st.raw > 0) {
+        desc += st.digit + ' ' + uName + ' × ' + m0 + ' ＝ ' + st.raw + ' ' + uName;
+        if (st.carryIn > 0) desc += '，加上進位 ' + st.carryIn + ' ' + uName + ' ＝ ' + st.total + ' ' + uName;
+      } else if (st.carryIn > 0) {
+        desc += '進位上來的 ' + st.carryIn + ' ' + uName;
+      }
+      desc += '，在第一行' + pName + '位寫 <b>' + st.write + '</b>' +
+        (st.carryOut > 0 ? '（在' + placeName(st.place + 1) + '位上方記 ' + st.carryOut + '）' : '') + '。';
+      steps.push({
+        phase: 0,
+        rowIndex: 0,
+        stepInRow: i,
+        place: st.place,
+        colPlace: st.place,
+        write: st.write,
+        carryOut: st.carryOut,
+        desc: desc
+      });
+    }
+
+    // Phase 1: Row 1 (multiplicand x m1, shifted by 1)
+    var s1 = digitSteps(multiplicand, m1);
+    for (var i = 0; i < s1.length; i++) {
+      var st = s1[i];
+      var pActual = st.place + 1;
+      var pNameActual = placeName(pActual);
+      var uActual = unitName(pActual);
+      var desc = '<b>第二行（重複次數是十次：' + (m1 * 10) + ' 次）</b>：';
+      if (st.digit > 0 || st.raw > 0) {
+        desc += st.digit + ' × ' + m1 + ' 個十 ＝ ' + st.raw + ' ' + uActual;
+        if (st.carryIn > 0) desc += '，加上進位 ' + st.carryIn + ' ' + uActual + ' ＝ ' + st.total + ' ' + uActual;
+      } else if (st.carryIn > 0) {
+        desc += '進位上來的 ' + st.carryIn + ' ' + uActual;
+      }
+      desc += '，在第二行' + pNameActual + '位寫 <b>' + st.write + '</b>（對齊' + pNameActual + '位' +
+        (st.place === 0 ? '，往左移一位' : '') + '）' +
+        (st.carryOut > 0 ? '（進位 ' + st.carryOut + '）' : '') + '。';
+      steps.push({
+        phase: 1,
+        rowIndex: 1,
+        stepInRow: i,
+        place: st.place,
+        colPlace: pActual,
+        write: st.write,
+        carryOut: st.carryOut,
+        desc: desc
+      });
+    }
+
+    // Phase 2: Row 2 (Sum: row 0 + row 1 shifted)
+    var r0Val = multiplicand * m0;
+    var r1ValShifted = multiplicand * m1 * 10;
+    var prod = multiplicand * multiplier;
+    var ds0 = digitsOf(r0Val);
+    var ds1 = digitsOf(r1ValShifted);
+    var dsProd = digitsOf(prod);
+    var numCols = dsProd.length;
+
+    var carry = 0;
+    for (var p = 0; p < numCols; p++) {
+      var d0 = ds0[p] || 0;
+      var d1 = ds1[p] || 0;
+      var tot = d0 + d1 + carry;
+      var w = tot % 10;
+      var nextCarry = Math.floor(tot / 10);
+      var pName = placeName(p);
+      var desc = '<b>兩行相加（' + pName + '位）</b>：' +
+        (p === 0 ? (d0 + ' ＋ 0 ＝ <b>' + w + '</b>') : (d0 + ' ＋ ' + d1 + (carry > 0 ? ' ＋ 進位 ' + carry : '') + ' ＝ ' + tot)) +
+        '，在' + pName + '位寫 <b>' + w + '</b>' +
+        (nextCarry > 0 ? '（進位 ' + nextCarry + '）' : '') + '。';
+      steps.push({
+        phase: 2,
+        rowIndex: 2,
+        stepInRow: p,
+        place: p,
+        colPlace: p,
+        write: w,
+        carryOut: nextCarry,
+        desc: desc
+      });
+      carry = nextCarry;
+    }
+
+    return steps;
+  }
+
   /* ---------------------------------------------------------------
    * 三、面積模型（array.html，二位數×二位數）
    * ------------------------------------------------------------- */
@@ -263,6 +373,7 @@
     placeName: placeName,
     digitsOf: digitsOf,
     digitSteps: digitSteps,
+    multiDigitSteps: multiDigitSteps,
     partialRows: partialRows,
     breakdown: breakdown,
     areaBlocks: areaBlocks,

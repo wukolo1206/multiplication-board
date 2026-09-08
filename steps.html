@@ -100,7 +100,8 @@ h1{font-size:24px;margin:4px 0 4px}
 
   <div class="tabs">
     <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
-    <button class="tab" id="tabQz" onclick="setMode('quiz')">✏️ 練習</button>
+    <button class="tab" id="tabQz" onclick="setMode('mul1')">✏️ 乘以一位數</button>
+    <button class="tab" id="tabQz2" onclick="setMode('mul2')">✏️ 乘以二位數</button>
     <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
   </div>
 
@@ -162,6 +163,7 @@ h1{font-size:24px;margin:4px 0 4px}
       </div>
       <div class="msg tip show" id="qMsg">按「下一步」，一位一位看。</div>
       <div class="row">
+        <button class="btn ghost" id="qPrevStep" onclick="stepPrev()" disabled>← 上一步</button>
         <button class="btn" id="qNextStep" onclick="stepNext()">下一步 →</button>
         <button class="btn ghost" onclick="stepReset()">重來</button>
         <button class="btn" id="qNextLv" style="display:none" onclick="nextLv()">下一題 →</button>
@@ -197,12 +199,37 @@ h1{font-size:24px;margin:4px 0 4px}
 'use strict';
 var C = MulCore;
 
+var quizMode = 'mul1';
+
 function setMode(m){
-  var map={explore:['pEx','tabEx'],quiz:['pQz','tabQz'],chal:['pCh','tabCh']};
-  Object.keys(map).forEach(function(k){
-    document.getElementById(map[k][0]).classList.toggle('on',k===m);
-    document.getElementById(map[k][1]).classList.toggle('on',k===m);
+  if (m === 'quiz') m = 'mul1';
+  var tabs = {
+    explore: 'tabEx',
+    mul1: 'tabQz',
+    mul2: 'tabQz2',
+    chal: 'tabCh'
+  };
+  var panels = {
+    explore: 'pEx',
+    mul1: 'pQz',
+    mul2: 'pQz',
+    chal: 'pCh'
+  };
+
+  ['tabEx', 'tabQz', 'tabQz2', 'tabCh'].forEach(function(tid){
+    var el = document.getElementById(tid);
+    if (el) el.classList.toggle('on', tid === tabs[m]);
   });
+  ['pEx', 'pQz', 'pCh'].forEach(function(pid){
+    var el = document.getElementById(pid);
+    if (el) el.classList.toggle('on', pid === panels[m]);
+  });
+
+  if (m === 'mul1' || m === 'mul2') {
+    quizMode = m;
+    lvi = 0;
+    renderLv();
+  }
 }
 
 /* ═══════════ 探索一：一千元紙鈔 ═══════════
@@ -252,7 +279,8 @@ document.querySelectorAll('#four div').forEach(function(e){
 });
 
 /* ═══════════ 練習：引導式逐步揭示（不填格子） ═══════════ */
-var QLV=[
+/* ═══════════ 練習：引導式逐步揭示（不填格子） ═══════════ */
+var QLV_MUL1 = [
   // ── 活動一：四位數 × 一位數 ──
   {
     a:1426, m:3, lv:'活動一　課本 p21 問3',
@@ -276,50 +304,46 @@ var QLV=[
       '2 個千的 6 倍是 12 個千，在千位寫 2，在萬位上方記 1。',
       '萬位就是進位上來的 1，在萬位寫 1。'
     ]
-  },
+  }
+];
+
+var QLV_MUL2 = [
   // ── 活動二：一、二位數 × 二位數 ──
   {
     a:6, m:28, lv:'活動二　課本 p22 問2',
     title:'學校舉辦跳繩比賽，每組有 6 人，全部有 28 組，共有幾人參加比賽？',
-    sub:'6 的 28 倍（6 人重複 28 次）：<b>重複個位數（8 次）在第一行</b>，<b>重複次數是十次（20 次）在第二行</b>。',
-    text:[
-      '<b>第一行（重複個位數 8 次）</b>：6 個一重複 8 次是 48 個一，在第一行寫 48。',
-      '<b>第二行（重複次數是十次：20 次）</b>：6 個一重複 20 次（2 個十次）是 12 個十，也就是 120。<br>在第二行寫 12（對齊十位，往左移一位；120 的「0」可以省略不寫）。',
-      '<b>兩行合起來</b>：重複 8 次的 48 個一 ＋ 重複 20 次的 12 個十（120）＝ 168 人。'
-    ]
+    sub:'6 的 28 倍（6 人重複 28 次）：<b>重複個位數（8 次）在第一行</b>，<b>重複次數是十次（20 次）在第二行</b>。'
   },
   {
     a:24, m:12, lv:'活動二　課本 p24 問5',
     title:'學校健康操表演，一列有 24 人，排成 12 列，共有幾人表演？',
-    sub:'24 的 12 倍（24 人重複 12 次）：<b>重複個位數（2 次）在第一行</b>，<b>重複次數是十次（10 次）在第二行</b>。',
-    text:[
-      '<b>第一行（重複個位數 2 次）</b>：24 重複 2 次是 48 個一，在第一行寫 48。',
-      '<b>第二行（重複次數是十次：10 次）</b>：24 重複 10 次（1 個十次）是 24 個十，也就是 240。<br>在第二行寫 24（對齊十位，往左移一位；240 的「0」可以省略不寫）。',
-      '<b>兩行合起來</b>：重複 2 次的 48 個一 ＋ 重複 10 次的 24 個十（240）＝ 288 人。'
-    ]
+    sub:'24 的 12 倍（24 人重複 12 次）：<b>重複個位數（2 次）在第一行</b>，<b>重複次數是十次（10 次）在第二行</b>。'
   },
   {
     a:28, m:74, lv:'活動二　課本 p25 問6',
     title:'復興國小要影印視力檢查通知單，每班發 28 張，全校有 74 班，共要影印幾張？',
-    sub:'28 的 74 倍（28 張重複 74 次）：<b>重複個位數（4 次）在第一行</b>，<b>重複次數是十次（70 次）在第二行</b>。',
-    text:[
-      '<b>第一行（重複個位數 4 次）</b>：28 重複 4 次是 112 個一，在第一行寫 112。',
-      '<b>第二行（重複次數是十次：70 次）</b>：28 重複 70 次（7 個十次）是 196 個十，也就是 1960。<br>在第二行寫 196（對齊十位，往左移一位；末位「0」可以省略不寫）。',
-      '<b>兩行合起來</b>：重複 4 次的 112 個一 ＋ 重複 70 次的 196 個十（1960）＝ 2072 張。'
-    ]
+    sub:'28 的 74 倍（28 張重複 74 次）：<b>重複個位數（4 次）在第一行</b>，<b>重複次數是十次（70 次）在第二行</b>。'
   }
 ];
 
-var lvi=0, si=-1, steps=[], showZero=false, showPv=true;
+var lvi = 0, si = -1, steps = [], showZero = false, showPv = true;
 
-function maxStepsFor(c){
-  return c.m < 10 ? steps.length : 3;
+function currentList(){
+  return (quizMode === 'mul2') ? QLV_MUL2 : QLV_MUL1;
+}
+
+function currentItem(){
+  var list = currentList();
+  if (lvi >= list.length) lvi = 0;
+  return list[lvi];
 }
 
 function setZeroMode(sz){
   showZero = sz;
-  document.getElementById('btnZeroOmit').classList.toggle('ghost', sz);
-  document.getElementById('btnZeroShow').classList.toggle('ghost', !sz);
+  var bOmit = document.getElementById('btnZeroOmit');
+  var bShow = document.getElementById('btnZeroShow');
+  if (bOmit) bOmit.classList.toggle('ghost', sz);
+  if (bShow) bShow.classList.toggle('ghost', !sz);
   drawVert();
 }
 
@@ -334,9 +358,12 @@ function togglePv(){
 }
 
 function renderLv(){
-  var c = QLV[lvi];
-  steps = c.m < 10 ? C.digitSteps(c.a, c.m) : [];
+  var list = currentList();
+  if (lvi >= list.length) lvi = 0;
+  var c = list[lvi];
+  steps = c.m < 10 ? C.digitSteps(c.a, c.m) : C.multiDigitSteps(c.a, c.m);
   si = -1;
+
   var vc = document.getElementById('qVConcept');
   if (vc) {
     if (c.m < 10) {
@@ -345,25 +372,76 @@ function renderLv(){
       vc.innerHTML = '💡 <b>兩列直式核心口訣</b>：<b>重複個位數次的在第一行</b>，<b>重複次數是十次的在第二行</b>（對齊十位往左移一位），最後兩行合起來！';
     }
   }
-  document.getElementById('qProg').textContent = '第 ' + (lvi + 1) + ' 題／共 ' + QLV.length + ' 題';
+
+  document.getElementById('qProg').textContent = '第 ' + (lvi + 1) + ' 題／共 ' + list.length + ' 題';
   document.getElementById('qLv').textContent = c.lv;
   document.getElementById('qTitle').textContent = c.title;
   var sub = document.getElementById('qSub');
   if (sub) sub.innerHTML = c.sub || '';
-  document.getElementById('qNextStep').disabled = false;
-  document.getElementById('qNextLv').style.display = 'none';
+
   var zt = document.getElementById('qZeroToggle');
-  if (zt) zt.style.display = (c.m >= 10 && si >= 1) ? 'flex' : 'none';
+  if (zt) zt.style.display = 'none';
   var leg = document.getElementById('qRowLeg');
   if (leg) leg.style.display = c.m >= 10 ? 'flex' : 'none';
-  var m = document.getElementById('qMsg');
-  m.className = 'msg tip show';
-  m.innerHTML = '按「下一步」，' + (c.m < 10 ? '一位一位看。' : '一步一步看。');
+
   drawVert();
+  updateStepUi();
+}
+
+function updateStepUi(){
+  var list = currentList();
+  var c = list[lvi];
+  var maxS = steps.length;
+
+  var prevBtn = document.getElementById('qPrevStep');
+  if (prevBtn) prevBtn.disabled = (si <= -1);
+
+  var nextBtn = document.getElementById('qNextStep');
+  if (nextBtn) nextBtn.disabled = (si >= maxS - 1);
+
+  var zt = document.getElementById('qZeroToggle');
+  if (zt) {
+    var r1Started = (c.m >= 10 && si >= 0 && steps[si] && steps[si].phase >= 1);
+    zt.style.display = r1Started ? 'flex' : 'none';
+  }
+
+  var m = document.getElementById('qMsg');
+  var nxtLvBtn = document.getElementById('qNextLv');
+
+  if (si <= -1) {
+    m.className = 'msg tip show';
+    m.innerHTML = '按「下一步」，' + (c.m < 10 ? '一位一位看。' : '一個一個數字看。');
+    if (nxtLvBtn) nxtLvBtn.style.display = 'none';
+    return;
+  }
+
+  var stepText = (c.m < 10) ? (c.text[si] || '') : (steps[si].desc || '');
+
+  if (si >= maxS - 1) {
+    m.className = 'msg ok show';
+    m.innerHTML = stepText + '<br>算完了：' + c.a + ' × ' + c.m + ' ＝ <b>' + (c.a * c.m) + '</b>';
+    if (nxtLvBtn) {
+      nxtLvBtn.style.display = '';
+      if (lvi < list.length - 1) {
+        nxtLvBtn.textContent = '下一題 →';
+        nxtLvBtn.onclick = nextLv;
+      } else if (quizMode === 'mul1') {
+        nxtLvBtn.textContent = '進階：前往「乘以二位數」→';
+        nxtLvBtn.onclick = function(){ setMode('mul2'); };
+      } else if (quizMode === 'mul2') {
+        nxtLvBtn.textContent = '前往「挑戰」→';
+        nxtLvBtn.onclick = function(){ setMode('chal'); };
+      }
+    }
+  } else {
+    m.className = 'msg tip show';
+    m.innerHTML = stepText + '<div style="font-size:13px;color:#64748b;margin-top:6px">— ' + c.lv + '</div>';
+    if (nxtLvBtn) nxtLvBtn.style.display = 'none';
+  }
 }
 
 function drawVert(){
-  var c = QLV[lvi];
+  var c = currentItem();
   if (c.m < 10) {
     drawVert1(c);
   } else {
@@ -420,15 +498,17 @@ function drawVert2(c){
   var dsProd = C.digitsOf(prod);
   var cols = dsProd.length + 1;
   var numCols = cols - 1;
+
+  var allSteps = steps;
+  var currStep = (si >= 0 && si < allSteps.length) ? allSteps[si] : null;
+
   var h = '<div class="vgrid' + (showPv ? ' with-pv' : '') + '" style="grid-template-columns:repeat(' + cols + ',44px)">';
 
   // 1. 定位板標題列
   if (showPv) {
     h += '<div class="pvcell op"></div>';
     for (var k = numCols - 1; k >= 0; k--) {
-      var isHi = false;
-      if (si === 0 && k === 0) isHi = true; // 第一列主要看個位乘數
-      if (si === 1 && k === 1) isHi = true; // 第二列主要看十位乘數
+      var isHi = (currStep && currStep.colPlace === k);
       h += '<div class="pvcell' + (isHi ? ' hi' : '') + '">' + C.placeName(k) + '位</div>';
     }
   }
@@ -447,33 +527,73 @@ function drawVert2(c){
   // 4. 第一條橫線
   h += '<div class="hr"></div>';
 
-  // 5. 第一列部分積（個位乘數）
-  var dsR0 = C.digitsOf(rows[0].value);
-  for (var x = 0; x < cols - dsR0.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
-  for (var j = dsR0.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 0 ? dsR0[j] : '') + '</div>';
-
-  // 6. 第二列部分積（十位乘數，向左移一位）
-  var dsR1 = C.digitsOf(rows[1].value);
-  if (showZero) {
-    var dsR1s = C.digitsOf(rows[1].shifted);
-    for (var x = 0; x < cols - dsR1s.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
-    for (var j = dsR1s.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 1 ? dsR1s[j] : '') + '</div>';
-  } else {
-    for (var x = 0; x < cols - 1 - dsR1.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
-    for (var j = dsR1.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 1 ? dsR1[j] : '') + '</div>';
-    h += '<div class="cell col-line ' + (si >= 1 ? 'dimzero' : '') + '">' + (si >= 1 ? ' ' : '') + '</div>';
+  // 5. 第一行部分積（個位乘數）逐位呈現
+  var r0Digits = {};
+  for (var k = 0; k <= si && k < allSteps.length; k++) {
+    if (allSteps[k].phase === 0) {
+      r0Digits[allSteps[k].colPlace] = allSteps[k].write;
+    }
+  }
+  h += '<div class="cell"></div>';
+  for (var p = numCols - 1; p >= 0; p--) {
+    var val = (r0Digits[p] !== undefined) ? r0Digits[p] : '';
+    h += '<div class="cell col-line">' + val + '</div>';
   }
 
-  // 7. 第二條橫線（兩列相加線）
-  if (si >= 2) {
+  // 6. 第二行部分積（十位乘數，向左移一位）逐位呈現
+  var r1Digits = {};
+  var r1Started = false;
+  for (var k = 0; k <= si && k < allSteps.length; k++) {
+    if (allSteps[k].phase >= 1) {
+      r1Started = true;
+      if (allSteps[k].phase === 1) {
+        r1Digits[allSteps[k].colPlace] = allSteps[k].write;
+      }
+    }
+  }
+  h += '<div class="cell"></div>';
+  for (var p = numCols - 1; p >= 0; p--) {
+    var val = '';
+    var cls = 'cell col-line';
+    if (p === 0) {
+      if (r1Started) {
+        if (showZero) {
+          val = '0';
+        } else {
+          val = ' ';
+          cls += ' dimzero';
+        }
+      }
+    } else {
+      if (r1Digits[p] !== undefined) {
+        val = r1Digits[p];
+      }
+    }
+    h += '<div class="' + cls + '">' + val + '</div>';
+  }
+
+  // 7. 第二條橫線（兩行相加線）
+  var isAdding = (currStep && currStep.phase >= 2);
+  var phase1Done = allSteps.some(function(s, idx) { return s.phase === 1 && idx <= si; }) &&
+                   !allSteps.some(function(s, idx) { return s.phase === 1 && idx > si; });
+  if (isAdding || phase1Done) {
     h += '<div class="hr"></div>';
   } else {
     h += '<div style="grid-column:1/-1;height:2px"></div>';
   }
 
-  // 8. 相加答案列
-  for (var x = 0; x < cols - dsProd.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
-  for (var j = dsProd.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + (si >= 2 ? dsProd[j] : '') + '</div>';
+  // 8. 相加答案列逐位呈現
+  var sumDigits = {};
+  for (var k = 0; k <= si && k < allSteps.length; k++) {
+    if (allSteps[k].phase === 2) {
+      sumDigits[allSteps[k].colPlace] = allSteps[k].write;
+    }
+  }
+  h += '<div class="cell"></div>';
+  for (var p = numCols - 1; p >= 0; p--) {
+    var val = (sumDigits[p] !== undefined) ? sumDigits[p] : '';
+    h += '<div class="cell col-line">' + val + '</div>';
+  }
 
   h += '</div>';
   document.getElementById('qVert').innerHTML = h;
@@ -482,43 +602,34 @@ function drawVert2(c){
   var leg = document.getElementById('qRowLeg');
   if (leg) {
     leg.style.display = 'flex';
+    var ph = currStep ? currStep.phase : -1;
     leg.innerHTML =
-      '<div class="rleg ' + (si === 0 ? 'on' : '') + '">① 第一行：<b>重複個位數 ' + rows[0].digit + ' 次</b>（' + c.a + ' × ' + rows[0].digit + ' ＝ ' + rows[0].value + ' 個一）</div>' +
-      '<div class="rleg ' + (si === 1 ? 'on' : '') + '">② 第二行：<b>重複次數是十次 ' + (rows[1].digit * 10) + ' 次</b>（' + c.a + ' × ' + (rows[1].digit * 10) + ' ＝ ' + rows[1].shifted + '，' + rows[1].value + ' 個十，' + (showZero ? '補0' : '末位0省略') + '）</div>' +
-      '<div class="rleg ' + (si === 2 ? 'on' : '') + '">③ 兩行合起來：<b>全部重複 ' + c.m + ' 次</b>（' + rows[0].value + ' ＋ ' + rows[1].shifted + ' ＝ ' + prod + '）</div>';
+      '<div class="rleg ' + (ph === 0 ? 'on' : '') + '">① 第一行：<b>重複個位數 ' + rows[0].digit + ' 次</b>（' + c.a + ' × ' + rows[0].digit + ' ＝ ' + rows[0].value + ' 個一）</div>' +
+      '<div class="rleg ' + (ph === 1 ? 'on' : '') + '">② 第二行：<b>重複次數是十次 ' + (rows[1].digit * 10) + ' 次</b>（' + c.a + ' × ' + (rows[1].digit * 10) + ' ＝ ' + rows[1].shifted + '，' + rows[1].value + ' 個十，' + (showZero ? '補0' : '末位0省略') + '）</div>' +
+      '<div class="rleg ' + (ph === 2 ? 'on' : '') + '">③ 兩行合起來：<b>全部重複 ' + c.m + ' 次</b>（' + rows[0].value + ' ＋ ' + rows[1].shifted + ' ＝ ' + prod + '）</div>';
   }
 }
 
 function stepNext(){
-  var c = QLV[lvi];
-  var maxS = maxStepsFor(c);
-  if (si >= maxS - 1) return;
+  if (si >= steps.length - 1) return;
   si++;
   drawVert();
-  var zt = document.getElementById('qZeroToggle');
-  if (zt) zt.style.display = (c.m >= 10 && si >= 1) ? 'flex' : 'none';
-  var m = document.getElementById('qMsg');
-  m.className = 'msg tip show';
-  m.innerHTML = (c.text[si] || '') +
-    '<div style="font-size:13px;color:#64748b;margin-top:6px">— ' + c.lv + '</div>';
-  if (si >= maxS - 1){
-    m.className = 'msg ok show';
-    m.innerHTML = (c.text[si] || '') + '<br>算完了：' + c.a + ' × ' + c.m + ' ＝ <b>' + (c.a * c.m) + '</b>';
-    document.getElementById('qNextStep').disabled = true;
-    if (lvi < QLV.length - 1) document.getElementById('qNextLv').style.display = '';
-  }
+  updateStepUi();
 }
+
+function stepPrev(){
+  if (si <= -1) return;
+  si--;
+  drawVert();
+  updateStepUi();
+}
+
 function stepReset(){
   si = -1;
-  document.getElementById('qNextStep').disabled = false;
-  document.getElementById('qNextLv').style.display = 'none';
-  var zt = document.getElementById('qZeroToggle');
-  if (zt) zt.style.display = 'none';
-  var m = document.getElementById('qMsg');
-  m.className = 'msg tip show';
-  m.innerHTML = '按「下一步」，' + (QLV[lvi].m < 10 ? '一位一位看。' : '一步一步看。');
   drawVert();
+  updateStepUi();
 }
+
 function nextLv(){
   lvi++;
   renderLv();

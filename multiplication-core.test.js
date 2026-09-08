@@ -75,6 +75,14 @@ eq('兩列相加＝2072（M11 加法進位）', r[0].shifted + r[1].shifted, 207
 eq('6×28 需要相加兩列', C.breakdown(6, 28).needsRowSum, true);
 eq('53×80 個位為0 只有一列有效（課本p25）', C.breakdown(53, 80).needsRowSum, false);
 
+var mSteps74 = C.multiDigitSteps(28, 74);
+eq('28×74 逐位拆解步數為 10 步', mSteps74.length, 10);
+eq('28×74 第一行（28×4）分 3 步寫出 2, 1, 1', mSteps74.filter(function(s){ return s.phase === 0; }).map(function(s){ return s.write; }), [2, 1, 1]);
+eq('28×74 第二行（28×70）分 3 步寫出 6, 9, 1（十百千位）', mSteps74.filter(function(s){ return s.phase === 1; }).map(function(s){ return s.write; }), [6, 9, 1]);
+eq('28×74 兩行相加分 4 步寫出 2, 7, 0, 2', mSteps74.filter(function(s){ return s.phase === 2; }).map(function(s){ return s.write; }), [2, 7, 0, 2]);
+eq('24×12 逐位拆解步數為 7 步', C.multiDigitSteps(24, 12).length, 7);
+eq('6×28 逐位拆解步數為 7 步', C.multiDigitSteps(6, 28).length, 7);
+
 /* =============================================================
  * 4. 面積模型四區塊（課本p24 24×12）
  * =========================================================== */

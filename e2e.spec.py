@@ -59,6 +59,16 @@ def run(pg, errs):
     ck('在十位上方記 1' in m or '在十位上方記 1' in pg.content(), '位值敘述照課本原文（上方）')
     ck(pg.eval_on_selector('#qNextStep', 'e=>e.disabled') is True, '走完後下一步停用')
 
+    # 乘以二位數分頁
+    pg.click('#tabQz2'); pg.wait_for_timeout(120)
+    ck('6×28' in pg.content() or '6 × 28' in pg.content() or '28' in pg.content(), '二位數乘法分頁預設載入')
+    for _ in range(7):
+        pg.click('#qNextStep'); pg.wait_for_timeout(80)
+    m2 = msg(pg)
+    ck('168' in m2, '6×28 逐位拆解後得 168')
+    pg.click('#qPrevStep'); pg.wait_for_timeout(80)
+    ck(pg.eval_on_selector('#qNextStep', 'e=>e.disabled') is False, '點上一步後下一步重新啟用')
+
     pg.click('#tabCh'); pg.wait_for_timeout(120)
     opts = pg.eval_on_selector_all('#chOpts .opt', 'e=>e.map(x=>x.textContent)')
     ck(opts == ['甲', '甲、丙', '乙、丁', '甲、乙、丁'], '108-11 選項照考卷原題')

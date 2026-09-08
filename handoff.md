@@ -32,7 +32,7 @@ python run-tests.py
 |---|---|---|
 | knowledge-map | `5374295` | 已推送，遠端 SHA 已驗證 |
 | beike-ai 上層 | `50d2f8c` | 已推送（gitlink 推進 ＋ 設計文件） |
-| multiplication-board | `6eb9759`＋ | 已推送，Pages 已上線並驗證回 200 |
+| multiplication-board | `b6bf90f` | 已推送（修復直式乘號位置與 CSS Grid 對齊），Pages 部署中 |
 
 ## 未完成／待確認
 

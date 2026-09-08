@@ -32,7 +32,7 @@ python run-tests.py
 |---|---|---|
 | knowledge-map | `5374295` | 已推送，遠端 SHA 已驗證 |
 | beike-ai 上層 | `50d2f8c` | 已推送（gitlink 推進 ＋ 設計文件） |
-| multiplication-board | `94177fb` | 已推送（直式講解上方全面配置定位板標頭與位名高亮、格子由 36px 擴大至 44px、提供定位板開關與直式位值對齊線），Pages 部署中 |
+| multiplication-board | `181b981` | 已推送（全面導入「重複個位數次的在第一行，重複次數是十次的在第二行」講解 1、2 位數×2 位數，直式上方配置定位板與位名高亮），Pages 部署中 |
 
 ## 未完成／待確認
 

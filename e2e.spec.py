@@ -72,6 +72,7 @@ def run(pg, errs):
     # 一位數×整十橫式練習
     pg.click('#tabH1'); pg.wait_for_timeout(120)
     ck(pg.eval_on_selector('#pH1', 'e=>e.classList.contains("on")'), '一位數×整十分頁開啟')
+    ck(pg.eval_on_selector('#h1Vert .vgrid', 'e=>!!e'), '一位數×整十同時顯示對應直式與定位板')
     pg.fill('#h1Input', '80')
     pg.click('#h1SubmitBtn'); pg.wait_for_timeout(120)
     ck('答對' in msg(pg, '#h1Msg'), '一位數×整十答對回饋')
@@ -79,6 +80,7 @@ def run(pg, errs):
     # 整十×整十橫式練習
     pg.click('#tabH2'); pg.wait_for_timeout(120)
     ck(pg.eval_on_selector('#pH2', 'e=>e.classList.contains("on")'), '整十×整十分頁開啟')
+    ck(pg.eval_on_selector('#h2Vert .vgrid', 'e=>!!e'), '整十×整十同時顯示對應直式與定位板')
     pg.fill('#h2Input', '400')
     pg.click('#h2SubmitBtn'); pg.wait_for_timeout(120)
     ck('答對' in msg(pg, '#h2Msg'), '整十×整十答對回饋')

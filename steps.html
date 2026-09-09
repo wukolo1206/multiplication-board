@@ -31,12 +31,23 @@ h1{font-size:24px;margin:4px 0 4px}
 .h-stat b{font-size:18px;color:#1e293b;margin:0 2px}
 .h-stat.streak{color:#c2410c}
 .h-stat.streak b{color:#ea580c;font-size:20px}
-.h-card{background:#f8fafc;border:2px solid #fdba74;border-radius:16px;padding:22px 16px;text-align:center;margin-bottom:16px}
-.h-eq{display:inline-flex;align-items:center;justify-content:center;gap:12px;font-family:"Courier New",monospace;font-size:36px;font-weight:700;color:#1e293b;flex-wrap:wrap}
+.h-card{background:#f8fafc;border:2px solid #fdba74;border-radius:16px;padding:20px 16px;margin-bottom:16px}
+.h-dual-wrap{display:flex;align-items:center;justify-content:space-around;gap:20px;flex-wrap:wrap}
+.h-side-eq{text-align:center;min-width:260px}
+.h-side-vert{text-align:center;min-width:240px}
+.h-side-tag{display:inline-block;font-size:13px;background:#ffedd5;color:#9a3412;padding:3px 10px;border-radius:99px;font-weight:700;margin-bottom:10px}
+.h-divider{width:1px;align-self:stretch;background:#fed7aa;min-height:120px}
+@media(max-width:680px){
+  .h-divider{width:100%;height:1px;min-height:1px;margin:8px 0}
+}
+.h-eq{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:"Courier New",monospace;font-size:36px;font-weight:700;color:#1e293b;flex-wrap:wrap}
 .h-num{color:#0369a1}
 .h-op,.h-eq-sign{color:#c2410c}
-.h-input{width:140px;height:54px;font-size:32px;font-family:inherit;font-weight:700;text-align:center;border:2.5px solid #cbd5e1;border-radius:12px;background:#fff;color:#1e293b;outline:none;transition:border-color .15s}
+.h-input{width:130px;height:54px;font-size:32px;font-family:inherit;font-weight:700;text-align:center;border:2.5px solid #cbd5e1;border-radius:12px;background:#fff;color:#1e293b;outline:none;transition:border-color .15s}
 .h-input:focus{border-color:#c2410c;box-shadow:0 0 0 3px rgba(194,65,12,0.2)}
+.vgrid .cell.ans{color:#c2410c;font-weight:700}
+.vgrid .cell.ans.ok{color:#166534;background:#dcfce7;border-radius:6px}
+.vgrid .cell.ans.dim{color:#94a3b8}
 .h-pad-wrap{display:flex;justify-content:center;margin:14px 0}
 .h-pad{display:grid;grid-template-columns:repeat(3,72px);gap:8px}
 .h-pad-btn{min-height:50px;font-size:22px;font-weight:700;font-family:inherit;border-radius:10px;border:2px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s}
@@ -215,12 +226,22 @@ h1{font-size:24px;margin:4px 0 4px}
       </div>
       <span class="lv" id="h1Lv">課本 p22 活動二 問1</span>
       <div class="h-card">
-        <div class="h-eq">
-          <span class="h-num" id="h1A">8</span>
-          <span class="h-op">×</span>
-          <span class="h-num" id="h1B">30</span>
-          <span class="h-eq-sign">＝</span>
-          <input type="text" id="h1Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
+        <div class="h-dual-wrap">
+          <div class="h-side-eq">
+            <span class="h-side-tag">橫式算式</span><br>
+            <div class="h-eq">
+              <span class="h-num" id="h1A">8</span>
+              <span class="h-op">×</span>
+              <span class="h-num" id="h1B">30</span>
+              <span class="h-eq-sign">＝</span>
+              <input type="text" id="h1Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
+            </div>
+          </div>
+          <div class="h-divider"></div>
+          <div class="h-side-vert">
+            <span class="h-side-tag">對應直式（帶定位板）</span>
+            <div class="vert" id="h1Vert"></div>
+          </div>
         </div>
       </div>
       <div class="h-pad-wrap">
@@ -265,12 +286,22 @@ h1{font-size:24px;margin:4px 0 4px}
       </div>
       <span class="lv" id="h2Lv">課本 p23 活動二 問4</span>
       <div class="h-card">
-        <div class="h-eq">
-          <span class="h-num" id="h2A">40</span>
-          <span class="h-op">×</span>
-          <span class="h-num" id="h2B">30</span>
-          <span class="h-eq-sign">＝</span>
-          <input type="text" id="h2Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
+        <div class="h-dual-wrap">
+          <div class="h-side-eq">
+            <span class="h-side-tag">橫式算式</span><br>
+            <div class="h-eq">
+              <span class="h-num" id="h2A">40</span>
+              <span class="h-op">×</span>
+              <span class="h-num" id="h2B">30</span>
+              <span class="h-eq-sign">＝</span>
+              <input type="text" id="h2Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
+            </div>
+          </div>
+          <div class="h-divider"></div>
+          <div class="h-side-vert">
+            <span class="h-side-tag">對應直式（帶定位板）</span>
+            <div class="vert" id="h2Vert"></div>
+          </div>
         </div>
       </div>
       <div class="h-pad-wrap">
@@ -825,7 +856,70 @@ function hInit(mode) {
     var prefix = (mode === 'h1') ? 'h1' : 'h2';
     var inp = document.getElementById(prefix + 'Input');
     if (inp) setTimeout(function(){ inp.focus(); }, 100);
+    drawHVert(mode, inp ? inp.value : '', s.answered && s.streak > 0);
   }
+}
+
+function drawHVert(mode, rawInput, isCorrect) {
+  var s = H_STATE[mode];
+  if (!s || !s.cur) return;
+  var a = s.cur.a, b = s.cur.b;
+  var isTens = (mode === 'h2');
+  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var container = document.getElementById(prefix + 'Vert');
+  if (!container) return;
+
+  var ansVal = s.cur.ans;
+  var dsAns = C.digitsOf(ansVal);
+  var baseCols = isTens ? 4 : 3;
+  var inputStr = (typeof rawInput === 'string') ? rawInput.trim() : '';
+  var dsIn = (inputStr.length > 0 && !isNaN(Number(inputStr))) ? inputStr.split('').map(Number) : [];
+  var numCols = Math.max(baseCols, dsAns.length, Math.min(dsIn.length, 5));
+  var cols = numCols + 1;
+
+  var h = '<div class="vgrid with-pv" style="grid-template-columns:repeat(' + cols + ',44px)">';
+
+  // 1. 定位板標題列
+  h += '<div class="pvcell op"></div>';
+  for (var k = numCols - 1; k >= 0; k--) {
+    h += '<div class="pvcell">' + C.placeName(k) + '位</div>';
+  }
+
+  // 2. 被乘數 a (靠右對齊)
+  var dsA = C.digitsOf(a);
+  for (var x = 0; x < cols - dsA.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+  for (var j = dsA.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsA[j] + '</div>';
+
+  // 3. 乘數 b (× 符號在最左欄，數字靠右對齊)
+  var dsB = C.digitsOf(b);
+  h += '<div class="cell op">×</div>';
+  for (var x = 0; x < cols - 1 - dsB.length; x++) h += '<div class="cell col-line"></div>';
+  for (var j = dsB.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsB[j] + '</div>';
+
+  // 4. 橫線
+  h += '<div class="hr"></div>';
+
+  // 5. 答案列
+  h += '<div class="cell"></div>';
+  if (isCorrect) {
+    var dsOk = C.digitsOf(ansVal);
+    for (var x = 0; x < numCols - dsOk.length; x++) h += '<div class="cell col-line"></div>';
+    for (var j = dsOk.length - 1; j >= 0; j--) {
+      h += '<div class="cell col-line ans ok">' + dsOk[j] + '</div>';
+    }
+  } else if (dsIn.length > 0) {
+    for (var x = 0; x < numCols - dsIn.length; x++) h += '<div class="cell col-line"></div>';
+    for (var j = 0; j < dsIn.length; j++) {
+      h += '<div class="cell col-line ans">' + dsIn[j] + '</div>';
+    }
+  } else {
+    for (var k = numCols - 1; k >= 0; k--) {
+      h += '<div class="cell col-line ans dim">?</div>';
+    }
+  }
+
+  h += '</div>';
+  container.innerHTML = h;
 }
 
 function hNewQuestion(mode) {
@@ -841,6 +935,8 @@ function hNewQuestion(mode) {
   inp.value = '';
   inp.disabled = false;
   setTimeout(function(){ inp.focus(); }, 100);
+
+  drawHVert(mode, '', false);
 
   var msg = document.getElementById(prefix + 'Msg');
   msg.className = 'msg';
@@ -875,6 +971,7 @@ function hPadInput(mode, key) {
     if (inp.value.length < 8) inp.value += key;
   }
   inp.focus();
+  drawHVert(mode, inp.value, false);
 }
 
 function hSubmit(mode) {
@@ -899,6 +996,8 @@ function hSubmit(mode) {
     s.answered = true;
     inp.disabled = true;
 
+    drawHVert(mode, raw, true);
+
     msg.className = 'msg ok show';
     var streakText = (s.streak >= 3) ? ' 🔥 連對 <b>' + s.streak + '</b> 題！太棒了！' : '';
     msg.innerHTML = '🎉 <b>答對了！</b>' + s.cur.a + ' × ' + s.cur.b + ' ＝ <b>' + s.cur.ans + '</b>。' + streakText;
@@ -917,6 +1016,8 @@ function hSubmit(mode) {
       s.streak = 0;
       s.answered = true;
     }
+    drawHVert(mode, raw, false);
+
     msg.className = 'msg no show';
     var errText = '';
     if (diag.code === 'ZERO_TOO_FEW') {
@@ -978,6 +1079,10 @@ function hResetStats(mode) {
 ['h1Input', 'h2Input'].forEach(function(id) {
   var el = document.getElementById(id);
   if (el) {
+    el.addEventListener('input', function() {
+      var mode = (id === 'h1Input') ? 'h1' : 'h2';
+      drawHVert(mode, el.value, false);
+    });
     el.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         var mode = (id === 'h1Input') ? 'h1' : 'h2';

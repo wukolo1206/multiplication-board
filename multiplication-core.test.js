@@ -172,6 +172,34 @@ eq('負數應拒絕', throws(function () { C.digitsOf(-5); }), true);
 eq('非整數應拒絕', throws(function () { C.digitsOf(1.5); }), true);
 eq('超出位名範圍應拒絕', throws(function () { C.placeName(99); }), true);
 
+/* =============================================================
+ * 9. 橫式大量練習（一位數×整十、整十×整十）
+ * =========================================================== */
+group('9. 橫式大量練習');
+var q1_0 = C.generateSingleByTens(0);
+eq('一位×整十 第 0 題 8×10=80', q1_0.a === 8 && q1_0.b === 10 && q1_0.ans === 80, true);
+var q1_2 = C.generateSingleByTens(2);
+eq('一位×整十 課本 p22 問1 8×30=240', q1_2.a === 8 && q1_2.b === 30 && q1_2.ans === 240, true);
+var q1_rnd = C.generateSingleByTens();
+eq('一位×整十 隨機題合法性', q1_rnd.a >= 2 && q1_rnd.a <= 9 && q1_rnd.b % 10 === 0 && q1_rnd.ans === q1_rnd.a * q1_rnd.b, true);
+
+var q2_2 = C.generateTensByTens(2);
+eq('整十×整十 課本 p23 問4 40×30=1200', q2_2.a === 40 && q2_2.b === 30 && q2_2.ans === 1200, true);
+var q2_rnd = C.generateTensByTens();
+eq('整十×整十 隨機題合法性', q2_rnd.a % 10 === 0 && q2_rnd.b % 10 === 0 && q2_rnd.ans === q2_rnd.a * q2_rnd.b, true);
+
+// 診斷測試
+eq('一位×整十 答對', C.diagnoseHorizontal(8, 30, 240).code, 'CORRECT');
+eq('一位×整十 漏補 0 (24)', C.diagnoseHorizontal(8, 30, 24).code, 'ZERO_TOO_FEW');
+eq('一位×整十 補多 0 (2400)', C.diagnoseHorizontal(8, 30, 2400).code, 'ZERO_TOO_MANY');
+eq('一位×整十 九九乘法錯 (210)', C.diagnoseHorizontal(8, 30, 210).code, 'BASE_FACT_ERROR');
+
+eq('整十×整十 答對', C.diagnoseHorizontal(40, 30, 1200).code, 'CORRECT');
+eq('整十×整十 漏補 2 個 0 (12)', C.diagnoseHorizontal(40, 30, 12).code, 'ZERO_TOO_FEW');
+eq('整十×整十 漏補 1 個 0 (120)', C.diagnoseHorizontal(40, 30, 120).code, 'ZERO_TOO_FEW');
+eq('整十×整十 補多 0 (12000)', C.diagnoseHorizontal(40, 30, 12000).code, 'ZERO_TOO_MANY');
+eq('整十×整十 基本乘法錯 (1500)', C.diagnoseHorizontal(40, 30, 1500).code, 'BASE_FACT_ERROR');
+
 /* ---------------------------------------------------------- */
 console.log('\n' + '='.repeat(52));
 console.log('  通過 ' + pass + ' 項，失敗 ' + fail + ' 項');

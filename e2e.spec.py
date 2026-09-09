@@ -69,6 +69,20 @@ def run(pg, errs):
     pg.click('#qPrevStep'); pg.wait_for_timeout(80)
     ck(pg.eval_on_selector('#qNextStep', 'e=>e.disabled') is False, '點上一步後下一步重新啟用')
 
+    # 一位數×整十橫式練習
+    pg.click('#tabH1'); pg.wait_for_timeout(120)
+    ck(pg.eval_on_selector('#pH1', 'e=>e.classList.contains("on")'), '一位數×整十分頁開啟')
+    pg.fill('#h1Input', '80')
+    pg.click('#h1SubmitBtn'); pg.wait_for_timeout(120)
+    ck('答對' in msg(pg, '#h1Msg'), '一位數×整十答對回饋')
+
+    # 整十×整十橫式練習
+    pg.click('#tabH2'); pg.wait_for_timeout(120)
+    ck(pg.eval_on_selector('#pH2', 'e=>e.classList.contains("on")'), '整十×整十分頁開啟')
+    pg.fill('#h2Input', '400')
+    pg.click('#h2SubmitBtn'); pg.wait_for_timeout(120)
+    ck('答對' in msg(pg, '#h2Msg'), '整十×整十答對回饋')
+
     pg.click('#tabCh'); pg.wait_for_timeout(120)
     opts = pg.eval_on_selector_all('#chOpts .opt', 'e=>e.map(x=>x.textContent)')
     ck(opts == ['甲', '甲、丙', '乙、丁', '甲、乙、丁'], '108-11 選項照考卷原題')

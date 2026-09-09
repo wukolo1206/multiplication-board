@@ -367,6 +367,126 @@
     return form === WRONG_FORMS.SWAPPED_OPERANDS;
   }
 
+  /**
+   * 生成「一位數 × 整十」題目物件。
+   * @param {number} [idx] 固定題號（0~4 依序為經典題，>=5 隨機題）
+   */
+  function generateSingleByTens(idx) {
+    var fixed = [
+      { a: 8, b: 10 },
+      { a: 8, b: 20 },
+      { a: 8, b: 30 },
+      { a: 6, b: 40 },
+      { a: 7, b: 50 }
+    ];
+    var a, b;
+    if (typeof idx === 'number' && idx >= 0 && idx < fixed.length) {
+      a = fixed[idx].a;
+      b = fixed[idx].b;
+    } else {
+      a = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+      var bCore = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+      b = bCore * 10;
+    }
+    var bCoreActual = Math.floor(b / 10);
+    var baseProd = a * bCoreActual;
+    var ans = a * b;
+    return {
+      type: 'single_by_tens',
+      a: a,
+      b: b,
+      bCore: bCoreActual,
+      ans: ans,
+      baseFact: { a: a, b: bCoreActual, prod: baseProd },
+      zeros: 1,
+      hint: a + '×' + bCoreActual + '＝' + baseProd + '，' + a + ' 的 ' + b + ' 倍是 ' + baseProd + ' 個十，也就是 ' + ans + '。'
+    };
+  }
+
+  /**
+   * 生成「整十 × 整十」題目物件。
+   * @param {number} [idx] 固定題號（0~4 依序為經典題，>=5 隨機題）
+   */
+  function generateTensByTens(idx) {
+    var fixed = [
+      { a: 40, b: 10 },
+      { a: 40, b: 20 },
+      { a: 40, b: 30 },
+      { a: 30, b: 50 },
+      { a: 60, b: 80 }
+    ];
+    var a, b;
+    if (typeof idx === 'number' && idx >= 0 && idx < fixed.length) {
+      a = fixed[idx].a;
+      b = fixed[idx].b;
+    } else {
+      var aCore = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+      var bCore = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+      a = aCore * 10;
+      b = bCore * 10;
+    }
+    var aCoreActual = Math.floor(a / 10);
+    var bCoreActual = Math.floor(b / 10);
+    var baseProd = aCoreActual * bCoreActual;
+    var ans = a * b;
+    return {
+      type: 'tens_by_tens',
+      a: a,
+      b: b,
+      aCore: aCoreActual,
+      bCore: bCoreActual,
+      ans: ans,
+      baseFact: { a: aCoreActual, b: bCoreActual, prod: baseProd },
+      zeros: 2,
+      hint: aCoreActual + '×' + bCoreActual + '＝' + baseProd + '，' + a + '×' + b + ' 是 ' + baseProd + ' 個百，也就是 ' + ans + '。'
+    };
+  }
+
+  /**
+   * 診斷橫式作答：一位數×整十 或 整十×整十。
+   */
+  function diagnoseHorizontal(a, b, inputVal) {
+    var val = Number(inputVal);
+    if (isNaN(val)) return { code: 'INVALID_INPUT' };
+    var correct = a * b;
+    if (val === correct) return { code: 'CORRECT', correct: correct };
+
+    var isTensByTens = (a % 10 === 0 && b % 10 === 0 && a >= 10 && b >= 10);
+    if (isTensByTens) {
+      var aCore = Math.floor(a / 10);
+      var bCore = Math.floor(b / 10);
+      var baseProd = aCore * bCore;
+
+      if (val === baseProd) {
+        return { code: 'ZERO_TOO_FEW', expectedZeros: 2, actualZeros: 0, baseProd: baseProd };
+      }
+      if (val === baseProd * 10) {
+        return { code: 'ZERO_TOO_FEW', expectedZeros: 2, actualZeros: 1, baseProd: baseProd };
+      }
+      if (val === baseProd * 1000) {
+        return { code: 'ZERO_TOO_MANY', expectedZeros: 2, actualZeros: 3, baseProd: baseProd };
+      }
+      if (val % 100 === 0 && Math.floor(val / 100) !== baseProd) {
+        return { code: 'BASE_FACT_ERROR', baseFactInput: Math.floor(val / 100), expectedBaseFact: baseProd };
+      }
+      return { code: 'CALC_ERROR', correct: correct };
+    } else {
+      var bCoreSingle = Math.floor(b / 10);
+      var baseProdSingle = a * bCoreSingle;
+
+      if (val === baseProdSingle) {
+        return { code: 'ZERO_TOO_FEW', expectedZeros: 1, actualZeros: 0, baseProd: baseProdSingle };
+      }
+      if (val === baseProdSingle * 100) {
+        return { code: 'ZERO_TOO_MANY', expectedZeros: 1, actualZeros: 2, baseProd: baseProdSingle };
+      }
+      if (val % 10 === 0 && Math.floor(val / 10) !== baseProdSingle) {
+        return { code: 'BASE_FACT_ERROR', baseFactInput: Math.floor(val / 10), expectedBaseFact: baseProdSingle };
+      }
+      return { code: 'CALC_ERROR', correct: correct };
+    }
+  }
+
   return {
     PLACE_NAMES: PLACE_NAMES,
     WRONG_FORMS: WRONG_FORMS,
@@ -383,6 +503,9 @@
     diagnoseRowSum: diagnoseRowSum,
     digitwisePairingValue: digitwisePairingValue,
     noShiftValue: noShiftValue,
-    isStructuralError: isStructuralError
+    isStructuralError: isStructuralError,
+    generateSingleByTens: generateSingleByTens,
+    generateTensByTens: generateTensByTens,
+    diagnoseHorizontal: diagnoseHorizontal
   };
 });

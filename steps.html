@@ -13,14 +13,36 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
       text-decoration:none;font-size:16px;font-weight:700}
 h1{font-size:24px;margin:4px 0 4px}
 .pg{color:#94a3b8;font-size:14px;margin-bottom:12px}
-.tabs{display:flex;gap:8px;margin-bottom:14px}
-.tab{flex:1;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
-     font-size:16px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tab{flex:1 1 calc(33.333% - 8px);min-width:130px;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
+     font-size:15px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit;padding:8px 4px;text-align:center}
+@media(min-width:768px){
+  .tab{flex:1;min-width:0;font-size:16px;padding:8px 4px}
+}
 .tab.on{background:#c2410c;border-color:#c2410c;color:#fff}
 .panel{display:none}.panel.on{display:block}
 .card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px}
 .stitle{font-size:19px;font-weight:700;margin:0 0 4px}
 .sdesc{color:#64748b;font-size:15px;line-height:1.7;margin:0 0 14px}
+
+/* ── 橫式大量練習專用樣式 ── */
+.h-stats{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 14px;margin-bottom:14px}
+.h-stat{font-size:14px;color:#64748b}
+.h-stat b{font-size:18px;color:#1e293b;margin:0 2px}
+.h-stat.streak{color:#c2410c}
+.h-stat.streak b{color:#ea580c;font-size:20px}
+.h-card{background:#f8fafc;border:2px solid #fdba74;border-radius:16px;padding:22px 16px;text-align:center;margin-bottom:16px}
+.h-eq{display:inline-flex;align-items:center;justify-content:center;gap:12px;font-family:"Courier New",monospace;font-size:36px;font-weight:700;color:#1e293b;flex-wrap:wrap}
+.h-num{color:#0369a1}
+.h-op,.h-eq-sign{color:#c2410c}
+.h-input{width:140px;height:54px;font-size:32px;font-family:inherit;font-weight:700;text-align:center;border:2.5px solid #cbd5e1;border-radius:12px;background:#fff;color:#1e293b;outline:none;transition:border-color .15s}
+.h-input:focus{border-color:#c2410c;box-shadow:0 0 0 3px rgba(194,65,12,0.2)}
+.h-pad-wrap{display:flex;justify-content:center;margin:14px 0}
+.h-pad{display:grid;grid-template-columns:repeat(3,72px);gap:8px}
+.h-pad-btn{min-height:50px;font-size:22px;font-weight:700;font-family:inherit;border-radius:10px;border:2px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s}
+.h-pad-btn:active{background:#ffedd5;border-color:#fdba74;transform:scale(.96)}
+.h-pad-btn.action{background:#f1f5f9;font-size:18px;color:#475569}
+.h-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
 .btn{min-height:48px;padding:0 20px;border-radius:12px;border:none;background:#c2410c;color:#fff;
      font-size:17px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn:disabled{background:#cbd5e1;cursor:default}
@@ -101,6 +123,8 @@ h1{font-size:24px;margin:4px 0 4px}
   <div class="tabs">
     <button class="tab on" id="tabEx" onclick="setMode('explore')">🔍 探索</button>
     <button class="tab" id="tabQz" onclick="setMode('mul1')">✏️ 乘以一位數</button>
+    <button class="tab" id="tabH1" onclick="setMode('h1')">🔢 一位數×整十</button>
+    <button class="tab" id="tabH2" onclick="setMode('h2')">🔢 整十×整十</button>
     <button class="tab" id="tabQz2" onclick="setMode('mul2')">✏️ 乘以二位數</button>
     <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
   </div>
@@ -175,6 +199,106 @@ h1{font-size:24px;margin:4px 0 4px}
     </div>
   </div>
 
+  <!-- ═══════════ 一位數×整十 橫式大量練習 ═══════════ -->
+  <div class="panel" id="pH1">
+    <div class="card">
+      <div class="vconcept">
+        💡 <b>一位數×整十 核心思維</b>：先算乘數的十位是幾倍，在乘積末位補 1 個 0。<br>
+        例：<b>8 × 30</b> ＝ 8 的 3 倍是 24（24 個十），24 個十就是 <b>240</b>。
+      </div>
+      <div class="h-stats">
+        <div class="h-stat"><span class="h-stat-label">已練習</span><b id="h1Total">0</b> 題</div>
+        <div class="h-stat"><span class="h-stat-label">答對率</span><b id="h1Acc">100%</b></div>
+        <div class="h-stat streak"><span class="h-stat-label">🔥 連對</span><b id="h1Streak">0</b> 次</div>
+        <div class="h-stat"><span class="h-stat-label">最佳連對</span><b id="h1Best">0</b> 次</div>
+        <button class="btn ghost sm" style="margin-left:auto;min-height:36px;padding:0 12px;font-size:14px" onclick="hResetStats('h1')">重新計數</button>
+      </div>
+      <span class="lv" id="h1Lv">課本 p22 活動二 問1</span>
+      <div class="h-card">
+        <div class="h-eq">
+          <span class="h-num" id="h1A">8</span>
+          <span class="h-op">×</span>
+          <span class="h-num" id="h1B">30</span>
+          <span class="h-eq-sign">＝</span>
+          <input type="text" id="h1Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
+        </div>
+      </div>
+      <div class="h-pad-wrap">
+        <div class="h-pad">
+          <button class="h-pad-btn" onclick="hPadInput('h1','1')">1</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','2')">2</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','3')">3</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','4')">4</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','5')">5</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','6')">6</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','7')">7</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','8')">8</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','9')">9</button>
+          <button class="h-pad-btn action" onclick="hPadInput('h1','clear')">C</button>
+          <button class="h-pad-btn" onclick="hPadInput('h1','0')">0</button>
+          <button class="h-pad-btn action" onclick="hPadInput('h1','back')">⌫</button>
+        </div>
+      </div>
+      <div class="msg" id="h1Msg"></div>
+      <div class="h-actions">
+        <button class="btn" id="h1SubmitBtn" onclick="hSubmit('h1')">確定送出</button>
+        <button class="btn ghost" id="h1NextBtn" onclick="hNext('h1')">換一題 →</button>
+        <button class="btn ghost" id="h1HintBtn" onclick="hToggleHint('h1')">💡 看解說</button>
+      </div>
+      <div id="h1HintBox" class="qsub" style="display:none;margin-top:14px"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 整十×整十 橫式大量練習 ═══════════ -->
+  <div class="panel" id="pH2">
+    <div class="card">
+      <div class="vconcept">
+        💡 <b>整十×整十 核心思維</b>：先算最高位相乘有幾個百，在乘積末位補 2 個 0。<br>
+        例：<b>40 × 30</b> ＝ 4 個十 × 3 個十 ＝ 12 個百，12 個百就是 <b>1200</b>。
+      </div>
+      <div class="h-stats">
+        <div class="h-stat"><span class="h-stat-label">已練習</span><b id="h2Total">0</b> 題</div>
+        <div class="h-stat"><span class="h-stat-label">答對率</span><b id="h2Acc">100%</b></div>
+        <div class="h-stat streak"><span class="h-stat-label">🔥 連對</span><b id="h2Streak">0</b> 次</div>
+        <div class="h-stat"><span class="h-stat-label">最佳連對</span><b id="h2Best">0</b> 次</div>
+        <button class="btn ghost sm" style="margin-left:auto;min-height:36px;padding:0 12px;font-size:14px" onclick="hResetStats('h2')">重新計數</button>
+      </div>
+      <span class="lv" id="h2Lv">課本 p23 活動二 問4</span>
+      <div class="h-card">
+        <div class="h-eq">
+          <span class="h-num" id="h2A">40</span>
+          <span class="h-op">×</span>
+          <span class="h-num" id="h2B">30</span>
+          <span class="h-eq-sign">＝</span>
+          <input type="text" id="h2Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
+        </div>
+      </div>
+      <div class="h-pad-wrap">
+        <div class="h-pad">
+          <button class="h-pad-btn" onclick="hPadInput('h2','1')">1</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','2')">2</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','3')">3</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','4')">4</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','5')">5</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','6')">6</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','7')">7</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','8')">8</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','9')">9</button>
+          <button class="h-pad-btn action" onclick="hPadInput('h2','clear')">C</button>
+          <button class="h-pad-btn" onclick="hPadInput('h2','0')">0</button>
+          <button class="h-pad-btn action" onclick="hPadInput('h2','back')">⌫</button>
+        </div>
+      </div>
+      <div class="msg" id="h2Msg"></div>
+      <div class="h-actions">
+        <button class="btn" id="h2SubmitBtn" onclick="hSubmit('h2')">確定送出</button>
+        <button class="btn ghost" id="h2NextBtn" onclick="hNext('h2')">換一題 →</button>
+        <button class="btn ghost" id="h2HintBtn" onclick="hToggleHint('h2')">💡 看解說</button>
+      </div>
+      <div id="h2HintBox" class="qsub" style="display:none;margin-top:14px"></div>
+    </div>
+  </div>
+
   <!-- ═══════════ 挑戰 ═══════════ -->
   <div class="panel" id="pCh">
     <div class="card">
@@ -206,21 +330,25 @@ function setMode(m){
   var tabs = {
     explore: 'tabEx',
     mul1: 'tabQz',
+    h1: 'tabH1',
+    h2: 'tabH2',
     mul2: 'tabQz2',
     chal: 'tabCh'
   };
   var panels = {
     explore: 'pEx',
     mul1: 'pQz',
+    h1: 'pH1',
+    h2: 'pH2',
     mul2: 'pQz',
     chal: 'pCh'
   };
 
-  ['tabEx', 'tabQz', 'tabQz2', 'tabCh'].forEach(function(tid){
+  ['tabEx', 'tabQz', 'tabH1', 'tabH2', 'tabQz2', 'tabCh'].forEach(function(tid){
     var el = document.getElementById(tid);
     if (el) el.classList.toggle('on', tid === tabs[m]);
   });
-  ['pEx', 'pQz', 'pCh'].forEach(function(pid){
+  ['pEx', 'pQz', 'pH1', 'pH2', 'pCh'].forEach(function(pid){
     var el = document.getElementById(pid);
     if (el) el.classList.toggle('on', pid === panels[m]);
   });
@@ -229,6 +357,8 @@ function setMode(m){
     quizMode = m;
     lvi = 0;
     renderLv();
+  } else if (m === 'h1' || m === 'h2') {
+    hInit(m);
   }
 }
 
@@ -664,6 +794,204 @@ function checkCh(){
       '再看 5673 的每個數字各在哪一位。';
   }
 }
+
+/* ═══════════ 橫式大量練習：一位數×整十、整十×整十 ═══════════ */
+var H_STATE = {
+  h1: {
+    idx: 0,
+    cur: null,
+    total: 0,
+    correct: 0,
+    streak: 0,
+    best: 0,
+    answered: false
+  },
+  h2: {
+    idx: 0,
+    cur: null,
+    total: 0,
+    correct: 0,
+    streak: 0,
+    best: 0,
+    answered: false
+  }
+};
+
+function hInit(mode) {
+  var s = H_STATE[mode];
+  if (!s.cur) {
+    hNewQuestion(mode);
+  } else {
+    var prefix = (mode === 'h1') ? 'h1' : 'h2';
+    var inp = document.getElementById(prefix + 'Input');
+    if (inp) setTimeout(function(){ inp.focus(); }, 100);
+  }
+}
+
+function hNewQuestion(mode) {
+  var s = H_STATE[mode];
+  s.cur = (mode === 'h1') ? C.generateSingleByTens(s.idx) : C.generateTensByTens(s.idx);
+  s.idx++;
+  s.answered = false;
+
+  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  document.getElementById(prefix + 'A').textContent = s.cur.a;
+  document.getElementById(prefix + 'B').textContent = s.cur.b;
+  var inp = document.getElementById(prefix + 'Input');
+  inp.value = '';
+  inp.disabled = false;
+  setTimeout(function(){ inp.focus(); }, 100);
+
+  var msg = document.getElementById(prefix + 'Msg');
+  msg.className = 'msg';
+  msg.style.display = 'none';
+
+  var hintBox = document.getElementById(prefix + 'HintBox');
+  hintBox.style.display = 'none';
+  hintBox.innerHTML = '';
+
+  var subBtn = document.getElementById(prefix + 'SubmitBtn');
+  subBtn.disabled = false;
+  subBtn.textContent = '確定送出';
+  subBtn.onclick = function() { hSubmit(mode); };
+
+  var lvEl = document.getElementById(prefix + 'Lv');
+  if (s.idx <= 3) {
+    lvEl.textContent = (mode === 'h1') ? ('課本 p22 活動二 問1（第 ' + s.idx + ' 題）') : ('課本 p23 活動二 問4（第 ' + s.idx + ' 題）');
+  } else {
+    lvEl.textContent = '大量速算練習（第 ' + s.idx + ' 題）';
+  }
+}
+
+function hPadInput(mode, key) {
+  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var inp = document.getElementById(prefix + 'Input');
+  if (inp.disabled) return;
+  if (key === 'clear') {
+    inp.value = '';
+  } else if (key === 'back') {
+    inp.value = inp.value.slice(0, -1);
+  } else {
+    if (inp.value.length < 8) inp.value += key;
+  }
+  inp.focus();
+}
+
+function hSubmit(mode) {
+  var s = H_STATE[mode];
+  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var inp = document.getElementById(prefix + 'Input');
+  var raw = inp.value.trim();
+  if (!raw) {
+    inp.focus();
+    return;
+  }
+
+  var diag = C.diagnoseHorizontal(s.cur.a, s.cur.b, raw);
+  var msg = document.getElementById(prefix + 'Msg');
+  var hintBox = document.getElementById(prefix + 'HintBox');
+
+  if (diag.code === 'CORRECT') {
+    s.total++;
+    s.correct++;
+    s.streak++;
+    if (s.streak > s.best) s.best = s.streak;
+    s.answered = true;
+    inp.disabled = true;
+
+    msg.className = 'msg ok show';
+    var streakText = (s.streak >= 3) ? ' 🔥 連對 <b>' + s.streak + '</b> 題！太棒了！' : '';
+    msg.innerHTML = '🎉 <b>答對了！</b>' + s.cur.a + ' × ' + s.cur.b + ' ＝ <b>' + s.cur.ans + '</b>。' + streakText;
+
+    hintBox.style.display = 'block';
+    hintBox.innerHTML = '<b>位值解說</b>：' + s.cur.hint;
+
+    var subBtn = document.getElementById(prefix + 'SubmitBtn');
+    subBtn.textContent = '下一題 →';
+    subBtn.onclick = function() {
+      hNext(mode);
+    };
+  } else {
+    if (!s.answered) {
+      s.total++;
+      s.streak = 0;
+      s.answered = true;
+    }
+    msg.className = 'msg no show';
+    var errText = '';
+    if (diag.code === 'ZERO_TOO_FEW') {
+      errText = '⚠️ <b>0 補太少囉！</b>乘數有 0 代表是「幾個十」或「幾個百」，末位記得補 0。';
+    } else if (diag.code === 'ZERO_TOO_MANY') {
+      errText = '⚠️ <b>0 補太多囉！</b>請檢查被乘數與乘數末位共有幾個 0。';
+    } else if (diag.code === 'BASE_FACT_ERROR') {
+      errText = '⚠️ <b>位值對了，但九九乘法算錯囉！</b>請檢查前方的基本乘法。';
+    } else {
+      errText = '❌ <b>再算算看喔！</b>請利用下方的位值小撇步檢查。';
+    }
+    msg.innerHTML = errText;
+
+    hintBox.style.display = 'block';
+    hintBox.innerHTML = '💡 <b>位值小撇步</b>：' + s.cur.hint;
+  }
+
+  hUpdateStatsUI(mode);
+}
+
+function hNext(mode) {
+  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var subBtn = document.getElementById(prefix + 'SubmitBtn');
+  subBtn.onclick = function() { hSubmit(mode); };
+  hNewQuestion(mode);
+}
+
+function hToggleHint(mode) {
+  var s = H_STATE[mode];
+  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var hintBox = document.getElementById(prefix + 'HintBox');
+  if (hintBox.style.display === 'none' || !hintBox.style.display) {
+    hintBox.style.display = 'block';
+    hintBox.innerHTML = '💡 <b>位值思考提示</b>：' + (s.cur ? s.cur.hint : '');
+  } else {
+    hintBox.style.display = 'none';
+  }
+}
+
+function hUpdateStatsUI(mode) {
+  var s = H_STATE[mode];
+  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  document.getElementById(prefix + 'Total').textContent = s.total;
+  var acc = (s.total === 0) ? 100 : Math.round((s.correct / s.total) * 100);
+  document.getElementById(prefix + 'Acc').textContent = acc + '%';
+  document.getElementById(prefix + 'Streak').textContent = s.streak;
+  document.getElementById(prefix + 'Best').textContent = s.best;
+}
+
+function hResetStats(mode) {
+  var s = H_STATE[mode];
+  s.total = 0;
+  s.correct = 0;
+  s.streak = 0;
+  s.best = 0;
+  hUpdateStatsUI(mode);
+}
+
+['h1Input', 'h2Input'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        var mode = (id === 'h1Input') ? 'h1' : 'h2';
+        var s = H_STATE[mode];
+        var subBtn = document.getElementById(mode + 'SubmitBtn');
+        if (s.answered && subBtn.textContent.indexOf('下一題') !== -1) {
+          hNext(mode);
+        } else {
+          hSubmit(mode);
+        }
+      }
+    });
+  }
+});
 
 drawBills();
 renderLv();

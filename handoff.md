@@ -32,7 +32,7 @@ python run-tests.py
 |---|---|---|
 | knowledge-map | `5374295` | 已推送，遠端 SHA 已驗證 |
 | beike-ai 上層 | `50d2f8c` | 已推送（gitlink 推進 ＋ 設計文件） |
-| multiplication-board | `273dbe4` | 已推送（拆出「✏️ 乘以二位數」獨立分頁、兩列直式逐位運算與進位呈現、支援「← 上一步」回溯、80/80 單元測試通過），Pages 部署中 |
+| multiplication-board | `1859086` | 已推送（新增「🔢 一位數×整十」與「🔢 整十×整十」橫式大量練習 Tab、觸控數字小鍵盤、連對 Streak 統計、位值診斷回饋、94/94 單元測試通過），Pages 部署中 |
 
 ## 未完成／待確認
 

@@ -5,7 +5,7 @@ status: 已上線
 version: "v1.0 已發佈 GitHub Pages，線上端到端驗證通過 2026-08-23"
 url: https://wukolo1206.github.io/multiplication-board/
 next_action: 實機驗收（教師觸控大屏＋學生 iPad 手感），並設計 L3 無協助正確率的收集方式
-updated: 2026-08-23
+updated: 2026-09-11
 ---
 
 # CLAUDE.md — 乘法直式板

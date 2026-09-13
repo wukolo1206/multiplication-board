@@ -81,39 +81,141 @@ h1{font-size:24px;margin:4px 0 4px}
 .digit-select select{min-height:48px;padding:0 12px;border:2px solid #cbd5e1;border-radius:12px;
                      font-size:17px;font-family:inherit;background:#fff;color:#1f2937}
 .speech{margin:10px 0 14px;padding:13px 16px;border-left:5px solid #0ea5e9;
-        background:#f0f9ff;color:#075985;font-size:19px;line-height:1.8;font-weight:700}
-.practice-layout{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
-.practice-work{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;width:100%}
-.practice-guidance{flex:1;min-width:240px;font-size:clamp(17px,2.8vw,22px);line-height:1.8;
-                   color:#7c2d12;font-weight:700}
-.practice-guidance div{padding:8px 10px;margin-bottom:8px;background:#fff7ed;border-radius:10px}
+        background:#f0f9ff;color:#075985;font-size:19px;line-height:1.8;font-weight:700;border-radius:0 12px 12px 0}
+.speech b{color:#0369a1}
+.practice-layout{display:flex;flex-direction:column;gap:14px;align-items:flex-start;width:100%}
 .practice-vertical{display:inline-block;padding:16px 20px;background:#fff7ed;border:3px solid #fed7aa;
                    border-radius:16px;font-family:"Courier New",monospace;max-width:100%;overflow-x:auto;
-                   --practice-cell:clamp(42px,8vw,58px)}
-.practice-grid{display:grid;grid-template-columns:repeat(var(--practice-col-count),var(--practice-cell));
-               gap:2px;align-items:center;justify-content:start}
+                   --practice-cell:clamp(40px,7vw,56px)}
+.practice-grid{display:grid;grid-template-columns:repeat(var(--practice-number-cols),var(--practice-cell)) minmax(280px,auto);
+               gap:4px 2px;align-items:center;justify-content:start}
 .practice-cell{width:var(--practice-cell);min-height:58px;display:flex;align-items:center;justify-content:center;
-               font-size:clamp(30px,5.5vw,52px);line-height:1.2;font-variant-numeric:tabular-nums}
+               font-size:clamp(30px,5.5vw,52px);line-height:1.2;font-variant-numeric:tabular-nums;box-sizing:border-box;
+               transition:all .2s ease}
 .practice-cell.place-header{min-height:34px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
                             font-size:clamp(13px,2vw,17px);font-weight:700;color:#0e7490;
                             background:#cffafe;border:2px solid #a5f3fc;border-radius:8px 8px 0 0}
 .practice-cell.place-spacer,.practice-cell.answer-spacer{background:transparent}
-.practice-cell.operand-op{color:#64748b;font-size:clamp(26px,5vw,44px)}
-.practice-line{grid-column:1/-1;border-top:4px solid #1f2937;height:0;margin:4px 0;width:100%}
+.practice-cell.operand-op{color:#64748b;font-size:clamp(26px,5vw,44px);font-weight:700}
+.practice-line{border-top:4px solid #1f2937;height:0;margin:6px 0;width:100%}
 .practice-row{display:contents}
-.practice-cell.answer-cell{min-height:66px}
-.practice-cell .answer-input{width:calc(var(--practice-cell) - 8px);height:58px;font-size:clamp(28px,5vw,44px);
-                             text-align:center;border:3px solid #cbd5e1;border-radius:12px;
-                             font-family:"Courier New",monospace;padding:0;background:#fff}
-.practice-cell .answer-input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px #ede9fe}
-.practice-cell .answer-input.ok{border-color:#16a34a;background:#f0fdf4}
-.practice-cell .answer-input.bad{border-color:#dc2626;background:#fef2f2}
+
+/* 強調要乘的數字 */
+.practice-cell.highlight-factor{
+  background:#fef08a !important;border:2.5px solid #f59e0b !important;
+  color:#854d0e !important;font-weight:800;border-radius:10px;
+  box-shadow:0 0 10px rgba(245,158,11,0.45);transform:scale(1.05);z-index:2
+}
+
+/* 變暗的數字 */
+.practice-cell.dim-digit{
+  opacity:0.2 !important;color:#94a3b8 !important;filter:grayscale(1);
+  transform:scale(0.92)
+}
+
+/* 答案格子（替代 input） */
+.practice-cell.answer-box{
+  border:2px solid #cbd5e1;background:#fff;border-radius:10px;
+  font-family:"Courier New",monospace;font-size:clamp(28px,5vw,44px);
+  font-weight:700;color:#1e293b;min-height:58px;user-select:none;
+  transition:all .2s ease
+}
+.practice-cell.answer-box.active-target{
+  border:2.5px dashed #7c3aed;background:#faf5ff;cursor:pointer
+}
+.practice-cell.answer-box.active-target:hover{
+  background:#ede9fe;border-color:#6d28d9
+}
+.practice-cell.answer-box.filled{
+  border:2px solid #93c5fd;background:#eff6ff;color:#1e40af
+}
+.practice-row.second-row .practice-cell.answer-box.filled{
+  border-color:#fed7aa;background:#fff7ed;color:#9a3412
+}
+.practice-row.total-row .practice-cell.answer-box.filled{
+  border-color:#86efac;background:#f0fdf4;color:#166534
+}
+.practice-cell.answer-box .dimzero{
+  opacity:0.4;color:#64748b
+}
+
+/* 右側引導欄位 */
+.practice-step-col{
+  padding-left:16px;display:flex;align-items:center;
+  font-family:"Microsoft JhengHei","PingFang TC",sans-serif
+}
+.step-role-tag{
+  display:inline-block;font-size:13px;font-weight:700;color:#64748b;
+  background:#f1f5f9;padding:3px 10px;border-radius:8px
+}
+.step-guide-btn{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  gap:3px;padding:8px 14px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;
+  font-family:inherit;text-align:left;cursor:default;transition:all .2s ease;
+  min-height:58px;width:100%;box-sizing:border-box
+}
+.step-guide-btn.active{
+  border-color:#7c3aed;background:#f5f3ff;
+  box-shadow:0 3px 12px rgba(124,58,237,0.18);cursor:pointer;
+  animation:step-pulse 2.2s infinite
+}
+@keyframes step-pulse{
+  0%,100%{border-color:#7c3aed;box-shadow:0 0 0 0 rgba(124,58,237,0.3)}
+  50%{border-color:#9333ea;box-shadow:0 0 0 4px rgba(124,58,237,0.15)}
+}
+.step-guide-btn.active:hover{
+  background:#ede9fe;transform:translateY(-1px)
+}
+.step-guide-btn.done{
+  border-color:#cbd5e1;background:#f8fafc;cursor:pointer;opacity:0.95
+}
+.step-guide-btn.done:hover{
+  background:#f1f5f9;border-color:#94a3b8
+}
+.step-guide-btn.done.focused{
+  border-color:#7c3aed;background:#fdf4ff
+}
+.step-guide-btn.locked{
+  border-color:#f1f5f9;background:#f8fafc;opacity:0.42
+}
+.step-top-line{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap
+}
+.step-badge{
+  display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;
+  border-radius:99px;background:#ede9fe;color:#6d28d9
+}
+.step-badge.done{
+  background:#dcfce7;color:#166534
+}
+.step-title{
+  font-size:clamp(15px,2.2vw,19px);font-weight:700;color:#1e293b;line-height:1.4
+}
+.step-title.muted{color:#94a3b8}
+.step-title b{color:#7c3aed}
+.step-action-hint{
+  font-size:14px;font-weight:800;color:#7c3aed;margin-top:2px;
+  display:inline-flex;align-items:center;gap:4px
+}
+.step-warn-note{
+  font-size:13px;font-weight:800;color:#c2410c;background:#ffedd5;
+  padding:2px 8px;border-radius:6px;margin-top:2px;line-height:1.4
+}
+.step-warn-note.mini{
+  font-size:12px;background:transparent;padding:0;color:#ea580c
+}
+.step-sub-note{
+  font-size:13px;color:#64748b;font-weight:700
+}
 .repeat-total{padding:11px 14px;background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;
-              font-size:clamp(18px,3vw,24px);line-height:1.6;font-weight:700;color:#92400e}
-@media(max-width:640px){.card{padding:12px}.speech{font-size:17px}
-  .practice-work{display:block}.practice-guidance{margin-top:12px;min-width:0}
-  .practice-vertical{padding:12px 14px}.practice-cell{min-height:50px}
-  .practice-cell.answer-cell{min-height:58px}.practice-cell .answer-input{height:50px}}
+              font-size:clamp(18px,3vw,24px);line-height:1.6;font-weight:700;color:#92400e;width:100%;box-sizing:border-box}
+@media(max-width:640px){
+  .card{padding:12px}.speech{font-size:17px}
+  .practice-vertical{padding:12px 14px;--practice-cell:clamp(36px,6.8vw,48px)}
+  .practice-cell{min-height:50px}.practice-cell.answer-box{min-height:50px}
+  .step-guide-btn{min-height:50px;padding:6px 10px}
+  .practice-grid{grid-template-columns:repeat(var(--practice-number-cols),var(--practice-cell)) minmax(220px,auto)}
+}
 .lv{display:inline-block;font-size:13px;background:#ede9fe;color:#5b21b6;padding:3px 10px;
     border-radius:99px;font-weight:700;margin-bottom:8px}
 .warn{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 14px;
@@ -281,6 +383,7 @@ h1{font-size:24px;margin:4px 0 4px}
       <div class="row">
         <button class="btn" id="qBtn" onclick="submitQ()">檢查答案</button>
         <button class="btn ghost" id="qNext" style="display:none" onclick="nextQ()">下一題 →</button>
+        <button class="btn ghost" id="qReplay" style="display:none" onclick="replayPractice()">↺ 重看步驟</button>
       </div>
     </div>
   </div>
@@ -450,132 +553,318 @@ document.querySelectorAll('#s2 .vrow[data-r]').forEach(function(e){
   });
 });
 
-/* ───────── 練習：無限兩列部分積與口語提示 ───────── */
-var practiceState={digits:2,completed:0,question:null,locked:false};
-function practiceSpeech(q){
-  return [
-    '先看個位，第一排。個位是 '+q.onesDigit+'，被乘數重複 '+q.onesRepeats+
-      ' 次；'+q.a+'×'+q.onesRepeats+'＝第一列。',
-    '再看十位，左移一位。十位是 '+q.tensDigit+'，也就是 '+q.tensDigit+
-      ' 個十，也就是重複 '+q.tensRepeats+' 次；'+q.a+'×'+q.tensRepeats+
-      '＝第二列，答案要對齊十位。',
-    '兩排相加，答案出現。最後確認：'+q.onesRepeats+'＋'+q.tensRepeats+
-      '＝'+q.repeatTotal+' 次。'
-  ].join('<br>');
+/* ───────── 練習：步驟引導與點選填入（一次強調一個重點） ───────── */
+var practiceState={
+  digits: 2,
+  completed: 0,
+  question: null,
+  step: 1,       // 1: 第一步（第一列/個位列），2: 第二步（第二列/十位列），3: 第三步（合計），4: 完成
+  focusStep: 1   // 目前視覺強調的步驟（1、2、3 或 4）
+};
+
+function practiceSpeech(q, step){
+  if(step === 1){
+    return '【第一步・個位列】先看個位 <b>'+q.onesDigit+'</b>，被乘數重複 <b>'+q.onesRepeats+
+      ' 次</b>；'+q.a+'×'+q.onesRepeats+'＝第一列。';
+  } else if(step === 2){
+    return '【第二步・十位列】再看十位 <b>'+q.tensDigit+'</b>，也就是 <b>'+q.tensDigit+
+      ' 個十</b>（重複 <b>'+q.tensRepeats+' 次</b>）；'+q.a+'×'+q.tensRepeats+
+      '＝第二列，答案對齊十位。';
+  } else if(step === 3){
+    return '【第三步・兩排相加】將個位列與十位列相加；最後確認重複次數：'+
+      q.onesRepeats+'＋'+q.tensRepeats+'＝'+q.repeatTotal+' 次。';
+  } else {
+    return '🎉 兩列直式計算完成！重複次數：'+q.onesRepeats+' 次 ＋ '+
+      q.tensRepeats+' 次 ＝ <b>'+q.repeatTotal+' 次</b>（共 '+q.b+' 倍）。';
+  }
 }
+
 function newPracticeQuestion(){
-  practiceState.question=C.generateArrayPracticeQuestion(practiceState.digits);
-  practiceState.locked=false;
+  practiceState.question = C.generateArrayPracticeQuestion(practiceState.digits);
+  practiceState.step = 1;
+  practiceState.focusStep = 1;
   renderPracticeQuestion();
 }
+
 function practicePlaceCount(q){
-  return Math.max(3,String(q.a).length,String(q.secondRow).length,String(q.product).length);
+  return Math.max(3, String(q.a).length, String(q.secondRow).length, String(q.product).length);
 }
-function practiceDigit(value,pos){
-  return Math.floor(value/Math.pow(10,pos))%10;
+
+function practiceDigit(value, pos){
+  return Math.floor(value / Math.pow(10, pos)) % 10;
 }
-function practiceNumberCells(value,cols,cls){
-  var h='';
-  for(var pos=cols-1;pos>=0;pos--){
-    h+='<div class="practice-cell '+cls+'" data-pos="'+pos+'">'+
-      (pos<String(value).length?practiceDigit(value,pos):'')+'</div>';
+
+// 產生被乘數數字格
+function practiceMultiplicandCells(value, cols, isHighlight){
+  var h = '';
+  var len = String(value).length;
+  for(var pos = cols - 1; pos >= 0; pos--){
+    var hasDigit = (pos < len);
+    var d = hasDigit ? practiceDigit(value, pos) : '';
+    var cls = 'practice-cell operand-cell factor-a' + (hasDigit && isHighlight ? ' highlight-factor' : '');
+    h += '<div class="' + cls + '" data-pos="' + pos + '">' + d + '</div>';
   }
   return h;
 }
-function practiceAnswerCells(row,cols){
-  var h='<div class="practice-cell answer-spacer"></div>';
-  for(var pos=cols-1;pos>=0;pos--){
-    h+='<div class="practice-cell answer-cell" data-pos="'+pos+'">'+
-      '<input class="answer-input" data-pos="'+pos+'" maxlength="1" inputmode="numeric" pattern="[0-9]"'+
-      ' aria-label="'+row+'答案第'+pos+'位"></div>';
+
+// 產生乘數數字格（含個位/十位區分高亮與變暗）
+function practiceMultiplierCells(q, cols, focus){
+  var h = '';
+  for(var pos = cols - 1; pos >= 0; pos--){
+    if(pos > 1){
+      h += '<div class="practice-cell operand-cell place-spacer" data-pos="' + pos + '"></div>';
+    } else if(pos === 1){
+      // 十位數
+      var cls = 'practice-cell operand-cell factor-b factor-b-tens';
+      if(focus === 1){
+        cls += ' dim-digit'; // 第一步時十位變暗！
+      } else if(focus === 2){
+        cls += ' highlight-factor'; // 第二步時十位高亮！
+      }
+      h += '<div class="' + cls + '" data-pos="1">' + q.tensDigit + '</div>';
+    } else if(pos === 0){
+      // 個位數
+      var cls = 'practice-cell operand-cell factor-b factor-b-ones';
+      if(focus === 1){
+        cls += ' highlight-factor'; // 第一步時個位高亮！
+      } else if(focus === 2){
+        cls += ' dim-digit'; // 第二步時個位變暗！
+      }
+      h += '<div class="' + cls + '" data-pos="0">' + q.onesDigit + '</div>';
+    }
   }
   return h;
 }
+
+// 產生答案格（點選填入式）
+function practiceAnswerCells(rowKey, value, cols, isFilled, isActive){
+  var h = '<div class="practice-cell answer-spacer"></div>';
+  var len = String(value).length;
+  var stepTarget = (rowKey === 'first') ? 1 : (rowKey === 'second') ? 2 : 3;
+  for(var pos = cols - 1; pos >= 0; pos--){
+    var d = '';
+    var cls = 'practice-cell answer-box';
+    var clickAttr = '';
+    if(isFilled){
+      if(pos < len){
+        var digitVal = practiceDigit(value, pos);
+        if(rowKey === 'second' && pos === 0 && digitVal === 0){
+          d = '<span class="dimzero">0</span>';
+        } else {
+          d = digitVal;
+        }
+      }
+      cls += ' filled';
+      clickAttr = ' onclick="reviewStep(' + stepTarget + ')" title="點此回顧第 ' + stepTarget + ' 步重點"';
+    } else {
+      cls += ' empty';
+      if(isActive){
+        cls += ' active-target';
+        clickAttr = ' onclick="applyPracticeStep(' + stepTarget + ')" title="點此填入第 ' + stepTarget + ' 步"';
+      }
+    }
+    h += '<div class="' + cls + '" data-pos="' + pos + '"' + clickAttr + '>' + d + '</div>';
+  }
+  return h;
+}
+
 function readPracticeRow(row){
-  var inputs=document.querySelectorAll('[data-answer-row="'+row+'"] .answer-input');
-  var raw=[],first=-1;
-  for(var i=0;i<inputs.length;i++){
-    raw.push(String(inputs[i].value||'').replace(/[^0-9]/g,''));
-    if(raw[i] && first<0) first=i;
-  }
-  if(first<0) return null;
-  for(var j=first;j<raw.length;j++) if(!raw[j]) return null;
-  return Number(raw.slice(first).join(''));
+  var cells = document.querySelectorAll('[data-answer-row="' + row + '"] .answer-box.filled');
+  if(!cells.length) return null;
+  var q = practiceState.question;
+  if(row === 'first') return q.firstRow;
+  if(row === 'second') return q.secondRow;
+  if(row === 'total') return q.product;
+  return null;
 }
+
+function applyPracticeStep(targetStep){
+  if(practiceState.step !== targetStep) return;
+  practiceState.step = targetStep + 1;
+  practiceState.focusStep = (practiceState.step <= 3) ? practiceState.step : 4;
+  if(practiceState.step > 3){
+    practiceState.step = 4;
+    practiceState.completed += 1;
+  }
+  renderPracticeQuestion();
+}
+
+function reviewStep(stepIndex){
+  practiceState.focusStep = stepIndex;
+  renderPracticeQuestion();
+}
+
+function replayPractice(){
+  practiceState.step = 1;
+  practiceState.focusStep = 1;
+  renderPracticeQuestion();
+}
+
 function renderPracticeQuestion(){
-  var q=practiceState.question;
-  var cols=practicePlaceCount(q);
-  document.getElementById('lvTag').textContent='無限練習／已練習 '+practiceState.completed+' 題';
-  document.getElementById('qText').innerHTML='請完成 <b>'+q.a+' × '+q.b+'</b> 的兩列直式。';
-  document.getElementById('qSpeech').innerHTML=practiceSpeech(q);
-  document.getElementById('qMsg').className='msg';
-  document.getElementById('qBtn').style.display='';
-  document.getElementById('qNext').style.display='none';
-  document.getElementById('qBody').innerHTML=
-    '<div class="practice-layout">'+
-      '<div class="practice-work">'+
-        '<div class="practice-vertical" id="practiceVertical">'+
-          '<div class="practice-grid" style="--practice-col-count:'+(cols+1)+'">'+
-            '<div class="practice-cell place-spacer"></div>'+
-            (function(){var s='';for(var pos=cols-1;pos>=0;pos--)s+='<div class="practice-cell place-header" data-pos="'+pos+'">'+C.placeName(pos)+'位</div>';return s;})()+
-            '<div class="practice-cell place-spacer"></div>'+practiceNumberCells(q.a,cols,'operand-cell')+
-            '<div class="practice-cell operand-op">×</div>'+practiceNumberCells(q.b,cols,'operand-cell')+
-            '<div class="practice-line"></div>'+
-            '<div class="practice-row first-row" data-shift="0" data-answer-row="first">'+
-              practiceAnswerCells('第一列',cols)+
-            '</div>'+
-            '<div class="practice-row second-row" data-shift="1" data-answer-row="second">'+
-              practiceAnswerCells('第二列',cols)+
-            '</div>'+
-            '<div class="practice-line"></div>'+
-            '<div class="practice-row total-row" data-answer-row="total">'+
-              practiceAnswerCells('最後',cols)+
-            '</div>'+
-          '</div>'+
-        '</div>'+
-        '<div class="practice-guidance">'+
-          '<div>第一列：'+q.a+' × '+q.onesRepeats+' ＝ 個位列</div>'+
-          '<div>第二列：'+q.a+' × '+q.tensRepeats+' ＝ 十位列（對齊十位）</div>'+
-          '<div>第二列不是 ×'+q.tensDigit+'，而是 ×'+q.tensRepeats+'。</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="repeat-total">重複次數：'+q.onesRepeats+' 次 ＋ '+
-        q.tensRepeats+' 次 ＝ '+q.repeatTotal+' 次</div>'+
+  var q = practiceState.question;
+  var cols = practicePlaceCount(q);
+  var numCols = cols + 1;
+  var step = practiceState.step;
+  var focus = practiceState.focusStep;
+  var isDone = (step >= 4);
+
+  var hiFactorA = (focus === 1 || focus === 2);
+
+  document.getElementById('lvTag').textContent = '無限練習／已練習 ' + practiceState.completed + ' 題';
+  document.getElementById('qText').innerHTML = '請完成 <b>' + q.a + ' × ' + q.b + '</b> 的兩列直式。';
+  document.getElementById('qSpeech').innerHTML = practiceSpeech(q, focus);
+
+  var m = document.getElementById('qMsg');
+  var qNext = document.getElementById('qNext');
+  var qBtn = document.getElementById('qBtn');
+
+  if(isDone){
+    m.className = 'msg ok show';
+    m.style.display = 'block';
+    m.innerHTML = '🎉 <b>答對了！</b><br>' +
+      q.a + ' × ' + q.onesRepeats + ' ＝ <b>' + q.firstRow + '</b>（第一列：個位重複 ' + q.onesRepeats + ' 次）<br>' +
+      q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b>（第二列：十位重複 ' + q.tensRepeats + ' 次，對齊十位）<br>' +
+      q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b>。<br>' +
+      '重複次數合計：' + q.onesRepeats + ' ＋ ' + q.tensRepeats + ' ＝ <b>' + q.repeatTotal + ' 次</b>。';
+    var qReplay = document.getElementById('qReplay');
+    if(qBtn) qBtn.style.display = 'none';
+    if(qNext) qNext.style.display = '';
+    if(qReplay) qReplay.style.display = '';
+  } else {
+    m.className = 'msg';
+    m.style.display = 'none';
+    var qReplay = document.getElementById('qReplay');
+    if(qNext) qNext.style.display = 'none';
+    if(qReplay) qReplay.style.display = 'none';
+    if(qBtn){
+      qBtn.style.display = '';
+      if(step === 1) qBtn.textContent = '👉 填入第一列';
+      else if(step === 2) qBtn.textContent = '👉 填入第二列';
+      else if(step === 3) qBtn.textContent = '👉 填入合計';
+    }
+  }
+
+  // 第一步按鈕卡 HTML
+  var step1Card = '';
+  if(step === 1){
+    step1Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyPracticeStep(1);" aria-label="點選填入第一列">' +
+      '<div class="step-top-line"><span class="step-badge">第 1 步</span><span class="step-title">第一列：<b>' + q.a + ' × ' + q.onesRepeats + '</b> ＝ 個位列</span></div>' +
+      '<div class="step-action-hint">👉 點我填入 <b>' + q.firstRow + '</b></div>' +
+      '</button>';
+  } else {
+    step1Card = '<div class="step-guide-btn done' + (focus === 1 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewStep(1);" title="點此回顧第 1 步重點">' +
+      '<div class="step-top-line"><span class="step-badge done">✓ 第 1 步</span><span class="step-title">第一列：' + q.a + ' × ' + q.onesRepeats + ' ＝ <b>' + q.firstRow + '</b></span></div>' +
+      '<div class="step-sub-note">（個位列）</div>' +
+      '</div>';
+  }
+
+  // 第二步按鈕卡 HTML
+  var step2Card = '';
+  if(step < 2){
+    step2Card = '<div class="step-guide-btn locked">' +
+      '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title muted">第二列：十位列（待第 1 步完成）</span></div>' +
+      '</div>';
+  } else if(step === 2){
+    step2Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyPracticeStep(2);" aria-label="點選填入第二列">' +
+      '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title">第二列：<b>' + q.a + ' × ' + q.tensRepeats + '</b> ＝ 十位列</span></div>' +
+      '<div class="step-warn-note">第二列不是 ×' + q.tensDigit + '，而是 ×' + q.tensRepeats + '（對齊十位）</div>' +
+      '<div class="step-action-hint">👉 點我填入 <b>' + q.secondRow + '</b></div>' +
+      '</button>';
+  } else {
+    step2Card = '<div class="step-guide-btn done' + (focus === 2 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewStep(2);" title="點此回顧第 2 步重點">' +
+      '<div class="step-top-line"><span class="step-badge done">✓ 第 2 步</span><span class="step-title">第二列：' + q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b></span></div>' +
+      '<div class="step-warn-note mini">對齊十位（是 ×' + q.tensRepeats + '）</div>' +
+      '</div>';
+  }
+
+  // 第三步按鈕卡 HTML
+  var step3Card = '';
+  if(step < 3){
+    step3Card = '<div class="step-guide-btn locked">' +
+      '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title muted">兩排相加（待前兩步完成）</span></div>' +
+      '</div>';
+  } else if(step === 3){
+    step3Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyPracticeStep(3);" aria-label="點選填入合計">' +
+      '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title">兩排相加：<b>' + q.firstRow + ' ＋ ' + q.secondRow + '</b></span></div>' +
+      '<div class="step-action-hint">👉 點我填入 <b>' + q.product + '</b></div>' +
+      '</button>';
+  } else {
+    step3Card = '<div class="step-guide-btn done' + (focus === 3 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewStep(3);" title="點此回顧合計重點">' +
+      '<div class="step-top-line"><span class="step-badge done">✓ 第 3 步</span><span class="step-title">兩排相加：' + q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b></span></div>' +
+      '</div>';
+  }
+
+  // 組合整份直式網格 HTML
+  var gridHtml =
+    '<div class="practice-vertical" id="practiceVertical">' +
+      '<div class="practice-grid" style="--practice-number-cols:' + numCols + '">' +
+        // 表頭
+        '<div class="practice-cell place-spacer"></div>' +
+        (function(){
+          var s = '';
+          for(var pos = cols - 1; pos >= 0; pos--){
+            s += '<div class="practice-cell place-header" data-pos="' + pos + '">' + C.placeName(pos) + '位</div>';
+          }
+          return s;
+        })() +
+        '<div class="practice-step-col header-spacer"></div>' +
+
+        // 被乘數
+        '<div class="practice-cell place-spacer"></div>' +
+        practiceMultiplicandCells(q.a, cols, hiFactorA) +
+        '<div class="practice-step-col label-col"><span class="step-role-tag">被乘數</span></div>' +
+
+        // 乘數
+        '<div class="practice-cell operand-op">×</div>' +
+        practiceMultiplierCells(q, cols, focus) +
+        '<div class="practice-step-col label-col"><span class="step-role-tag">乘數</span></div>' +
+
+        // 橫線 1
+        '<div class="practice-line" style="grid-column:1/span ' + numCols + '"></div>' +
+        '<div class="practice-step-col line-spacer"></div>' +
+
+        // 第一列（個位列）
+        '<div class="practice-row first-row" data-shift="0" data-answer-row="first">' +
+          practiceAnswerCells('first', q.firstRow, cols, step > 1, step === 1) +
+          '<div class="practice-step-col" data-step-col="1">' + step1Card + '</div>' +
+        '</div>' +
+
+        // 第二列（十位列）
+        '<div class="practice-row second-row" data-shift="1" data-answer-row="second">' +
+          practiceAnswerCells('second', q.secondRow, cols, step > 2, step === 2) +
+          '<div class="practice-step-col" data-step-col="2">' + step2Card + '</div>' +
+        '</div>' +
+
+        // 橫線 2
+        '<div class="practice-line" style="grid-column:1/span ' + numCols + '"></div>' +
+        '<div class="practice-step-col line-spacer"></div>' +
+
+        // 合計列
+        '<div class="practice-row total-row" data-answer-row="total">' +
+          practiceAnswerCells('total', q.product, cols, step > 3, step === 3) +
+          '<div class="practice-step-col" data-step-col="3">' + step3Card + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  var repeatTotalHtml =
+    '<div class="repeat-total">重複次數：' +
+      (focus === 1 ? '<b style="color:#7c3aed">' + q.onesRepeats + ' 次</b>' : q.onesRepeats + ' 次') +
+      ' ＋ ' +
+      (focus === 2 ? '<b style="color:#c2410c">' + q.tensRepeats + ' 次</b>' : q.tensRepeats + ' 次') +
+      ' ＝ <b>' + q.repeatTotal + ' 次</b>（共 ' + q.b + ' 倍）</div>';
+
+  document.getElementById('qBody').innerHTML =
+    '<div class="practice-layout">' +
+      gridHtml +
+      repeatTotalHtml +
     '</div>';
 }
+
 function submitQ(){
-  if(practiceState.locked) return;
-  var q=practiceState.question;
-  var m=document.getElementById('qMsg');
-  var first=readPracticeRow('first');
-  var second=readPracticeRow('second');
-  var total=readPracticeRow('total');
-  if(first===null || second===null || total===null){
-    m.className='msg no show'; m.textContent='三個答案都填好，再按檢查答案。'; return;
+  if(practiceState.step <= 3){
+    applyPracticeStep(practiceState.step);
   }
-  if(first!==q.firstRow){
-    m.className='msg no show';
-    m.innerHTML='先看個位，個位是 '+q.onesDigit+'，請計算被乘數重複 '+q.onesRepeats+' 次。';
-    return;
-  }
-  if(second!==q.secondRow){
-    m.className='msg no show';
-    m.innerHTML='十位的數字 '+q.tensDigit+' 是 '+q.tensDigit+' 個十，也就是重複 '+
-      q.tensRepeats+' 次；請計算被乘數×'+q.tensRepeats+'，並對齊十位。';
-    return;
-  }
-  if(total!==q.product){
-    m.className='msg no show'; m.innerHTML='兩列部分積都對了，請再把第一列和第二列相加。'; return;
-  }
-  practiceState.locked=true;
-  practiceState.completed+=1;
-  m.className='msg ok show';
-  m.innerHTML='答對了。<br>'+q.a+'×'+q.onesRepeats+'＝'+q.firstRow+'；'+
-    q.a+'×'+q.tensRepeats+'＝'+q.secondRow+'；'+q.firstRow+'＋'+q.secondRow+
-    '＝<b>'+q.product+'</b>。<br>'+q.onesRepeats+'＋'+q.tensRepeats+'＝'+
-    q.repeatTotal+' 次。';
-  document.getElementById('qBtn').style.display='none';
-  document.getElementById('qNext').style.display='';
 }
 function nextQ(){newPracticeQuestion();}
 document.getElementById('digitsSelect').addEventListener('change',function(){

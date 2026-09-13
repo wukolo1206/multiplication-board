@@ -132,7 +132,7 @@ def run(pg, errs):
     ck('無限練習' in pg.eval_on_selector('#lvTag', 'e=>e.textContent'),
        '練習頁標示無限練習')
     ck(pg.eval_on_selector_all('#digitsSelect option',
-       'e=>e.map(x=>x.value)'), ['1', '2', '3', '4'],
+       'e=>e.map(x=>x.value)') == ['1', '2', '3', '4'],
        '被乘數位數有一至四位可選')
 
     for digits in [1, 2, 3, 4]:
@@ -143,10 +143,8 @@ def run(pg, errs):
            '%d位選擇產生%d位被乘數' % (digits, digits))
         speech = pg.eval_on_selector(
             '#qSpeech', 'e=>e.textContent').replace(' ', '')
-        ck(('重複%d次' % q['tensRepeats']) in speech,
-           '%d位題目說明十位重複次數' % digits)
-        ck(('×%d' % q['tensRepeats']) in speech,
-           '%d位題目第二列使用實際十位值' % digits)
+        ck(('重複%d次' % q['onesRepeats']) in speech,
+           '%d位題目說明個位重複次數' % digits)
         ck(pg.eval_on_selector('#practiceVertical .second-row',
            'e=>e.dataset.shift') == '1',
            '%d位題目第二列標記對齊十位' % digits)
@@ -157,32 +155,48 @@ def run(pg, errs):
             '#practiceVertical .place-header[data-pos="1"]',
             'e=>e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2')
         first_center = pg.eval_on_selector(
-            '#practiceVertical [data-answer-row="first"] .answer-input[data-pos="1"]',
+            '#practiceVertical [data-answer-row="first"] .answer-box[data-pos="1"]',
             'e=>e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2')
         second_center = pg.eval_on_selector(
-            '#practiceVertical [data-answer-row="second"] .answer-input[data-pos="1"]',
+            '#practiceVertical [data-answer-row="second"] .answer-box[data-pos="1"]',
             'e=>e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2')
         ck(abs(header_center - first_center) <= 1 and abs(header_center - second_center) <= 1,
            '%d位題目答案格共用十位欄位' % digits)
 
-    q = pg.evaluate('practiceState.question')
-    def fill_practice_row(row, value):
-        inputs = pg.locator('#practiceVertical [data-answer-row="%s"] .answer-input' % row)
-        digits = str(value)
-        start = inputs.count() - len(digits)
-        for i, digit in enumerate(digits):
-            inputs.nth(start + i).fill(digit)
+    # 步驟一：強調要乘的被乘數與個位數，乘數十位變暗，第一列文字在第一列旁
+    ck(len(pg.eval_on_selector_all('#practiceVertical .factor-a.highlight-factor', 'e=>e')) > 0,
+       '步驟一被乘數高亮')
+    ck(len(pg.eval_on_selector_all('#practiceVertical .factor-b-ones.highlight-factor', 'e=>e')) == 1,
+       '步驟一乘數個位高亮')
+    ck(len(pg.eval_on_selector_all('#practiceVertical .factor-b-tens.dim-digit', 'e=>e')) == 1,
+       '步驟一乘數十位變暗')
+    ck(pg.eval_on_selector('#practiceVertical [data-step-col="1"] .step-guide-btn.active', 'e=>!!e'),
+       '第一列引導卡顯示且在第一列旁')
 
-    fill_practice_row('first', q['firstRow'])
-    fill_practice_row('second', q['firstRow'])
-    fill_practice_row('total', q['product'])
-    pg.click('#qBtn'); pg.wait_for_timeout(120)
-    ck('十位' in msg(pg, '#qMsg') and str(q['tensRepeats']) in msg(pg, '#qMsg'),
-       '第二列錯誤會提示十位實際重複次數')
+    # 點選第一列填入
+    pg.click('#practiceVertical [data-step-col="1"] .step-guide-btn.active')
+    pg.wait_for_timeout(100)
+    ck(pg.eval_on_selector('#practiceVertical [data-answer-row="first"] .answer-box.filled', 'e=>!!e'),
+       '點選後第一列答案填入')
 
-    fill_practice_row('second', q['secondRow'])
-    pg.click('#qBtn'); pg.wait_for_timeout(120)
-    ck('答對' in msg(pg, '#qMsg'), '三個答案都正確時通過')
+    # 步驟二：乘數十位高亮，乘數個位變暗，第二列引導卡在第二列旁
+    ck(len(pg.eval_on_selector_all('#practiceVertical .factor-b-tens.highlight-factor', 'e=>e')) == 1,
+       '步驟二乘數十位高亮')
+    ck(len(pg.eval_on_selector_all('#practiceVertical .factor-b-ones.dim-digit', 'e=>e')) == 1,
+       '步驟二乘數個位變暗')
+    ck('第二列不是' in pg.eval_on_selector('#practiceVertical [data-step-col="2"]', 'e=>e.textContent'),
+       '第二列引導卡提示非乘2')
+
+    # 點選第二列填入
+    pg.click('#practiceVertical [data-step-col="2"] .step-guide-btn.active')
+    pg.wait_for_timeout(100)
+    ck(pg.eval_on_selector('#practiceVertical [data-answer-row="second"] .answer-box.filled', 'e=>!!e'),
+       '點選後第二列答案填入')
+
+    # 點選合計填入
+    pg.click('#practiceVertical [data-step-col="3"] .step-guide-btn.active')
+    pg.wait_for_timeout(120)
+    ck('答對' in msg(pg, '#qMsg'), '點選三步後全部正確並通過')
     ck(pg.eval_on_selector('#qNext', 'e=>e.style.display') != 'none',
        '答對後出現下一題')
     pg.click('#qNext'); pg.wait_for_timeout(100)

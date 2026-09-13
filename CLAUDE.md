@@ -2,9 +2,9 @@
 project: 乘法直式板（四上第二單元）
 category: 學科工具集
 status: 維護中
-version: "v1.1 array.html 無限練習與位值口語提示"
+version: "v1.1 array.html 無限練習與位值口語提示（GitHub Pages 已部署 2026-09-13）"
 url: https://wukolo1206.github.io/multiplication-board/
-next_action: 到學校用平板驗收 array.html 無限練習、十位對齊與口語提示
+next_action: 到學校用教師大屏與學生平板驗收 array.html 大字、十位對齊與口語提示
 updated: 2026-09-13
 ---
 

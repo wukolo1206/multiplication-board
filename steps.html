@@ -125,8 +125,8 @@ h1{font-size:24px;margin:4px 0 4px}
 .orig{font-size:13px;color:#64748b;margin-top:6px}
 .prog{font-size:14px;color:#64748b;margin-bottom:10px}
 
-/* ── h3 二三位數×整十 直式增強樣式（對應截圖2） ── */
-.h3-vert-grid{display:inline-grid;background:#fffdfa;border:2px solid #fed7aa;border-radius:16px;padding:10px 10px}
+/* ── h3 二三位數×整十 直式增強樣式 ── */
+.h3-vert-grid{display:inline-grid;background:#fffdfa;border:2px solid #fed7aa;border-radius:16px;padding:12px 14px}
 .vgrid .cell.highlight-factor{
   width:44px;height:48px;background:#fef08a !important;border:2.5px solid #f59e0b !important;
   color:#854d0e !important;font-weight:800;border-radius:10px;
@@ -149,11 +149,18 @@ h1{font-size:24px;margin:4px 0 4px}
 .vgrid .ans-box.dim{color:#94a3b8;background:#f8fafc}
 .vgrid .ans-box.filled{border-color:#93c5fd;background:#eff6ff;color:#1e40af}
 .vgrid .ans-box.ok{border-color:#86efac;background:#dcfce7;color:#166534}
+.vgrid .ans-box.active-target{
+  border:2.5px dashed #7c3aed;background:#faf5ff;cursor:pointer;
+  animation:step-pulse 2.2s infinite
+}
+.vgrid .ans-box.active-target:hover{
+  background:#ede9fe;border-color:#6d28d9
+}
 .vgrid .ans-box.fixed-zero{
   border:2.5px solid #0284c7;background:#f0f9ff;color:#0369a1;
-  box-shadow:0 0 8px rgba(2,132,199,0.3)
+  box-shadow:0 0 8px rgba(2,132,199,0.3);cursor:pointer
 }
-.vgrid .ans-box.fixed-zero.ok{border-color:#86efac;background:#dcfce7;color:#166534;box-shadow:none}
+.vgrid .ans-box.fixed-zero.ok{border-color:#86efac;background:#dcfce7;color:#166534;box-shadow:none;cursor:default}
 .vgrid .ans-box .box-digit{font-size:24px;font-weight:800;line-height:1}
 .vgrid .ans-box .zero-badge-text{
   font-size:9px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
@@ -174,6 +181,143 @@ h1{font-size:24px;margin:4px 0 4px}
 }
 .h-step-pill.ok{background:#f0fdf4;border-color:#86efac;color:#166534}
 .btn.sm{min-height:36px;padding:0 12px;font-size:14px;border-radius:8px}
+
+/* ── 兩列直式分步練習專用樣式（移植自 array.html） ── */
+.practice-head{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.digit-select{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#334155}
+.digit-select select{min-height:42px;padding:0 12px;border:2px solid #cbd5e1;border-radius:12px;
+                     font-size:16px;font-family:inherit;background:#fff;color:#1f2937;cursor:pointer}
+.speech{margin:10px 0 14px;padding:13px 16px;border-left:5px solid #0ea5e9;
+        background:#f0f9ff;color:#075985;font-size:18px;line-height:1.8;font-weight:700;border-radius:0 12px 12px 0}
+.speech b{color:#0369a1}
+.practice-layout{display:flex;flex-direction:column;gap:14px;align-items:flex-start;width:100%}
+.practice-vertical{display:inline-block;padding:16px 20px;background:#fff7ed;border:3px solid #fed7aa;
+                   border-radius:16px;font-family:"Courier New",monospace;max-width:100%;overflow-x:auto;
+                   --practice-cell:clamp(40px,7vw,54px)}
+.practice-grid{display:grid;grid-template-columns:repeat(var(--practice-number-cols),var(--practice-cell)) minmax(280px,auto);
+               gap:4px 2px;align-items:center;justify-content:start}
+.practice-cell{width:var(--practice-cell);min-height:56px;display:flex;align-items:center;justify-content:center;
+               font-size:clamp(28px,5vw,48px);line-height:1.2;font-variant-numeric:tabular-nums;box-sizing:border-box;
+               transition:all .2s ease}
+.practice-cell.place-header{min-height:34px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+                            font-size:clamp(13px,2vw,16px);font-weight:700;color:#0e7490;
+                            background:#cffafe;border:2px solid #a5f3fc;border-radius:8px 8px 0 0}
+.practice-cell.place-spacer,.practice-cell.answer-spacer{background:transparent}
+.practice-cell.operand-op{color:#64748b;font-size:clamp(26px,5vw,44px);font-weight:700}
+.practice-line{border-top:4px solid #1f2937;height:0;margin:6px 0;width:100%}
+.practice-row{display:contents}
+
+.practice-cell.highlight-factor{
+  background:#fef08a !important;border:2.5px solid #f59e0b !important;
+  color:#854d0e !important;font-weight:800;border-radius:10px;
+  box-shadow:0 0 10px rgba(245,158,11,0.45);transform:scale(1.05);z-index:2
+}
+.practice-cell.dim-digit{
+  opacity:0.2 !important;color:#94a3b8 !important;filter:grayscale(1);
+  transform:scale(0.92)
+}
+.practice-cell.answer-box{
+  border:2px solid #cbd5e1;background:#fff;border-radius:10px;
+  font-family:"Courier New",monospace;font-size:clamp(28px,5vw,44px);
+  font-weight:700;color:#1e293b;min-height:56px;user-select:none;
+  transition:all .2s ease
+}
+.practice-cell.answer-box.active-target{
+  border:2.5px dashed #7c3aed;background:#faf5ff;cursor:pointer;
+  animation:step-pulse 2.2s infinite
+}
+.practice-cell.answer-box.active-target:hover{
+  background:#ede9fe;border-color:#6d28d9
+}
+.practice-cell.answer-box.filled{
+  border:2px solid #93c5fd;background:#eff6ff;color:#1e40af
+}
+.practice-row.second-row .practice-cell.answer-box.filled{
+  border-color:#fed7aa;background:#fff7ed;color:#9a3412
+}
+.practice-row.total-row .practice-cell.answer-box.filled{
+  border-color:#86efac;background:#f0fdf4;color:#166534
+}
+.practice-cell.answer-box .dimzero{
+  opacity:0.4;color:#64748b
+}
+
+.practice-step-col{
+  padding-left:16px;display:flex;align-items:center;
+  font-family:"Microsoft JhengHei","PingFang TC",sans-serif
+}
+.step-role-tag{
+  display:inline-block;font-size:13px;font-weight:700;color:#64748b;
+  background:#f1f5f9;padding:3px 10px;border-radius:8px
+}
+.step-guide-btn{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  gap:3px;padding:8px 14px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;
+  font-family:inherit;text-align:left;cursor:default;transition:all .2s ease;
+  min-height:56px;width:100%;box-sizing:border-box
+}
+.step-guide-btn.active{
+  border-color:#7c3aed;background:#f5f3ff;
+  box-shadow:0 3px 12px rgba(124,58,237,0.18);cursor:pointer;
+  animation:step-pulse 2.2s infinite
+}
+@keyframes step-pulse{
+  0%,100%{border-color:#7c3aed;box-shadow:0 0 0 0 rgba(124,58,237,0.3)}
+  50%{border-color:#9333ea;box-shadow:0 0 0 4px rgba(124,58,237,0.15)}
+}
+.step-guide-btn.active:hover{
+  background:#ede9fe;transform:translateY(-1px)
+}
+.step-guide-btn.done{
+  border-color:#cbd5e1;background:#f8fafc;cursor:pointer;opacity:0.95
+}
+.step-guide-btn.done:hover{
+  background:#f1f5f9;border-color:#94a3b8
+}
+.step-guide-btn.done.focused{
+  border-color:#7c3aed;background:#fdf4ff
+}
+.step-guide-btn.locked{
+  border-color:#f1f5f9;background:#f8fafc;opacity:0.42
+}
+.step-top-line{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap
+}
+.step-badge{
+  display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;
+  border-radius:99px;background:#ede9fe;color:#6d28d9
+}
+.step-badge.done{
+  background:#dcfce7;color:#166534
+}
+.step-title{
+  font-size:clamp(15px,2.2vw,18px);font-weight:700;color:#1e293b;line-height:1.4
+}
+.step-title.muted{color:#94a3b8}
+.step-title b{color:#7c3aed}
+.step-action-hint{
+  font-size:14px;font-weight:800;color:#7c3aed;margin-top:2px;
+  display:inline-flex;align-items:center;gap:4px
+}
+.step-warn-note{
+  font-size:13px;font-weight:800;color:#c2410c;background:#ffedd5;
+  padding:2px 8px;border-radius:6px;margin-top:2px;line-height:1.4
+}
+.step-warn-note.mini{
+  font-size:12px;background:transparent;padding:0;color:#ea580c
+}
+.step-sub-note{
+  font-size:13px;color:#64748b;font-weight:700
+}
+.repeat-total{padding:11px 14px;background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;
+              font-size:clamp(17px,2.8vw,23px);line-height:1.6;font-weight:700;color:#92400e;width:100%;box-sizing:border-box}
+
+@media(max-width:640px){
+  .practice-vertical{padding:12px 14px;--practice-cell:clamp(36px,6.8vw,48px)}
+  .practice-cell{min-height:48px}.practice-cell.answer-box{min-height:48px}
+  .step-guide-btn{min-height:48px;padding:6px 10px}
+  .practice-grid{grid-template-columns:repeat(var(--practice-number-cols),var(--practice-cell)) minmax(220px,auto)}
+}
 </style>
 </head>
 <body>
@@ -188,7 +332,7 @@ h1{font-size:24px;margin:4px 0 4px}
     <button class="tab" id="tabH1" onclick="setMode('h1')">🔢 一位數×整十</button>
     <button class="tab" id="tabH2" onclick="setMode('h2')">🔢 整十×整十</button>
     <button class="tab" id="tabH3" onclick="setMode('h3')">🔢 二三位數×整十</button>
-    <button class="tab" id="tabQz2" onclick="setMode('mul2')">✏️ 乘以二位數</button>
+    <button class="tab" id="tabQz2" onclick="setMode('mul2')">✏️ 兩列直式</button>
     <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
   </div>
 
@@ -382,7 +526,7 @@ h1{font-size:24px;margin:4px 0 4px}
     </div>
   </div>
 
-  <!-- ═══════════ 二三位數×整十 橫式大量練習（強調位置・0固定在個位） ═══════════ -->
+  <!-- ═══════════ 二三位數×整十 橫式大量練習（強調位置・0固定在個位・點一下送出） ═══════════ -->
   <div class="panel" id="pH3">
     <div class="card">
       <div class="vconcept" style="background:#fffbeb;border-color:#f59e0b;color:#92400e">
@@ -407,28 +551,36 @@ h1{font-size:24px;margin:4px 0 4px}
       </div>
 
       <span class="lv" id="h3Lv">經典示範：42×60（第 1 題）</span>
+      <div class="speech" id="h3Speech"></div>
 
-      <div class="h-card">
-        <div class="h-dual-wrap">
-          <div class="h-side-eq">
-            <span class="h-side-tag" style="background:#fef3c7;color:#92400e">橫式算式</span><br>
-            <div class="h-eq">
-              <span class="h-num" id="h3A">42</span>
-              <span class="h-op">×</span>
-              <span class="h-num" id="h3B">60</span>
-              <span class="h-eq-sign">＝</span>
-              <input type="text" id="h3Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
-            </div>
+      <div class="h-card" style="display:flex;flex-direction:column;align-items:center;padding:18px 14px">
+        <div style="text-align:center;margin-bottom:12px">
+          <span class="h-side-tag" style="background:#fef3c7;color:#92400e;font-size:14px;padding:3px 12px">橫式算式</span><br>
+          <div class="h-eq" style="font-size:32px;margin-top:6px">
+            <span class="h-num" id="h3A">42</span>
+            <span class="h-op">×</span>
+            <span class="h-num" id="h3B">60</span>
+            <span class="h-eq-sign">＝</span>
+            <input type="text" id="h3Input" class="h-input" style="width:140px;height:48px;font-size:28px" inputmode="numeric" placeholder="?" autocomplete="off">
           </div>
-          <div class="h-divider"></div>
-          <div class="h-side-vert">
-            <span class="h-side-tag" style="background:#fef3c7;color:#92400e">對應直式（強調位置・0固定在個位）</span>
-            <div class="vert" id="h3Vert"></div>
-          </div>
+        </div>
+        <div style="width:100%;max-width:540px;height:1px;background:#fed7aa;margin:4px 0 14px"></div>
+        <div class="h-side-vert" style="width:100%;display:flex;flex-direction:column;align-items:center">
+          <span class="h-side-tag" style="background:#fef3c7;color:#92400e;font-size:14px;padding:3px 12px">對應直式（強調位置・0固定在個位・點一下填入）</span>
+          <div class="vert" id="h3Vert" style="margin-top:6px"></div>
         </div>
       </div>
 
-      <div class="h-pad-wrap">
+      <div class="repeat-total" id="h3EqBar" style="margin:14px 0 10px"></div>
+
+      <div class="h-actions">
+        <button class="btn" id="h3SubmitBtn" onclick="h3AutoSubmit()" style="background:#7c3aed;font-size:18px;min-height:50px;padding:0 24px">👉 點我送出答案</button>
+        <button class="btn ghost" id="h3NextBtn" onclick="hNext('h3')" style="min-height:50px">換一題 →</button>
+        <button class="btn ghost" id="h3HintBtn" onclick="hToggleHint('h3')" style="min-height:50px">💡 看解說</button>
+        <button class="btn sm ghost" id="h3PadToggle" onclick="toggleH3Pad()" style="margin-left:auto;height:38px;padding:0 12px">鍵盤輸入（選用）</button>
+      </div>
+
+      <div class="h-pad-wrap" id="h3PadWrap" style="display:none;margin-top:12px">
         <div class="h-pad">
           <button class="h-pad-btn" onclick="hPadInput('h3','1')">1</button>
           <button class="h-pad-btn" onclick="hPadInput('h3','2')">2</button>
@@ -446,12 +598,70 @@ h1{font-size:24px;margin:4px 0 4px}
       </div>
 
       <div class="msg" id="h3Msg"></div>
-      <div class="h-actions">
-        <button class="btn" id="h3SubmitBtn" onclick="hSubmit('h3')">確定送出</button>
-        <button class="btn ghost" id="h3NextBtn" onclick="hNext('h3')">換一題 →</button>
-        <button class="btn ghost" id="h3HintBtn" onclick="hToggleHint('h3')">💡 看解說</button>
-      </div>
       <div id="h3HintBox" class="qsub" style="display:none;margin-top:14px"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 兩列直式 分步點選練習（移植自 array.html 練習頁） ═══════════ -->
+  <div class="panel" id="pQz2">
+    <div class="card">
+      <div class="practice-head">
+        <div class="lv" id="twoRowsLvTag" style="background:#ede9fe;color:#5b21b6;margin-bottom:0">無限練習／已練習 0 題</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:14px;color:#64748b;font-weight:700">模式：</span>
+            <button class="btn sm" id="btnTwoRowsPractice" onclick="setTwoRowsMode('practice')">🎯 分步點選練習</button>
+            <button class="btn sm ghost" id="btnTwoRowsDemo" onclick="setTwoRowsMode('demo')">📖 課本步驟演示</button>
+          </div>
+          <div class="digit-select" id="twoRowsDigitWrap">
+            <label for="twoRowsDigitsSelect">被乘數位數</label>
+            <select id="twoRowsDigitsSelect">
+              <option value="1">一位數</option>
+              <option value="2" selected>兩位數</option>
+              <option value="3">三位數</option>
+              <option value="4">四位數</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 模式一：分步點選練習（移植自 array.html） -->
+      <div id="twoRowsPracticeView" style="margin-top:10px">
+        <p class="q" id="twoRowsQText"></p>
+        <div class="speech" id="twoRowsSpeech"></div>
+        <div id="twoRowsBody"></div>
+        <div class="msg" id="twoRowsMsg"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn" id="twoRowsBtn" onclick="submitTwoRows()" style="background:#7c3aed">👉 填入第一列</button>
+          <button class="btn ghost" id="twoRowsReplay" onclick="replayTwoRows()" style="display:none">重新演練</button>
+          <button class="btn" id="twoRowsNext" onclick="nextTwoRows()" style="display:none;background:#7c3aed">換下一題 →</button>
+        </div>
+      </div>
+
+      <!-- 模式二：課本步驟演示（原 QLV_MUL2） -->
+      <div id="twoRowsDemoView" style="display:none;margin-top:14px">
+        <div class="prog" id="qProg2"></div>
+        <span class="lv" id="qLv2"></span>
+        <p class="q" id="qTitle2"></p>
+        <div class="qsub" id="qSub2"></div>
+        <div class="vert" id="qVert2"></div>
+        <div id="qRowLeg2" class="rowleg" style="display:none"></div>
+        <div id="qTools2" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <button class="btn sm" id="btnPvToggle2" onclick="togglePv2()">定位板：開</button>
+          <div id="qZeroToggle2" style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:14px;color:#64748b;font-weight:700">第二列末位：</span>
+            <button class="btn sm" id="btnZeroOmit2" onclick="setZeroMode2(false)">省略 0（課本記法）</button>
+            <button class="btn sm ghost" id="btnZeroShow2" onclick="setZeroMode2(true)">補 0（完整值）</button>
+          </div>
+        </div>
+        <div class="msg tip show" id="qMsg2">按「下一步」，一位一位看。</div>
+        <div class="row">
+          <button class="btn ghost" id="qPrevStep2" onclick="stepPrev2()" disabled>← 上一步</button>
+          <button class="btn" id="qNextStep2" onclick="stepNext2()">下一步 →</button>
+          <button class="btn ghost" onclick="stepReset2()">重來</button>
+          <button class="btn" id="qNextLv2" style="display:none" onclick="nextLv2()">下一題 →</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -498,7 +708,7 @@ function setMode(m){
     h1: 'pH1',
     h2: 'pH2',
     h3: 'pH3',
-    mul2: 'pQz',
+    mul2: 'pQz2',
     chal: 'pCh'
   };
 
@@ -506,15 +716,17 @@ function setMode(m){
     var el = document.getElementById(tid);
     if (el) el.classList.toggle('on', tid === tabs[m]);
   });
-  ['pEx', 'pQz', 'pH1', 'pH2', 'pH3', 'pCh'].forEach(function(pid){
+  ['pEx', 'pQz', 'pH1', 'pH2', 'pH3', 'pQz2', 'pCh'].forEach(function(pid){
     var el = document.getElementById(pid);
     if (el) el.classList.toggle('on', pid === panels[m]);
   });
 
-  if (m === 'mul1' || m === 'mul2') {
+  if (m === 'mul1') {
     quizMode = m;
     lvi = 0;
     renderLv();
+  } else if (m === 'mul2') {
+    initTwoRows();
   } else if (m === 'h1' || m === 'h2' || m === 'h3') {
     hInit(m);
   }
@@ -1076,7 +1288,7 @@ function drawHVert(mode, rawInput, isCorrect) {
     return;
   }
 
-  // ══════════════ h3 專屬：二三位數×整十（依截圖2特別強調位置，0固定在個位） ══════════════
+  // ══════════════ h3 專屬：二三位數×整十（強調位置・0固定在個位・點一下送出） ══════════════
   var dsA = C.digitsOf(a);
   var dsB = C.digitsOf(b); // dsB = [0, bCore]
   var bCore = s.cur.bCore;
@@ -1104,7 +1316,7 @@ function drawHVert(mode, rawInput, isCorrect) {
   h += '<div class="cell op" style="font-size:28px;font-weight:700">×</div>';
   for (var x = 0; x < numCols - dsB.length; x++) h += '<div class="cell"></div>';
   h += '<div class="cell highlight-factor">' + dsB[1] + '</div>';
-  h += '<div class="cell fixed-zero-cell" title="個位是0"><span class="zero-num">0</span></div>';
+  h += '<div class="cell fixed-zero-cell" title="個位固定是0"><span class="zero-num">0</span></div>';
   h += '<div class="h-badge-col"><span class="h-pill-badge multiplier">乘數</span></div>';
 
   // 4. 橫線
@@ -1119,7 +1331,10 @@ function drawHVert(mode, rawInput, isCorrect) {
       h += '<div class="ans-box ok">' + dsOk[j] + '</div>';
     }
     h += '<div class="ans-box fixed-zero ok"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
-    h += '<div class="h-step-pill ok">✓ <b>答對了！</b><br>個位固定是 <b>0</b>；' + a + '×' + bCore + '＝' + baseProd + ' 個十，合起來是 <b>' + ansVal + '</b>。</div>';
+    h += '<div class="practice-step-col" style="padding-left:8px"><div class="step-guide-btn done" style="min-width:210px">' +
+         '<div class="step-top-line"><span class="step-badge done">✓ 觀察完成</span><span class="step-title">' + a + ' × ' + bCore + ' 個十 ＝ <b>' + ansVal + '</b></span></div>' +
+         '<div class="step-sub-note">（個位固定是 0）</div>' +
+         '</div></div>';
   } else if (inputStr.length > 0) {
     var valNum = Number(inputStr);
     if (!isNaN(valNum) && valNum === baseProd) {
@@ -1130,7 +1345,10 @@ function drawHVert(mode, rawInput, isCorrect) {
         h += '<div class="ans-box filled">' + dsBase[j] + '</div>';
       }
       h += '<div class="ans-box fixed-zero"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
-      h += '<div class="h-step-pill">⚠️ 乘法算得很好（' + a + '×' + bCore + '＝' + baseProd + '），但別忘了<b>個位要補 0</b> 寫 <b>' + (baseProd * 10) + '</b> 喔！</div>';
+      h += '<div class="practice-step-col" style="padding-left:8px"><div class="step-guide-btn active" onclick="h3AutoSubmit()" style="min-width:210px;cursor:pointer">' +
+           '<div class="step-warn-note">⚠️ 記得補個位 0：寫 ' + ansVal + '</div>' +
+           '<div class="step-action-hint">👉 點我填入 <b>' + ansVal + '</b></div>' +
+           '</div></div>';
     } else {
       var inDigits = inputStr.split('').map(Number);
       var leadSpacers = Math.max(0, numCols - inDigits.length);
@@ -1143,19 +1361,42 @@ function drawHVert(mode, rawInput, isCorrect) {
           h += '<div class="ans-box filled">' + inDigits[j] + '</div>';
         }
       }
-      h += '<div class="h-step-pill">💡 <b>0 固定在個位</b><br>' + a + ' × ' + bCore + ' 個十 ＝ <b>' + baseProd + '</b> 個十<br>答案是 <b>' + ansVal + '</b></div>';
+      h += '<div class="practice-step-col" style="padding-left:8px"><div class="step-guide-btn active" onclick="h3AutoSubmit()" style="min-width:210px;cursor:pointer">' +
+           '<div class="step-top-line"><span class="step-badge">第 1 步</span><span class="step-title">十位起算：' + a + ' × ' + bCore + ' 個十</span></div>' +
+           '<div class="step-action-hint">👉 點我填入 <b>' + ansVal + '</b></div>' +
+           '</div></div>';
     }
   } else {
-    // 未作答狀態：十位以上為 ?，個位直接固定為 0！
+    // 未作答狀態：十位以上為紫色虛線框，點擊填入；個位固定為 0！
     for (var k = numCols - 1; k >= 1; k--) {
-      h += '<div class="ans-box dim">?</div>';
+      h += '<div class="ans-box active-target" onclick="h3AutoSubmit()" title="點此填入答案">?</div>';
     }
-    h += '<div class="ans-box fixed-zero"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
-    h += '<div class="h-step-pill">💡 <b>0 固定在個位</b><br>請算：<b>' + a + ' × ' + bCore + '</b> ＝ ？個十</div>';
+    h += '<div class="ans-box fixed-zero" onclick="h3AutoSubmit()" title="個位固定是0"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
+    h += '<div class="practice-step-col" style="padding-left:8px"><div class="step-guide-btn active" onclick="h3AutoSubmit()" style="min-width:210px;cursor:pointer" title="點此填入答案">' +
+         '<div class="step-top-line"><span class="step-badge">第 1 步</span><span class="step-title">十位起算：<b>' + a + ' × ' + bCore + '</b> ＝ ' + baseProd + ' 個十</span></div>' +
+         '<div class="step-action-hint">👉 點我填入 <b>' + ansVal + '</b></div>' +
+         '</div></div>';
   }
 
   h += '</div>';
   container.innerHTML = h;
+}
+
+function h3AutoSubmit() {
+  var s = H_STATE['h3'];
+  if (!s || !s.cur) return;
+  var inp = document.getElementById('h3Input');
+  inp.value = s.cur.ans;
+  hSubmit('h3');
+}
+
+function toggleH3Pad() {
+  var pad = document.getElementById('h3PadWrap');
+  if (!pad) return;
+  var isHidden = (pad.style.display === 'none' || !pad.style.display);
+  pad.style.display = isHidden ? 'flex' : 'none';
+  var btn = document.getElementById('h3PadToggle');
+  if (btn) btn.textContent = isHidden ? '收起鍵盤' : '鍵盤輸入（選用）';
 }
 
 function hNewQuestion(mode) {
@@ -1191,14 +1432,18 @@ function hNewQuestion(mode) {
 
   var subBtn = document.getElementById(prefix + 'SubmitBtn');
   subBtn.disabled = false;
-  subBtn.textContent = '確定送出';
-  subBtn.onclick = function() { hSubmit(mode); };
 
   var lvEl = document.getElementById(prefix + 'Lv');
   if (mode === 'h1') {
     lvEl.textContent = (s.idx <= 3) ? ('課本 p22 活動二 問1（第 ' + s.idx + ' 題）') : ('大量速算練習（第 ' + s.idx + ' 題）');
+    subBtn.textContent = '確定送出';
+    subBtn.style.background = '#c2410c';
+    subBtn.onclick = function() { hSubmit(mode); };
   } else if (mode === 'h2') {
     lvEl.textContent = (s.idx <= 3) ? ('課本 p23 活動二 問4（第 ' + s.idx + ' 題）') : ('大量速算練習（第 ' + s.idx + ' 題）');
+    subBtn.textContent = '確定送出';
+    subBtn.style.background = '#c2410c';
+    subBtn.onclick = function() { hSubmit(mode); };
   } else if (mode === 'h3') {
     if (s.cur && s.cur.tag) {
       lvEl.textContent = s.cur.tag + '（第 ' + s.idx + ' 題）';
@@ -1206,6 +1451,17 @@ function hNewQuestion(mode) {
       var kindText = s.cur.a >= 100 ? '三位數 × 整十' : '二位數 × 整十';
       lvEl.textContent = '大量速算練習：' + kindText + '（第 ' + s.idx + ' 題）';
     }
+    var speechEl = document.getElementById('h3Speech');
+    if (speechEl) {
+      speechEl.innerHTML = '【觀察乘以整十】個位固定是 <b>0</b>；從十位開始計算：<b>' + s.cur.a + ' × ' + s.cur.bCore + ' 個十 ＝ ' + s.cur.baseFact.prod + ' 個十</b>（' + s.cur.ans + '）。';
+    }
+    var eqBarEl = document.getElementById('h3EqBar');
+    if (eqBarEl) {
+      eqBarEl.innerHTML = '位值觀察：<b>' + s.cur.a + ' × ' + s.cur.b + '</b> ＝ ' + s.cur.a + ' × ' + s.cur.bCore + ' 個十 ＝ <b>' + s.cur.baseFact.prod + ' 個十</b> ＝ <b>' + s.cur.ans + '</b>（個位固定是 0）';
+    }
+    subBtn.textContent = '👉 點我送出答案（' + s.cur.a + ' × ' + s.cur.b + ' ＝ ' + s.cur.ans + '）';
+    subBtn.style.background = '#7c3aed';
+    subBtn.onclick = function() { h3AutoSubmit(); };
   }
 }
 
@@ -1256,7 +1512,8 @@ function hSubmit(mode) {
     hintBox.innerHTML = '<b>位值解說</b>：' + s.cur.hint;
 
     var subBtn = document.getElementById(prefix + 'SubmitBtn');
-    subBtn.textContent = '下一題 →';
+    subBtn.textContent = '換下一題 →';
+    subBtn.style.background = '#16a34a';
     subBtn.onclick = function() {
       hNext(mode);
     };
@@ -1347,6 +1604,524 @@ function hResetStats(mode) {
     });
   }
 });
+
+/* ═══════════ 兩列直式 分步點選練習（移植自 array.html 練習頁） ═══════════ */
+var twoRowsState = {
+  digits: 2,
+  completed: 0,
+  question: null,
+  step: 1,
+  focusStep: 1,
+  inited: false,
+  mode: 'practice'
+};
+
+function initTwoRows() {
+  if (!twoRowsState.inited) {
+    twoRowsState.inited = true;
+    newTwoRowsQuestion();
+    var sel = document.getElementById('twoRowsDigitsSelect');
+    if (sel) {
+      sel.addEventListener('change', function() {
+        twoRowsState.digits = Number(this.value);
+        newTwoRowsQuestion();
+      });
+    }
+  }
+}
+
+function setTwoRowsMode(mode) {
+  twoRowsState.mode = mode;
+  var bPrac = document.getElementById('btnTwoRowsPractice');
+  var bDemo = document.getElementById('btnTwoRowsDemo');
+  var pView = document.getElementById('twoRowsPracticeView');
+  var dView = document.getElementById('twoRowsDemoView');
+  var dWrap = document.getElementById('twoRowsDigitWrap');
+
+  if (mode === 'practice') {
+    bPrac.classList.remove('ghost');
+    bDemo.classList.add('ghost');
+    pView.style.display = 'block';
+    dView.style.display = 'none';
+    if (dWrap) dWrap.style.display = 'flex';
+    renderTwoRowsQuestion();
+  } else {
+    bPrac.classList.add('ghost');
+    bDemo.classList.remove('ghost');
+    pView.style.display = 'none';
+    dView.style.display = 'block';
+    if (dWrap) dWrap.style.display = 'none';
+    renderTwoRowsDemo();
+  }
+}
+
+function newTwoRowsQuestion() {
+  twoRowsState.question = C.generateArrayPracticeQuestion(twoRowsState.digits);
+  twoRowsState.step = 1;
+  twoRowsState.focusStep = 1;
+  renderTwoRowsQuestion();
+}
+
+function twoRowsSpeechText(q, step) {
+  if (step === 1) {
+    return '【第一步・個位列】先看個位 <b>' + q.onesDigit + '</b>，被乘數重複 <b>' + q.onesRepeats +
+      ' 次</b>；' + q.a + '×' + q.onesRepeats + '＝第一列。';
+  } else if (step === 2) {
+    return '【第二步・十位列】再看十位 <b>' + q.tensDigit + '</b>，也就是 <b>' + q.tensDigit +
+      ' 個十</b>（重複 <b>' + q.tensRepeats + ' 次</b>）；' + q.a + '×' + q.tensRepeats +
+      '＝第二列，答案對齊十位。';
+  } else if (step === 3) {
+    return '【第三步・兩排相加】將個位列與十位列相加；最後確認重複次數：' +
+      q.onesRepeats + '＋' + q.tensRepeats + '＝' + q.repeatTotal + ' 次。';
+  } else {
+    return '🎉 兩列直式計算完成！重複次數：' + q.onesRepeats + ' 次 ＋ ' +
+      q.tensRepeats + ' 次 ＝ <b>' + q.repeatTotal + ' 次</b>（共 ' + q.b + ' 倍）。';
+  }
+}
+
+function twoRowsMultiplicandCells(value, cols, isHighlight) {
+  var h = '';
+  var len = String(value).length;
+  for (var pos = cols - 1; pos >= 0; pos--) {
+    var hasDigit = (pos < len);
+    var d = hasDigit ? Math.floor(value / Math.pow(10, pos)) % 10 : '';
+    var cls = 'practice-cell operand-cell factor-a' + (hasDigit && isHighlight ? ' highlight-factor' : '');
+    h += '<div class="' + cls + '" data-pos="' + pos + '">' + d + '</div>';
+  }
+  return h;
+}
+
+function twoRowsMultiplierCells(q, cols, focus) {
+  var h = '';
+  for (var pos = cols - 1; pos >= 0; pos--) {
+    if (pos > 1) {
+      h += '<div class="practice-cell operand-cell place-spacer" data-pos="' + pos + '"></div>';
+    } else if (pos === 1) {
+      var cls = 'practice-cell operand-cell factor-b factor-b-tens';
+      if (focus === 1) cls += ' dim-digit';
+      else if (focus === 2) cls += ' highlight-factor';
+      h += '<div class="' + cls + '" data-pos="1">' + q.tensDigit + '</div>';
+    } else if (pos === 0) {
+      var cls = 'practice-cell operand-cell factor-b factor-b-ones';
+      if (focus === 1) cls += ' highlight-factor';
+      else if (focus === 2) cls += ' dim-digit';
+      h += '<div class="' + cls + '" data-pos="0">' + q.onesDigit + '</div>';
+    }
+  }
+  return h;
+}
+
+function twoRowsAnswerCells(rowKey, value, cols, isFilled, isActive) {
+  var h = '<div class="practice-cell answer-spacer"></div>';
+  var len = String(value).length;
+  var stepTarget = (rowKey === 'first') ? 1 : (rowKey === 'second') ? 2 : 3;
+  for (var pos = cols - 1; pos >= 0; pos--) {
+    var d = '';
+    var cls = 'practice-cell answer-box';
+    var clickAttr = '';
+    if (isFilled) {
+      if (pos < len) {
+        var digitVal = Math.floor(value / Math.pow(10, pos)) % 10;
+        if (rowKey === 'second' && pos === 0 && digitVal === 0) {
+          d = '<span class="dimzero">0</span>';
+        } else {
+          d = digitVal;
+        }
+      }
+      cls += ' filled';
+      clickAttr = ' onclick="reviewTwoRowsStep(' + stepTarget + ')" title="點此回顧第 ' + stepTarget + ' 步重點"';
+    } else {
+      cls += ' empty';
+      if (isActive) {
+        cls += ' active-target';
+        clickAttr = ' onclick="applyTwoRowsStep(' + stepTarget + ')" title="點此填入第 ' + stepTarget + ' 步"';
+      }
+    }
+    h += '<div class="' + cls + '" data-pos="' + pos + '"' + clickAttr + '>' + d + '</div>';
+  }
+  return h;
+}
+
+function applyTwoRowsStep(targetStep) {
+  if (twoRowsState.step !== targetStep) return;
+  twoRowsState.step = targetStep + 1;
+  twoRowsState.focusStep = (twoRowsState.step <= 3) ? twoRowsState.step : 4;
+  if (twoRowsState.step > 3) {
+    twoRowsState.step = 4;
+    twoRowsState.completed += 1;
+  }
+  renderTwoRowsQuestion();
+}
+
+function reviewTwoRowsStep(stepIndex) {
+  twoRowsState.focusStep = stepIndex;
+  renderTwoRowsQuestion();
+}
+
+function replayTwoRows() {
+  twoRowsState.step = 1;
+  twoRowsState.focusStep = 1;
+  renderTwoRowsQuestion();
+}
+
+function submitTwoRows() {
+  if (twoRowsState.step <= 3) {
+    applyTwoRowsStep(twoRowsState.step);
+  }
+}
+
+function nextTwoRows() {
+  newTwoRowsQuestion();
+}
+
+function renderTwoRowsQuestion() {
+  var q = twoRowsState.question;
+  if (!q) return;
+  var cols = Math.max(3, String(q.a).length, String(q.secondRow).length, String(q.product).length);
+  var numCols = cols + 1;
+  var step = twoRowsState.step;
+  var focus = twoRowsState.focusStep;
+  var isDone = (step >= 4);
+  var hiFactorA = (focus === 1 || focus === 2);
+
+  document.getElementById('twoRowsLvTag').textContent = '無限練習／已練習 ' + twoRowsState.completed + ' 題';
+  document.getElementById('twoRowsQText').innerHTML = '請完成 <b>' + q.a + ' × ' + q.b + '</b> 的兩列直式。';
+  document.getElementById('twoRowsSpeech').innerHTML = twoRowsSpeechText(q, focus);
+
+  var m = document.getElementById('twoRowsMsg');
+  var qNext = document.getElementById('twoRowsNext');
+  var qBtn = document.getElementById('twoRowsBtn');
+  var qReplay = document.getElementById('twoRowsReplay');
+
+  if (isDone) {
+    m.className = 'msg ok show';
+    m.style.display = 'block';
+    m.innerHTML = '🎉 <b>答對了！</b><br>' +
+      q.a + ' × ' + q.onesRepeats + ' ＝ <b>' + q.firstRow + '</b>（第一列：個位重複 ' + q.onesRepeats + ' 次）<br>' +
+      q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b>（第二列：十位重複 ' + q.tensRepeats + ' 次，對齊十位）<br>' +
+      q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b>。<br>' +
+      '重複次數合計：' + q.onesRepeats + ' ＋ ' + q.tensRepeats + ' ＝ <b>' + q.repeatTotal + ' 次</b>。';
+    if (qBtn) qBtn.style.display = 'none';
+    if (qNext) qNext.style.display = '';
+    if (qReplay) qReplay.style.display = '';
+  } else {
+    m.className = 'msg';
+    m.style.display = 'none';
+    if (qNext) qNext.style.display = 'none';
+    if (qReplay) qReplay.style.display = 'none';
+    if (qBtn) {
+      qBtn.style.display = '';
+      if (step === 1) qBtn.textContent = '👉 填入第一列';
+      else if (step === 2) qBtn.textContent = '👉 填入第二列';
+      else if (step === 3) qBtn.textContent = '👉 填入兩排相加';
+    }
+  }
+
+  // 第一步按鈕卡 HTML
+  var step1Card = '';
+  if (step === 1) {
+    step1Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyTwoRowsStep(1);" aria-label="點選填入第一列">' +
+      '<div class="step-top-line"><span class="step-badge">第 1 步</span><span class="step-title">第一列：<b>' + q.a + ' × ' + q.onesRepeats + '</b> ＝ 個位列</span></div>' +
+      '<div class="step-action-hint">👉 點我填入 <b>' + q.firstRow + '</b></div>' +
+      '</button>';
+  } else {
+    step1Card = '<div class="step-guide-btn done' + (focus === 1 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewTwoRowsStep(1);" title="點此回顧第 1 步重點">' +
+      '<div class="step-top-line"><span class="step-badge done">✓ 第 1 步</span><span class="step-title">第一列：' + q.a + ' × ' + q.onesRepeats + ' ＝ <b>' + q.firstRow + '</b></span></div>' +
+      '<div class="step-sub-note">（個位列）</div>' +
+      '</div>';
+  }
+
+  // 第二步按鈕卡 HTML
+  var step2Card = '';
+  if (step < 2) {
+    step2Card = '<div class="step-guide-btn locked">' +
+      '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title muted">第二列：十位列（待第 1 步完成）</span></div>' +
+      '</div>';
+  } else if (step === 2) {
+    step2Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyTwoRowsStep(2);" aria-label="點選填入第二列">' +
+      '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title">第二列：<b>' + q.a + ' × ' + q.tensRepeats + '</b> ＝ 十位列</span></div>' +
+      '<div class="step-warn-note">第二列不是 ×' + q.tensDigit + '，而是 ×' + q.tensRepeats + '（對齊十位）</div>' +
+      '<div class="step-action-hint">👉 點我填入 <b>' + q.secondRow + '</b></div>' +
+      '</button>';
+  } else {
+    step2Card = '<div class="step-guide-btn done' + (focus === 2 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewTwoRowsStep(2);" title="點此回顧第 2 步重點">' +
+      '<div class="step-top-line"><span class="step-badge done">✓ 第 2 步</span><span class="step-title">第二列：' + q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b></span></div>' +
+      '<div class="step-warn-note mini">對齊十位（是 ×' + q.tensRepeats + '）</div>' +
+      '</div>';
+  }
+
+  // 第三步按鈕卡 HTML
+  var step3Card = '';
+  if (step < 3) {
+    step3Card = '<div class="step-guide-btn locked">' +
+      '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title muted">兩排相加（待前兩步完成）</span></div>' +
+      '</div>';
+  } else if (step === 3) {
+    step3Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyTwoRowsStep(3);" aria-label="點選填入合計">' +
+      '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title">兩排相加：<b>' + q.firstRow + ' ＋ ' + q.secondRow + '</b></span></div>' +
+      '<div class="step-action-hint">👉 點我填入 <b>' + q.product + '</b></div>' +
+      '</button>';
+  } else {
+    step3Card = '<div class="step-guide-btn done' + (focus === 3 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewTwoRowsStep(3);" title="點此回顧合計重點">' +
+      '<div class="step-top-line"><span class="step-badge done">✓ 第 3 步</span><span class="step-title">兩排相加：' + q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b></span></div>' +
+      '</div>';
+  }
+
+  // 組合直式網格 HTML
+  var gridHtml =
+    '<div class="practice-vertical">' +
+      '<div class="practice-grid" style="--practice-number-cols:' + numCols + '">' +
+        // 表頭
+        '<div class="practice-cell place-spacer"></div>' +
+        (function() {
+          var s = '';
+          for (var pos = cols - 1; pos >= 0; pos--) {
+            s += '<div class="practice-cell place-header" data-pos="' + pos + '">' + C.placeName(pos) + '位</div>';
+          }
+          return s;
+        })() +
+        '<div class="practice-step-col header-spacer"></div>' +
+
+        // 被乘數
+        '<div class="practice-cell place-spacer"></div>' +
+        twoRowsMultiplicandCells(q.a, cols, hiFactorA) +
+        '<div class="practice-step-col label-col"><span class="step-role-tag">被乘數</span></div>' +
+
+        // 乘數
+        '<div class="practice-cell operand-op">×</div>' +
+        twoRowsMultiplierCells(q, cols, focus) +
+        '<div class="practice-step-col label-col"><span class="step-role-tag">乘數</span></div>' +
+
+        // 橫線 1
+        '<div class="practice-line" style="grid-column:1/span ' + numCols + '"></div>' +
+        '<div class="practice-step-col line-spacer"></div>' +
+
+        // 第一列（個位列）
+        '<div class="practice-row first-row" data-shift="0" data-answer-row="first">' +
+          twoRowsAnswerCells('first', q.firstRow, cols, step > 1, step === 1) +
+          '<div class="practice-step-col" data-step-col="1">' + step1Card + '</div>' +
+        '</div>' +
+
+        // 第二列（十位列）
+        '<div class="practice-row second-row" data-shift="1" data-answer-row="second">' +
+          twoRowsAnswerCells('second', q.secondRow, cols, step > 2, step === 2) +
+          '<div class="practice-step-col" data-step-col="2">' + step2Card + '</div>' +
+        '</div>' +
+
+        // 橫線 2
+        '<div class="practice-line" style="grid-column:1/span ' + numCols + '"></div>' +
+        '<div class="practice-step-col line-spacer"></div>' +
+
+        // 合計列
+        '<div class="practice-row total-row" data-answer-row="total">' +
+          twoRowsAnswerCells('total', q.product, cols, step > 3, step === 3) +
+          '<div class="practice-step-col" data-step-col="3">' + step3Card + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  var repeatTotalHtml =
+    '<div class="repeat-total">重複次數：' +
+      (focus === 1 ? '<b style="color:#7c3aed">' + q.onesRepeats + ' 次</b>' : q.onesRepeats + ' 次') +
+      ' ＋ ' +
+      (focus === 2 ? '<b style="color:#c2410c">' + q.tensRepeats + ' 次</b>' : q.tensRepeats + ' 次') +
+      ' ＝ <b>' + q.repeatTotal + ' 次</b>（共 ' + q.b + ' 倍）</div>';
+
+  document.getElementById('twoRowsBody').innerHTML =
+    '<div class="practice-layout">' +
+      gridHtml +
+      repeatTotalHtml +
+    '</div>';
+}
+
+/* 課本步驟演示模式（針對 24×12, 28×74, 6×28） */
+var lvi2 = 0, si2 = -1, steps2 = [], showZero2 = false, showPv2 = true;
+
+function setZeroMode2(sz) {
+  showZero2 = sz;
+  var bOmit = document.getElementById('btnZeroOmit2');
+  var bShow = document.getElementById('btnZeroShow2');
+  if (bOmit) bOmit.classList.toggle('ghost', sz);
+  if (bShow) bShow.classList.toggle('ghost', !sz);
+  drawVert2();
+}
+
+function togglePv2() {
+  showPv2 = !showPv2;
+  var b = document.getElementById('btnPvToggle2');
+  if (b) {
+    b.textContent = showPv2 ? '定位板：開' : '定位板：關';
+    b.classList.toggle('ghost', !showPv2);
+  }
+  drawVert2();
+}
+
+function renderTwoRowsDemo() {
+  if (lvi2 >= QLV_MUL2.length) lvi2 = 0;
+  var c = QLV_MUL2[lvi2];
+  steps2 = C.multiDigitSteps(c.a, c.m);
+  si2 = -1;
+
+  document.getElementById('qProg2').textContent = '第 ' + (lvi2 + 1) + ' / ' + QLV_MUL2.length + ' 題';
+  document.getElementById('qLv2').textContent = c.lv;
+  document.getElementById('qTitle2').textContent = c.title;
+  document.getElementById('qSub2').innerHTML = c.sub;
+
+  drawVert2();
+  updateStepUi2();
+}
+
+function drawVert2() {
+  var c = QLV_MUL2[lvi2];
+  var prod = c.a * c.m;
+  var cols = Math.max(3, String(c.a).length, String(prod).length);
+  var numCols = cols;
+
+  var dsA = C.digitsOf(c.a);
+  var dsB = C.digitsOf(c.m);
+  var currStep = (si2 >= 0 && si2 < steps2.length) ? steps2[si2] : null;
+
+  var pvCls = showPv2 ? 'with-pv' : '';
+  var h = '<div class="vgrid ' + pvCls + '" style="grid-template-columns:repeat(' + (numCols + 1) + ',44px)">';
+
+  if (showPv2) {
+    h += '<div class="pvcell op"></div>';
+    for (var k = numCols - 1; k >= 0; k--) {
+      var isHi = currStep && currStep.colPlace === k;
+      h += '<div class="pvcell' + (isHi ? ' hi' : '') + '">' + C.placeName(k) + '位</div>';
+    }
+  }
+
+  // 被乘數
+  h += '<div class="cell"></div>';
+  for (var x = 0; x < numCols - dsA.length; x++) h += '<div class="cell col-line"></div>';
+  for (var j = dsA.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsA[j] + '</div>';
+
+  // 乘數
+  h += '<div class="cell op">×</div>';
+  for (var x = 0; x < numCols - dsB.length; x++) h += '<div class="cell col-line"></div>';
+  for (var j = dsB.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsB[j] + '</div>';
+
+  // 橫線 1
+  h += '<div class="hr"></div>';
+
+  var rows = C.partialRows(c.a, c.m);
+  var row0Digits = {};
+  var row1Digits = {};
+
+  for (var k = 0; k <= si2 && k < steps2.length; k++) {
+    var st = steps2[k];
+    if (st.phase === 0) row0Digits[st.colPlace] = st.write;
+    else if (st.phase === 1) row1Digits[st.colPlace] = st.write;
+  }
+
+  // 第一行（個位）
+  h += '<div class="cell"></div>';
+  for (var p = numCols - 1; p >= 0; p--) {
+    var val = (row0Digits[p] !== undefined) ? row0Digits[p] : '';
+    h += '<div class="cell col-line">' + val + '</div>';
+  }
+
+  // 第二行（十位）
+  h += '<div class="cell"></div>';
+  for (var p = numCols - 1; p >= 0; p--) {
+    var val = '';
+    if (p === 0) {
+      if (showZero2 && si2 >= 0) {
+        var hasRow1 = steps2.some(function(s, idx) { return s.phase === 1 && idx <= si2; });
+        if (hasRow1) val = '<span class="dimzero">0</span>';
+      }
+    } else {
+      if (row1Digits[p] !== undefined) val = row1Digits[p];
+    }
+    h += '<div class="cell col-line">' + val + '</div>';
+  }
+
+  // 第二條橫線
+  var isAdding = (currStep && currStep.phase >= 2);
+  var phase1Done = steps2.some(function(s, idx) { return s.phase === 1 && idx <= si2; }) &&
+                   !steps2.some(function(s, idx) { return s.phase === 1 && idx > si2; });
+  if (isAdding || phase1Done) {
+    h += '<div class="hr"></div>';
+  } else {
+    h += '<div style="grid-column:1/-1;height:2px"></div>';
+  }
+
+  // 相加答案列
+  var sumDigits = {};
+  for (var k = 0; k <= si2 && k < steps2.length; k++) {
+    if (steps2[k].phase === 2) sumDigits[steps2[k].colPlace] = steps2[k].write;
+  }
+  h += '<div class="cell"></div>';
+  for (var p = numCols - 1; p >= 0; p--) {
+    var val = (sumDigits[p] !== undefined) ? sumDigits[p] : '';
+    h += '<div class="cell col-line">' + val + '</div>';
+  }
+
+  h += '</div>';
+  document.getElementById('qVert2').innerHTML = h;
+
+  var leg = document.getElementById('qRowLeg2');
+  if (leg) {
+    leg.style.display = 'flex';
+    var ph = currStep ? currStep.phase : -1;
+    leg.innerHTML =
+      '<div class="rleg ' + (ph === 0 ? 'on' : '') + '">① 第一行：<b>重複個位數 ' + rows[0].digit + ' 次</b>（' + c.a + ' × ' + rows[0].digit + ' ＝ ' + rows[0].value + ' 個一）</div>' +
+      '<div class="rleg ' + (ph === 1 ? 'on' : '') + '">② 第二行：<b>重複次數是十次 ' + (rows[1].digit * 10) + ' 次</b>（' + c.a + ' × ' + (rows[1].digit * 10) + ' ＝ ' + rows[1].shifted + '，' + rows[1].value + ' 個十）</div>' +
+      '<div class="rleg ' + (ph === 2 ? 'on' : '') + '">③ 兩行合起來：<b>全部重複 ' + c.m + ' 次</b>（' + rows[0].value + ' ＋ ' + rows[1].shifted + ' ＝ ' + prod + '）</div>';
+  }
+}
+
+function updateStepUi2() {
+  var prevBtn = document.getElementById('qPrevStep2');
+  var nextBtn = document.getElementById('qNextStep2');
+  var nextLvBtn = document.getElementById('qNextLv2');
+  var msg = document.getElementById('qMsg2');
+
+  prevBtn.disabled = (si2 <= -1);
+
+  if (si2 >= steps2.length - 1) {
+    nextBtn.style.display = 'none';
+    nextLvBtn.style.display = '';
+    msg.className = 'msg ok show';
+    msg.innerHTML = '🎉 算完了！兩列直式完成。按「下一題」繼續。';
+  } else {
+    nextBtn.style.display = '';
+    nextLvBtn.style.display = 'none';
+    msg.className = 'msg tip show';
+    if (si2 === -1) {
+      msg.innerHTML = '按「下一步」，一位一位看。';
+    } else {
+      var s = steps2[si2];
+      msg.innerHTML = '第 ' + (si2 + 1) + ' 步：' + s.desc;
+    }
+  }
+}
+
+function stepNext2() {
+  if (si2 >= steps2.length - 1) return;
+  si2++;
+  drawVert2();
+  updateStepUi2();
+}
+
+function stepPrev2() {
+  if (si2 <= -1) return;
+  si2--;
+  drawVert2();
+  updateStepUi2();
+}
+
+function stepReset2() {
+  si2 = -1;
+  drawVert2();
+  updateStepUi2();
+}
+
+function nextLv2() {
+  lvi2++;
+  renderTwoRowsDemo();
+}
 
 drawBills();
 renderLv();

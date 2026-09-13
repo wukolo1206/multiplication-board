@@ -59,16 +59,6 @@ def run(pg, errs):
     ck('在十位上方記 1' in m or '在十位上方記 1' in pg.content(), '位值敘述照課本原文（上方）')
     ck(pg.eval_on_selector('#qNextStep', 'e=>e.disabled') is True, '走完後下一步停用')
 
-    # 乘以二位數分頁
-    pg.click('#tabQz2'); pg.wait_for_timeout(120)
-    ck('6×28' in pg.content() or '6 × 28' in pg.content() or '28' in pg.content(), '二位數乘法分頁預設載入')
-    for _ in range(7):
-        pg.click('#qNextStep'); pg.wait_for_timeout(80)
-    m2 = msg(pg)
-    ck('168' in m2, '6×28 逐位拆解後得 168')
-    pg.click('#qPrevStep'); pg.wait_for_timeout(80)
-    ck(pg.eval_on_selector('#qNextStep', 'e=>e.disabled') is False, '點上一步後下一步重新啟用')
-
     # 一位數×整十橫式練習
     pg.click('#tabH1'); pg.wait_for_timeout(120)
     ck(pg.eval_on_selector('#pH1', 'e=>e.classList.contains("on")'), '一位數×整十分頁開啟')
@@ -85,16 +75,36 @@ def run(pg, errs):
     pg.click('#h2SubmitBtn'); pg.wait_for_timeout(120)
     ck('答對' in msg(pg, '#h2Msg'), '整十×整十答對回饋')
 
-    # 二三位數×整十橫式練習（強調位置，0固定在個位）
+    # 二三位數×整十橫式練習（強調位置，0固定在個位，一鍵送出）
     pg.click('#tabH3'); pg.wait_for_timeout(120)
     ck(pg.eval_on_selector('#pH3', 'e=>e.classList.contains("on")'), '二三位數×整十分頁開啟')
     ck(pg.eval_on_selector('#h3Vert .h3-vert-grid', 'e=>!!e'), '二三位數×整十直式與定位板顯示')
     ck(pg.eval_on_selector('#h3Vert .fixed-zero', 'e=>!!e'), '直式答案列個位固定為 0')
     ck(pg.eval_on_selector_all('#h3Vert .highlight-factor', 'e=>e.length >= 3'), '被乘數與乘數十位高亮強調')
-    pg.fill('#h3Input', '2520')
+    ck('👉 點我送出答案' in pg.inner_text('#h3SubmitBtn'), '二三位數×整十一鍵送出按鈕')
     pg.click('#h3SubmitBtn'); pg.wait_for_timeout(120)
-    ck('答對' in msg(pg, '#h3Msg'), '二三位數×整十答對回饋')
+    ck('答對' in msg(pg, '#h3Msg'), '二三位數×整十點擊即答對回饋')
     ck(pg.eval_on_selector_all('#h3Vert .ans-box.ok', 'e=>e.length >= 3'), '答對後直式答案格亮綠色')
+    ck('換下一題' in pg.inner_text('#h3SubmitBtn'), '送出後切換為換下一題按鈕')
+
+    # 兩列直式分頁（移植自 array.html 練習頁，兼具課本步驟演示）
+    pg.click('#tabQz2'); pg.wait_for_timeout(120)
+    ck(pg.eval_on_selector('#pQz2', 'e=>e.classList.contains("on")'), '兩列直式分頁開啟')
+    ck(pg.eval_on_selector('#twoRowsPracticeView', 'e=>e.style.display !== "none"'), '兩列直式預設為分步點選練習')
+    ck(pg.eval_on_selector('#twoRowsBody .practice-grid', 'e=>!!e'), '兩列直式顯示網格')
+    pg.click('#twoRowsBtn'); pg.wait_for_timeout(120)
+    ck('填入第二列' in pg.inner_text('#twoRowsBtn'), '兩列直式第一步填入成功')
+
+    # 兩列直式切換課本步驟演示
+    pg.click('#btnTwoRowsDemo'); pg.wait_for_timeout(120)
+    ck(pg.eval_on_selector('#twoRowsDemoView', 'e=>e.style.display !== "none"'), '課本步驟演示模式開啟')
+    ck('6×28' in pg.content() or '6 × 28' in pg.content() or '28' in pg.content(), '課本演示預設載入 6×28')
+    for _ in range(7):
+        pg.click('#qNextStep2'); pg.wait_for_timeout(80)
+    m2 = msg(pg, '#qMsg2')
+    ck('算完了' in m2 or '兩列直式完成' in m2, '6×28 逐位拆解走完')
+    pg.click('#qPrevStep2'); pg.wait_for_timeout(80)
+    ck(pg.eval_on_selector('#qNextStep2', 'e=>e.disabled') is False, '點上一步後下一步重新啟用')
 
     pg.click('#tabCh'); pg.wait_for_timeout(120)
     opts = pg.eval_on_selector_all('#chOpts .opt', 'e=>e.map(x=>x.textContent)')

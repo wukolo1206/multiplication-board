@@ -2,9 +2,9 @@
 project: 乘法直式板（四上第二單元）
 category: 學科工具集
 status: 維護中
-version: "v1.1.6 被乘數整體框起表示重複計算與當前位底色強調"
+version: "v1.1.7 直式進位三大位置分離（第二列上方小進位、相加進位於直線處）與全程保留進位"
 url: https://wukolo1206.github.io/multiplication-board/
-next_action: 學校現場大屏與學生平板驗收被乘數框起與微步進位手感
+next_action: 學校現場大屏與學生平板驗收三大進位位置與微步手感
 updated: 2026-09-13
 ---
 

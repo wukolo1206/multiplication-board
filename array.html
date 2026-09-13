@@ -170,13 +170,20 @@ h1{font-size:24px;margin:4px 0 4px}
 }
 
 .practice-cell.carry-cell{
-  min-height:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  min-height:24px;height:24px;display:flex;align-items:center;justify-content:center;
   box-sizing:border-box;font-family:"Courier New",monospace
+}
+.practice-cell.carry-cell.mini-carry-cell{
+  min-height:18px;height:18px;display:flex;align-items:center;justify-content:center;
+  box-sizing:border-box;font-family:"Courier New",monospace
+}
+.practice-step-col.carry-spacer{
+  min-height:18px;height:18px;padding:0;margin:0
 }
 .carry-bubble{
   display:inline-flex;align-items:center;justify-content:center;
-  min-width:24px;height:24px;padding:0 4px;border-radius:99px;
-  font-size:13px;font-weight:800;line-height:1;
+  min-width:22px;height:22px;padding:0 3px;border-radius:99px;
+  font-size:12px;font-weight:800;line-height:1;
   font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
   animation:pop .25s ease
 }
@@ -186,14 +193,24 @@ h1{font-size:24px;margin:4px 0 4px}
 }
 .carry-bubble.r1{
   background:#ede9fe;color:#5b21b6;border:1.5px solid #8b5cf6;
-  box-shadow:0 0 6px rgba(139,92,246,0.45)
+  box-shadow:0 0 5px rgba(139,92,246,0.35)
 }
 .carry-bubble.add{
   background:#fee2e2;color:#991b1b;border:1.5px solid #ef4444;
-  box-shadow:0 0 6px rgba(239,68,68,0.45)
+  box-shadow:0 0 5px rgba(239,68,68,0.35)
+}
+.carry-bubble.mini,
+.carry-bubble.r1{
+  min-width:18px;height:18px;padding:0 2px;
+  font-size:11px;font-weight:800;border-radius:99px
+}
+.carry-bubble.mini.add,
+.carry-bubble.add{
+  min-width:18px;height:18px;padding:0 2px;
+  font-size:10.5px;font-weight:800;border-radius:99px
 }
 .carry-bubble.used{
-  opacity:0.35;text-decoration:line-through;box-shadow:none
+  opacity:0.45;text-decoration:line-through;box-shadow:none
 }
 
 /* 答案格子（替代 input） */
@@ -827,32 +844,40 @@ function renderPracticeQuestion() {
     }
   }
 
-  // 1. 計算進位氣泡 (Carries map: pos -> { val, type, used })
-  var carries = {};
-  if (isMicro && !isDone) {
-    if (curPhase === 0) {
-      for (var k = 0; k < mI; k++) {
-        if (mSteps[k].phase === 0 && mSteps[k].carryOut > 0) {
-          var pTarget = mSteps[k].colPlace + 1;
-          var isCur = (k === mI - 1);
-          carries[pTarget] = { val: mSteps[k].carryOut, type: 'r0', used: !isCur };
-        }
+  // 1. 計算進位氣泡（三大位置，全部保留進位）
+  // carriesR0: 第一行乘法進位（記在被乘數上方）
+  // carriesR1: 第二行乘法進位（記在第二列數字上方，小一點）
+  // carriesAdd: 最後相加進位（記在第一列上面的直線處）
+  var carriesR0 = {};
+  var carriesR1 = {};
+  var carriesAdd = {};
+
+  if (isMicro) {
+    for (var k = 0; k < mI; k++) {
+      var st = mSteps[k];
+      if (!st || !st.carryOut) continue;
+      var pTarget = st.colPlace + 1;
+      var isCur = (k === mI - 1);
+      if (st.phase === 0) {
+        carriesR0[pTarget] = { val: st.carryOut, type: 'r0', used: !isCur };
+      } else if (st.phase === 1) {
+        carriesR1[pTarget] = { val: st.carryOut, type: 'r1', used: !isCur };
+      } else if (st.phase === 2) {
+        carriesAdd[pTarget] = { val: st.carryOut, type: 'add', used: !isCur };
       }
-    } else if (curPhase === 1) {
-      for (var k = 0; k < mI; k++) {
-        if (mSteps[k].phase === 1 && mSteps[k].carryOut > 0) {
-          var pTarget = mSteps[k].colPlace + 1;
-          var isCur = (k === mI - 1);
-          carries[pTarget] = { val: mSteps[k].carryOut, type: 'r1', used: !isCur };
-        }
-      }
-    } else if (curPhase === 2) {
-      for (var k = 0; k < mI; k++) {
-        if (mSteps[k].phase === 2 && mSteps[k].carryOut > 0) {
-          var pTarget = mSteps[k].colPlace + 1;
-          var isCur = (k === mI - 1);
-          carries[pTarget] = { val: mSteps[k].carryOut, type: 'add', used: !isCur };
-        }
+    }
+  } else {
+    // 整列算模式：完成該列或整題完成時保留所有進位
+    for (var k = 0; k < mSteps.length; k++) {
+      var st = mSteps[k];
+      if (!st || !st.carryOut) continue;
+      var pTarget = st.colPlace + 1;
+      if (st.phase === 0 && (practiceState.step > 1 || isDone)) {
+        carriesR0[pTarget] = { val: st.carryOut, type: 'r0', used: true };
+      } else if (st.phase === 1 && (practiceState.step > 2 || isDone)) {
+        carriesR1[pTarget] = { val: st.carryOut, type: 'r1', used: true };
+      } else if (st.phase === 2 && (practiceState.step > 3 || isDone)) {
+        carriesAdd[pTarget] = { val: st.carryOut, type: 'add', used: true };
       }
     }
   }
@@ -1073,7 +1098,7 @@ function renderPracticeQuestion() {
     }
   }
 
-  // 組合直式網格 HTML（含進位列）
+  // 組合直式網格 HTML（含三大進位位置，都保留進位）
   var gridHtml =
     '<div class="practice-vertical" id="practiceVertical">' +
       '<div class="practice-grid" style="--practice-number-cols:' + numCols + '">' +
@@ -1088,16 +1113,15 @@ function renderPracticeQuestion() {
         })() +
         '<div class="practice-step-col header-spacer"></div>' +
 
-        // 進位列
+        // 2. 第一列乘法進位列 (Carry Row 0：記在被乘數上方)
         '<div class="practice-cell place-spacer"></div>' +
         (function() {
           var s = '';
           for (var pos = cols - 1; pos >= 0; pos--) {
-            var cItem = carries[pos];
+            var cItem = carriesR0[pos];
             var inner = '';
             if (cItem) {
-              inner = '<span class="carry-bubble ' + cItem.type + (cItem.used ? ' used' : '') + '">' +
-                (cItem.type === 'add' ? '+' : '') + cItem.val + '</span>';
+              inner = '<span class="carry-bubble r0' + (cItem.used ? ' used' : '') + '">' + cItem.val + '</span>';
             }
             s += '<div class="practice-cell carry-cell" data-carry-pos="' + pos + '">' + inner + '</div>';
           }
@@ -1115,15 +1139,47 @@ function renderPracticeQuestion() {
         renderB(q, cols, curPhase) +
         '<div class="practice-step-col label-col"><span class="step-role-tag">乘數</span></div>' +
 
-        // 橫線 1
+        // 橫線 1 (第一列上面的直線)
         '<div class="practice-line" style="grid-column:1/span ' + numCols + '"></div>' +
         '<div class="practice-step-col line-spacer"></div>' +
+
+        // 加法進位列（最後相加的進位，在第一列上面的直線處，小一點）
+        '<div class="practice-cell place-spacer"></div>' +
+        (function() {
+          var s = '';
+          for (var pos = cols - 1; pos >= 0; pos--) {
+            var cItem = carriesAdd[pos];
+            var inner = '';
+            if (cItem) {
+              inner = '<span class="carry-bubble add mini' + (cItem.used ? ' used' : '') + '">+' + cItem.val + '</span>';
+            }
+            s += '<div class="practice-cell carry-cell mini-carry-cell add-carry-cell" data-carry-pos="' + pos + '">' + inner + '</div>';
+          }
+          return s;
+        })() +
+        '<div class="practice-step-col carry-spacer"></div>' +
 
         // 第一列（個位列）
         '<div class="practice-row first-row" data-shift="0" data-answer-row="first">' +
           renderAns('first', q.firstRow, cols) +
           '<div class="practice-step-col" data-step-col="1">' + step1Card + '</div>' +
         '</div>' +
+
+        // 第二列進位列（第二行的進位，在第二列數字的上面，小一點）
+        '<div class="practice-cell place-spacer"></div>' +
+        (function() {
+          var s = '';
+          for (var pos = cols - 1; pos >= 0; pos--) {
+            var cItem = carriesR1[pos];
+            var inner = '';
+            if (cItem) {
+              inner = '<span class="carry-bubble r1 mini' + (cItem.used ? ' used' : '') + '">' + cItem.val + '</span>';
+            }
+            s += '<div class="practice-cell carry-cell mini-carry-cell r1-carry-cell" data-carry-pos="' + pos + '">' + inner + '</div>';
+          }
+          return s;
+        })() +
+        '<div class="practice-step-col carry-spacer"></div>' +
 
         // 第二列（十位列）
         '<div class="practice-row second-row" data-shift="1" data-answer-row="second">' +

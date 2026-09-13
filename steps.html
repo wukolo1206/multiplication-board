@@ -279,20 +279,21 @@ h1{font-size:24px;margin:4px 0 4px}
   transform:scale(0.96)
 }
 .practice-cell.carry-cell{
-  min-height:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  min-height:20px !important;height:20px !important;display:flex;align-items:center;justify-content:center;
   box-sizing:border-box;font-family:"Courier New",monospace
 }
 .practice-cell.carry-cell.mini-carry-cell{
-  min-height:18px;height:18px;display:flex;align-items:center;justify-content:center;
-  box-sizing:border-box;font-family:"Courier New",monospace
+  min-height:15px !important;height:15px !important;display:flex;align-items:center;justify-content:center;
+  box-sizing:border-box;font-family:"Courier New",monospace;
+  margin-top:-3px;margin-bottom:-2px
 }
 .practice-step-col.carry-spacer{
-  min-height:18px;height:18px;padding:0;margin:0
+  min-height:15px !important;height:15px !important;padding:0 !important;margin:0 !important
 }
 .carry-bubble{
   display:inline-flex;align-items:center;justify-content:center;
-  min-width:22px;height:22px;padding:0 3px;border-radius:99px;
-  font-size:12px;font-weight:800;line-height:1;
+  min-width:20px;height:20px;padding:0 3px;border-radius:99px;
+  font-size:11.5px;font-weight:800;line-height:1;
   font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
   animation:pop .25s ease
 }
@@ -310,16 +311,16 @@ h1{font-size:24px;margin:4px 0 4px}
 }
 .carry-bubble.mini,
 .carry-bubble.r1{
-  min-width:18px;height:18px;padding:0 2px;
-  font-size:11px;font-weight:800;border-radius:99px
+  min-width:17px;height:17px;padding:0 2px;
+  font-size:10.5px;font-weight:800;border-radius:99px
 }
 .carry-bubble.mini.add,
 .carry-bubble.add{
-  min-width:18px;height:18px;padding:0 2px;
-  font-size:10.5px;font-weight:800;border-radius:99px
+  min-width:17px;height:17px;padding:0 2px;
+  font-size:10px;font-weight:800;border-radius:99px
 }
 .carry-bubble.used{
-  opacity:0.45;text-decoration:line-through;box-shadow:none
+  opacity:0.4;text-decoration:line-through;box-shadow:none
 }
 .practice-cell.answer-box{
   border:2px solid #cbd5e1;background:#fff;border-radius:10px;
@@ -2212,7 +2213,7 @@ function renderTwoRowsQuestion() {
         '<div class="practice-step-col header-spacer"></div>' +
 
         // 2. 第一列乘法進位列 (Carry Row 0：記在被乘數上方)
-        '<div class="practice-cell place-spacer"></div>' +
+        '<div class="practice-cell carry-cell top-carry-cell place-spacer"></div>' +
         (function() {
           var s = '';
           for (var pos = cols - 1; pos >= 0; pos--) {
@@ -2242,7 +2243,7 @@ function renderTwoRowsQuestion() {
         '<div class="practice-step-col line-spacer"></div>' +
 
         // 5.5 加法進位列（最後相加的進位，在第一列上面的直線處，小一點）
-        '<div class="practice-cell place-spacer"></div>' +
+        '<div class="practice-cell carry-cell mini-carry-cell place-spacer"></div>' +
         (function() {
           var s = '';
           for (var pos = cols - 1; pos >= 0; pos--) {
@@ -2264,7 +2265,7 @@ function renderTwoRowsQuestion() {
         '</div>' +
 
         // 6.5 第二列進位列（第二行的進位，在第二列數字的上面，小一點）
-        '<div class="practice-cell place-spacer"></div>' +
+        '<div class="practice-cell carry-cell mini-carry-cell place-spacer"></div>' +
         (function() {
           var s = '';
           for (var pos = cols - 1; pos >= 0; pos--) {

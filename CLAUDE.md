@@ -2,9 +2,9 @@
 project: 乘法直式板（四上第二單元）
 category: 學科工具集
 status: 維護中
-version: "v1.1.7 直式進位三大位置分離（第二列上方小進位、相加進位於直線處）與全程保留進位"
+version: "v1.1.8 緊湊進位空間（密一點更符合實際紙筆直式運算）"
 url: https://wukolo1206.github.io/multiplication-board/
-next_action: 學校現場大屏與學生平板驗收三大進位位置與微步手感
+next_action: 學校現場大屏與學生平板驗收緊湊進位空間與直式手感
 updated: 2026-09-13
 ---
 

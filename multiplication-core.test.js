@@ -200,6 +200,25 @@ eq('整十×整十 漏補 1 個 0 (120)', C.diagnoseHorizontal(40, 30, 120).code
 eq('整十×整十 補多 0 (12000)', C.diagnoseHorizontal(40, 30, 12000).code, 'ZERO_TOO_MANY');
 eq('整十×整十 基本乘法錯 (1500)', C.diagnoseHorizontal(40, 30, 1500).code, 'BASE_FACT_ERROR');
 
+var q3_0 = C.generateMultiByTens(0);
+eq('二三位×整十 第 0 題 42×60=2520（示範題）', q3_0.a === 42 && q3_0.b === 60 && q3_0.ans === 2520, true);
+var q3_1 = C.generateMultiByTens(1);
+eq('二三位×整十 課本 p25 問7 53×80=4240', q3_1.a === 53 && q3_1.b === 80 && q3_1.ans === 4240, true);
+var q3_2 = C.generateMultiByTens(2);
+eq('二三位×整十 課本 p27 605×80=48400', q3_2.a === 605 && q3_2.b === 80 && q3_2.ans === 48400, true);
+var q3_rnd = C.generateMultiByTens();
+eq('二三位×整十 隨機題合法性', q3_rnd.a >= 10 && q3_rnd.b % 10 === 0 && q3_rnd.ans === q3_rnd.a * q3_rnd.b, true);
+var q3_filter2 = C.generateMultiByTens(null, 2);
+eq('二三位×整十 篩選二位數', q3_filter2.a >= 10 && q3_filter2.a < 100, true);
+var q3_filter3 = C.generateMultiByTens(null, 3);
+eq('二三位×整十 篩選三位數', q3_filter3.a >= 100 && q3_filter3.a < 1000, true);
+
+// 二三位數×整十 診斷測試
+eq('二三位×整十 答對 (42×60=2520)', C.diagnoseHorizontal(42, 60, 2520).code, 'CORRECT');
+eq('二三位×整十 漏補 0 (42×60=252)', C.diagnoseHorizontal(42, 60, 252).code, 'ZERO_TOO_FEW');
+eq('二三位×整十 補多 0 (42×60=25200)', C.diagnoseHorizontal(42, 60, 25200).code, 'ZERO_TOO_MANY');
+eq('二三位×整十 計算乘法錯 (42×60=2400)', C.diagnoseHorizontal(42, 60, 2400).code, 'BASE_FACT_ERROR');
+
 /* =============================================================
  * 10. array 無限練習題資料
  * =========================================================== */

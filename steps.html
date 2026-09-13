@@ -13,11 +13,11 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
       text-decoration:none;font-size:16px;font-weight:700}
 h1{font-size:24px;margin:4px 0 4px}
 .pg{color:#94a3b8;font-size:14px;margin-bottom:12px}
-.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.tab{flex:1 1 calc(33.333% - 8px);min-width:130px;min-height:48px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
-     font-size:15px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit;padding:8px 4px;text-align:center}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tab{flex:1 1 calc(33.333% - 6px);min-width:110px;min-height:46px;border:2px solid #e2e8f0;background:#fff;border-radius:12px;
+     font-size:14px;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit;padding:7px 2px;text-align:center;white-space:nowrap}
 @media(min-width:768px){
-  .tab{flex:1;min-width:0;font-size:16px;padding:8px 4px}
+  .tab{flex:1 1 calc(14.28% - 6px);min-width:100px;font-size:14px;padding:8px 2px}
 }
 .tab.on{background:#c2410c;border-color:#c2410c;color:#fff}
 .panel{display:none}.panel.on{display:block}
@@ -32,13 +32,14 @@ h1{font-size:24px;margin:4px 0 4px}
 .h-stat.streak{color:#c2410c}
 .h-stat.streak b{color:#ea580c;font-size:20px}
 .h-card{background:#f8fafc;border:2px solid #fdba74;border-radius:16px;padding:20px 16px;margin-bottom:16px}
-.h-dual-wrap{display:flex;align-items:center;justify-content:space-around;gap:20px;flex-wrap:wrap}
-.h-side-eq{text-align:center;min-width:260px}
-.h-side-vert{text-align:center;min-width:240px}
+.h-dual-wrap{display:flex;align-items:center;justify-content:space-evenly;gap:16px;flex-wrap:nowrap}
+.h-side-eq{text-align:center;flex:0 0 auto}
+.h-side-vert{text-align:center;flex:0 0 auto;display:flex;flex-direction:column;align-items:center}
 .h-side-tag{display:inline-block;font-size:13px;background:#ffedd5;color:#9a3412;padding:3px 10px;border-radius:99px;font-weight:700;margin-bottom:10px}
-.h-divider{width:1px;align-self:stretch;background:#fed7aa;min-height:120px}
-@media(max-width:680px){
-  .h-divider{width:100%;height:1px;min-height:1px;margin:8px 0}
+.h-divider{width:1px;align-self:stretch;background:#fed7aa;min-height:140px}
+@media(max-width:850px){
+  .h-dual-wrap{flex-direction:column;gap:16px;flex-wrap:wrap}
+  .h-divider{display:none}
 }
 .h-eq{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:"Courier New",monospace;font-size:36px;font-weight:700;color:#1e293b;flex-wrap:wrap}
 .h-num{color:#0369a1}
@@ -123,6 +124,56 @@ h1{font-size:24px;margin:4px 0 4px}
 .src{font-size:13px;color:#94a3b8;margin-top:10px;line-height:1.7}
 .orig{font-size:13px;color:#64748b;margin-top:6px}
 .prog{font-size:14px;color:#64748b;margin-bottom:10px}
+
+/* ── h3 二三位數×整十 直式增強樣式（對應截圖2） ── */
+.h3-vert-grid{display:inline-grid;background:#fffdfa;border:2px solid #fed7aa;border-radius:16px;padding:10px 10px}
+.vgrid .cell.highlight-factor{
+  width:44px;height:48px;background:#fef08a !important;border:2.5px solid #f59e0b !important;
+  color:#854d0e !important;font-weight:800;border-radius:10px;
+  box-shadow:0 0 8px rgba(245,158,11,0.4);
+  display:flex;align-items:center;justify-content:center;font-size:26px;margin:1px 1px
+}
+.vgrid .cell.fixed-zero-cell{
+  width:44px;height:48px;display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;color:#0284c7;background:#f0f9ff;
+  border:2px dashed #7dd3fc;border-radius:10px;margin:1px 1px
+}
+.vgrid .cell.fixed-zero-cell .zero-num{color:#0284c7;font-weight:800}
+.vgrid .pvcell.hi-pv{background:#fef9c3;color:#854d0e;border-color:#fde047}
+.vgrid .ans-box{
+  width:44px;height:48px;border:2px solid #cbd5e1;background:#fff;border-radius:10px;
+  font-family:"Courier New",monospace;font-size:24px;font-weight:700;color:#1e293b;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-sizing:border-box;margin:1px 1px;transition:all .2s
+}
+.vgrid .ans-box.dim{color:#94a3b8;background:#f8fafc}
+.vgrid .ans-box.filled{border-color:#93c5fd;background:#eff6ff;color:#1e40af}
+.vgrid .ans-box.ok{border-color:#86efac;background:#dcfce7;color:#166534}
+.vgrid .ans-box.fixed-zero{
+  border:2.5px solid #0284c7;background:#f0f9ff;color:#0369a1;
+  box-shadow:0 0 8px rgba(2,132,199,0.3)
+}
+.vgrid .ans-box.fixed-zero.ok{border-color:#86efac;background:#dcfce7;color:#166534;box-shadow:none}
+.vgrid .ans-box .box-digit{font-size:24px;font-weight:800;line-height:1}
+.vgrid .ans-box .zero-badge-text{
+  font-size:9px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+  color:#0284c7;font-weight:800;line-height:1;margin-top:1px
+}
+.vgrid .ans-box.ok .zero-badge-text{color:#166534}
+.h-badge-col{display:flex;align-items:center;padding-left:8px}
+.h-pill-badge{
+  font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;
+  background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;white-space:nowrap
+}
+.h-pill-badge.multiplicand{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+.h-pill-badge.multiplier{background:#fdf4ff;color:#a21caf;border-color:#f5d0fe}
+.h-step-pill{
+  margin-left:8px;padding:6px 10px;background:#f0f9ff;border:1.5px solid #bae6fd;
+  border-radius:10px;font-size:12.5px;line-height:1.45;color:#0369a1;text-align:left;
+  min-width:130px;max-width:190px;box-sizing:border-box
+}
+.h-step-pill.ok{background:#f0fdf4;border-color:#86efac;color:#166534}
+.btn.sm{min-height:36px;padding:0 12px;font-size:14px;border-radius:8px}
 </style>
 </head>
 <body>
@@ -136,6 +187,7 @@ h1{font-size:24px;margin:4px 0 4px}
     <button class="tab" id="tabQz" onclick="setMode('mul1')">✏️ 乘以一位數</button>
     <button class="tab" id="tabH1" onclick="setMode('h1')">🔢 一位數×整十</button>
     <button class="tab" id="tabH2" onclick="setMode('h2')">🔢 整十×整十</button>
+    <button class="tab" id="tabH3" onclick="setMode('h3')">🔢 二三位數×整十</button>
     <button class="tab" id="tabQz2" onclick="setMode('mul2')">✏️ 乘以二位數</button>
     <button class="tab" id="tabCh" onclick="setMode('chal')">🏆 挑戰</button>
   </div>
@@ -330,6 +382,79 @@ h1{font-size:24px;margin:4px 0 4px}
     </div>
   </div>
 
+  <!-- ═══════════ 二三位數×整十 橫式大量練習（強調位置・0固定在個位） ═══════════ -->
+  <div class="panel" id="pH3">
+    <div class="card">
+      <div class="vconcept" style="background:#fffbeb;border-color:#f59e0b;color:#92400e">
+        💡 <b>二三位數×整十 核心思維</b>：乘數是整十數時（如 60 是 6 個十），直式<b>個位固定寫 0</b>！<br>
+        只需計算「<b>被乘數 × 乘數的十位數</b>」（有幾個十），對齊十位往左記。<br>
+        例：<b>42 × 60</b> ＝ 42 × 6 個十 ＝ 252 個十，個位固定是 0，合起來就是 <b>2520</b>。
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:14px;color:#64748b;font-weight:700">題型選擇：</span>
+        <button class="btn sm" id="h3FilterAll" onclick="h3SetFilter('all')">隨機混合</button>
+        <button class="btn sm ghost" id="h3Filter2" onclick="h3SetFilter('2')">二位數 × 整十</button>
+        <button class="btn sm ghost" id="h3Filter3" onclick="h3SetFilter('3')">三位數 × 整十</button>
+      </div>
+
+      <div class="h-stats">
+        <div class="h-stat"><span class="h-stat-label">已練習</span><b id="h3Total">0</b> 題</div>
+        <div class="h-stat"><span class="h-stat-label">答對率</span><b id="h3Acc">100%</b></div>
+        <div class="h-stat streak"><span class="h-stat-label">🔥 連對</span><b id="h3Streak">0</b> 次</div>
+        <div class="h-stat"><span class="h-stat-label">最佳連對</span><b id="h3Best">0</b> 次</div>
+        <button class="btn ghost sm" style="margin-left:auto;min-height:36px;padding:0 12px;font-size:14px" onclick="hResetStats('h3')">重新計數</button>
+      </div>
+
+      <span class="lv" id="h3Lv">經典示範：42×60（第 1 題）</span>
+
+      <div class="h-card">
+        <div class="h-dual-wrap">
+          <div class="h-side-eq">
+            <span class="h-side-tag" style="background:#fef3c7;color:#92400e">橫式算式</span><br>
+            <div class="h-eq">
+              <span class="h-num" id="h3A">42</span>
+              <span class="h-op">×</span>
+              <span class="h-num" id="h3B">60</span>
+              <span class="h-eq-sign">＝</span>
+              <input type="text" id="h3Input" class="h-input" inputmode="numeric" placeholder="?" autocomplete="off">
+            </div>
+          </div>
+          <div class="h-divider"></div>
+          <div class="h-side-vert">
+            <span class="h-side-tag" style="background:#fef3c7;color:#92400e">對應直式（強調位置・0固定在個位）</span>
+            <div class="vert" id="h3Vert"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-pad-wrap">
+        <div class="h-pad">
+          <button class="h-pad-btn" onclick="hPadInput('h3','1')">1</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','2')">2</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','3')">3</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','4')">4</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','5')">5</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','6')">6</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','7')">7</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','8')">8</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','9')">9</button>
+          <button class="h-pad-btn action" onclick="hPadInput('h3','clear')">C</button>
+          <button class="h-pad-btn" onclick="hPadInput('h3','0')">0</button>
+          <button class="h-pad-btn action" onclick="hPadInput('h3','back')">⌫</button>
+        </div>
+      </div>
+
+      <div class="msg" id="h3Msg"></div>
+      <div class="h-actions">
+        <button class="btn" id="h3SubmitBtn" onclick="hSubmit('h3')">確定送出</button>
+        <button class="btn ghost" id="h3NextBtn" onclick="hNext('h3')">換一題 →</button>
+        <button class="btn ghost" id="h3HintBtn" onclick="hToggleHint('h3')">💡 看解說</button>
+      </div>
+      <div id="h3HintBox" class="qsub" style="display:none;margin-top:14px"></div>
+    </div>
+  </div>
+
   <!-- ═══════════ 挑戰 ═══════════ -->
   <div class="panel" id="pCh">
     <div class="card">
@@ -363,6 +488,7 @@ function setMode(m){
     mul1: 'tabQz',
     h1: 'tabH1',
     h2: 'tabH2',
+    h3: 'tabH3',
     mul2: 'tabQz2',
     chal: 'tabCh'
   };
@@ -371,15 +497,16 @@ function setMode(m){
     mul1: 'pQz',
     h1: 'pH1',
     h2: 'pH2',
+    h3: 'pH3',
     mul2: 'pQz',
     chal: 'pCh'
   };
 
-  ['tabEx', 'tabQz', 'tabH1', 'tabH2', 'tabQz2', 'tabCh'].forEach(function(tid){
+  ['tabEx', 'tabQz', 'tabH1', 'tabH2', 'tabH3', 'tabQz2', 'tabCh'].forEach(function(tid){
     var el = document.getElementById(tid);
     if (el) el.classList.toggle('on', tid === tabs[m]);
   });
-  ['pEx', 'pQz', 'pH1', 'pH2', 'pCh'].forEach(function(pid){
+  ['pEx', 'pQz', 'pH1', 'pH2', 'pH3', 'pCh'].forEach(function(pid){
     var el = document.getElementById(pid);
     if (el) el.classList.toggle('on', pid === panels[m]);
   });
@@ -388,7 +515,7 @@ function setMode(m){
     quizMode = m;
     lvi = 0;
     renderLv();
-  } else if (m === 'h1' || m === 'h2') {
+  } else if (m === 'h1' || m === 'h2' || m === 'h3') {
     hInit(m);
   }
 }
@@ -826,7 +953,7 @@ function checkCh(){
   }
 }
 
-/* ═══════════ 橫式大量練習：一位數×整十、整十×整十 ═══════════ */
+/* ═══════════ 橫式大量練習：一位數×整十、整十×整十、二三位數×整十 ═══════════ */
 var H_STATE = {
   h1: {
     idx: 0,
@@ -845,15 +972,39 @@ var H_STATE = {
     streak: 0,
     best: 0,
     answered: false
+  },
+  h3: {
+    idx: 0,
+    cur: null,
+    total: 0,
+    correct: 0,
+    streak: 0,
+    best: 0,
+    answered: false,
+    filter: 'all'
   }
 };
+
+function h3SetFilter(f) {
+  var s = H_STATE.h3;
+  s.filter = f;
+  ['All', '2', '3'].forEach(function(k) {
+    var btn = document.getElementById('h3Filter' + k);
+    if (btn) {
+      var match = (f === 'all' && k === 'All') || (f === '2' && k === '2') || (f === '3' && k === '3');
+      btn.classList.toggle('ghost', !match);
+    }
+  });
+  s.idx = 0;
+  hNewQuestion('h3');
+}
 
 function hInit(mode) {
   var s = H_STATE[mode];
   if (!s.cur) {
     hNewQuestion(mode);
   } else {
-    var prefix = (mode === 'h1') ? 'h1' : 'h2';
+    var prefix = mode;
     var inp = document.getElementById(prefix + 'Input');
     if (inp) setTimeout(function(){ inp.focus(); }, 100);
     drawHVert(mode, inp ? inp.value : '', s.answered && s.streak > 0);
@@ -865,57 +1016,142 @@ function drawHVert(mode, rawInput, isCorrect) {
   if (!s || !s.cur) return;
   var a = s.cur.a, b = s.cur.b;
   var isTens = (mode === 'h2');
-  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var isMulti = (mode === 'h3');
+  var prefix = mode;
   var container = document.getElementById(prefix + 'Vert');
   if (!container) return;
 
   var ansVal = s.cur.ans;
   var dsAns = C.digitsOf(ansVal);
-  var baseCols = isTens ? 4 : 3;
+  var baseCols = isMulti ? Math.max(4, dsAns.length) : (isTens ? 4 : 3);
   var inputStr = (typeof rawInput === 'string') ? rawInput.trim() : '';
   var dsIn = (inputStr.length > 0 && !isNaN(Number(inputStr))) ? inputStr.split('').map(Number) : [];
   var numCols = Math.max(baseCols, dsAns.length, Math.min(dsIn.length, 5));
   var cols = numCols + 1;
 
-  var h = '<div class="vgrid with-pv" style="grid-template-columns:repeat(' + cols + ',44px)">';
+  if (!isMulti) {
+    var h = '<div class="vgrid with-pv" style="grid-template-columns:repeat(' + cols + ',44px)">';
+
+    // 1. 定位板標題列
+    h += '<div class="pvcell op"></div>';
+    for (var k = numCols - 1; k >= 0; k--) {
+      h += '<div class="pvcell">' + C.placeName(k) + '位</div>';
+    }
+
+    // 2. 被乘數 a (靠右對齊)
+    var dsA = C.digitsOf(a);
+    for (var x = 0; x < cols - dsA.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
+    for (var j = dsA.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsA[j] + '</div>';
+
+    // 3. 乘數 b (× 符號在最左欄，數字靠右對齊)
+    var dsB = C.digitsOf(b);
+    h += '<div class="cell op">×</div>';
+    for (var x = 0; x < cols - 1 - dsB.length; x++) h += '<div class="cell col-line"></div>';
+    for (var j = dsB.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsB[j] + '</div>';
+
+    // 4. 橫線
+    h += '<div class="hr"></div>';
+
+    // 5. 答案列
+    h += '<div class="cell"></div>';
+    if (isCorrect) {
+      var dsOk = C.digitsOf(ansVal);
+      for (var x = 0; x < numCols - dsOk.length; x++) h += '<div class="cell col-line"></div>';
+      for (var j = dsOk.length - 1; j >= 0; j--) {
+        h += '<div class="cell col-line ans ok">' + dsOk[j] + '</div>';
+      }
+    } else if (dsIn.length > 0) {
+      for (var x = 0; x < numCols - dsIn.length; x++) h += '<div class="cell col-line"></div>';
+      for (var j = 0; j < dsIn.length; j++) {
+        h += '<div class="cell col-line ans">' + dsIn[j] + '</div>';
+      }
+    } else {
+      for (var k = numCols - 1; k >= 0; k--) {
+        h += '<div class="cell col-line ans dim">?</div>';
+      }
+    }
+
+    h += '</div>';
+    container.innerHTML = h;
+    return;
+  }
+
+  // ══════════════ h3 專屬：二三位數×整十（依截圖2特別強調位置，0固定在個位） ══════════════
+  var dsA = C.digitsOf(a);
+  var dsB = C.digitsOf(b); // dsB = [0, bCore]
+  var bCore = s.cur.bCore;
+  var baseProd = s.cur.baseFact.prod;
+
+  var h = '<div class="vgrid with-pv h3-vert-grid" style="grid-template-columns:repeat(' + cols + ',46px) auto;align-items:center">';
 
   // 1. 定位板標題列
   h += '<div class="pvcell op"></div>';
   for (var k = numCols - 1; k >= 0; k--) {
-    h += '<div class="pvcell">' + C.placeName(k) + '位</div>';
+    var isTensOrAbove = (k >= 1);
+    h += '<div class="pvcell' + (isTensOrAbove ? ' hi-pv' : '') + '">' + C.placeName(k) + '位</div>';
   }
+  h += '<div class="h-badge-col"></div>';
 
-  // 2. 被乘數 a (靠右對齊)
-  var dsA = C.digitsOf(a);
-  for (var x = 0; x < cols - dsA.length; x++) h += '<div class="cell' + (x > 0 ? ' col-line' : '') + '"></div>';
-  for (var j = dsA.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsA[j] + '</div>';
+  // 2. 被乘數 a (黃框高亮，右側標籤：被乘數)
+  h += '<div class="cell"></div>';
+  for (var x = 0; x < numCols - dsA.length; x++) h += '<div class="cell"></div>';
+  for (var j = dsA.length - 1; j >= 0; j--) {
+    h += '<div class="cell highlight-factor">' + dsA[j] + '</div>';
+  }
+  h += '<div class="h-badge-col"><span class="h-pill-badge multiplicand">被乘數</span></div>';
 
-  // 3. 乘數 b (× 符號在最左欄，數字靠右對齊)
-  var dsB = C.digitsOf(b);
-  h += '<div class="cell op">×</div>';
-  for (var x = 0; x < cols - 1 - dsB.length; x++) h += '<div class="cell col-line"></div>';
-  for (var j = dsB.length - 1; j >= 0; j--) h += '<div class="cell col-line">' + dsB[j] + '</div>';
+  // 3. 乘數 b (× 在最左，十位黃框高亮，個位 0 固定，右側標籤：乘數)
+  h += '<div class="cell op" style="font-size:28px;font-weight:700">×</div>';
+  for (var x = 0; x < numCols - dsB.length; x++) h += '<div class="cell"></div>';
+  h += '<div class="cell highlight-factor">' + dsB[1] + '</div>';
+  h += '<div class="cell fixed-zero-cell" title="個位是0"><span class="zero-num">0</span></div>';
+  h += '<div class="h-badge-col"><span class="h-pill-badge multiplier">乘數</span></div>';
 
   // 4. 橫線
-  h += '<div class="hr"></div>';
+  h += '<div class="hr" style="grid-column:1/-1;border-top:3px solid #1e293b;margin:6px 0"></div>';
 
-  // 5. 答案列
+  // 5. 答案列：0 固定在個位！
   h += '<div class="cell"></div>';
   if (isCorrect) {
     var dsOk = C.digitsOf(ansVal);
-    for (var x = 0; x < numCols - dsOk.length; x++) h += '<div class="cell col-line"></div>';
-    for (var j = dsOk.length - 1; j >= 0; j--) {
-      h += '<div class="cell col-line ans ok">' + dsOk[j] + '</div>';
+    for (var x = 0; x < numCols - dsOk.length; x++) h += '<div class="cell"></div>';
+    for (var j = dsOk.length - 1; j >= 1; j--) {
+      h += '<div class="ans-box ok">' + dsOk[j] + '</div>';
     }
-  } else if (dsIn.length > 0) {
-    for (var x = 0; x < numCols - dsIn.length; x++) h += '<div class="cell col-line"></div>';
-    for (var j = 0; j < dsIn.length; j++) {
-      h += '<div class="cell col-line ans">' + dsIn[j] + '</div>';
+    h += '<div class="ans-box fixed-zero ok"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
+    h += '<div class="h-step-pill ok">✓ <b>答對了！</b><br>個位固定是 <b>0</b>；' + a + '×' + bCore + '＝' + baseProd + ' 個十，合起來是 <b>' + ansVal + '</b>。</div>';
+  } else if (inputStr.length > 0) {
+    var valNum = Number(inputStr);
+    if (!isNaN(valNum) && valNum === baseProd) {
+      var dsBase = C.digitsOf(baseProd);
+      var totalNeeded = dsBase.length + 1;
+      for (var x = 0; x < numCols - totalNeeded; x++) h += '<div class="cell"></div>';
+      for (var j = dsBase.length - 1; j >= 0; j--) {
+        h += '<div class="ans-box filled">' + dsBase[j] + '</div>';
+      }
+      h += '<div class="ans-box fixed-zero"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
+      h += '<div class="h-step-pill">⚠️ 乘法算得很好（' + a + '×' + bCore + '＝' + baseProd + '），但別忘了<b>個位要補 0</b> 寫 <b>' + (baseProd * 10) + '</b> 喔！</div>';
+    } else {
+      var inDigits = inputStr.split('').map(Number);
+      var leadSpacers = Math.max(0, numCols - inDigits.length);
+      for (var x = 0; x < leadSpacers; x++) h += '<div class="cell"></div>';
+      for (var j = 0; j < inDigits.length; j++) {
+        var isLast = (j === inDigits.length - 1);
+        if (isLast && inDigits[j] === 0) {
+          h += '<div class="ans-box fixed-zero filled"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
+        } else {
+          h += '<div class="ans-box filled">' + inDigits[j] + '</div>';
+        }
+      }
+      h += '<div class="h-step-pill">💡 <b>0 固定在個位</b><br>' + a + ' × ' + bCore + ' 個十 ＝ <b>' + baseProd + '</b> 個十<br>答案是 <b>' + ansVal + '</b></div>';
     }
   } else {
-    for (var k = numCols - 1; k >= 0; k--) {
-      h += '<div class="cell col-line ans dim">?</div>';
+    // 未作答狀態：十位以上為 ?，個位直接固定為 0！
+    for (var k = numCols - 1; k >= 1; k--) {
+      h += '<div class="ans-box dim">?</div>';
     }
+    h += '<div class="ans-box fixed-zero"><span class="box-digit">0</span><span class="zero-badge-text">固定0</span></div>';
+    h += '<div class="h-step-pill">💡 <b>0 固定在個位</b><br>請算：<b>' + a + ' × ' + bCore + '</b> ＝ ？個十</div>';
   }
 
   h += '</div>';
@@ -924,11 +1160,18 @@ function drawHVert(mode, rawInput, isCorrect) {
 
 function hNewQuestion(mode) {
   var s = H_STATE[mode];
-  s.cur = (mode === 'h1') ? C.generateSingleByTens(s.idx) : C.generateTensByTens(s.idx);
+  if (mode === 'h1') {
+    s.cur = C.generateSingleByTens(s.idx);
+  } else if (mode === 'h2') {
+    s.cur = C.generateTensByTens(s.idx);
+  } else if (mode === 'h3') {
+    var fNum = (s.filter === '2') ? 2 : (s.filter === '3') ? 3 : undefined;
+    s.cur = C.generateMultiByTens(s.idx, fNum);
+  }
   s.idx++;
   s.answered = false;
 
-  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var prefix = mode;
   document.getElementById(prefix + 'A').textContent = s.cur.a;
   document.getElementById(prefix + 'B').textContent = s.cur.b;
   var inp = document.getElementById(prefix + 'Input');
@@ -952,15 +1195,22 @@ function hNewQuestion(mode) {
   subBtn.onclick = function() { hSubmit(mode); };
 
   var lvEl = document.getElementById(prefix + 'Lv');
-  if (s.idx <= 3) {
-    lvEl.textContent = (mode === 'h1') ? ('課本 p22 活動二 問1（第 ' + s.idx + ' 題）') : ('課本 p23 活動二 問4（第 ' + s.idx + ' 題）');
-  } else {
-    lvEl.textContent = '大量速算練習（第 ' + s.idx + ' 題）';
+  if (mode === 'h1') {
+    lvEl.textContent = (s.idx <= 3) ? ('課本 p22 活動二 問1（第 ' + s.idx + ' 題）') : ('大量速算練習（第 ' + s.idx + ' 題）');
+  } else if (mode === 'h2') {
+    lvEl.textContent = (s.idx <= 3) ? ('課本 p23 活動二 問4（第 ' + s.idx + ' 題）') : ('大量速算練習（第 ' + s.idx + ' 題）');
+  } else if (mode === 'h3') {
+    if (s.cur && s.cur.tag) {
+      lvEl.textContent = s.cur.tag + '（第 ' + s.idx + ' 題）';
+    } else {
+      var kindText = s.cur.a >= 100 ? '三位數 × 整十' : '二位數 × 整十';
+      lvEl.textContent = '大量速算練習：' + kindText + '（第 ' + s.idx + ' 題）';
+    }
   }
 }
 
 function hPadInput(mode, key) {
-  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var prefix = mode;
   var inp = document.getElementById(prefix + 'Input');
   if (inp.disabled) return;
   if (key === 'clear') {
@@ -976,7 +1226,7 @@ function hPadInput(mode, key) {
 
 function hSubmit(mode) {
   var s = H_STATE[mode];
-  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var prefix = mode;
   var inp = document.getElementById(prefix + 'Input');
   var raw = inp.value.trim();
   if (!raw) {
@@ -1021,11 +1271,11 @@ function hSubmit(mode) {
     msg.className = 'msg no show';
     var errText = '';
     if (diag.code === 'ZERO_TOO_FEW') {
-      errText = '⚠️ <b>0 補太少囉！</b>乘數有 0 代表是「幾個十」或「幾個百」，末位記得補 0。';
+      errText = '⚠️ <b>0 漏補囉！</b>乘數有 0 代表是「幾個十」或「幾個百」，末位記得補 0。';
     } else if (diag.code === 'ZERO_TOO_MANY') {
-      errText = '⚠️ <b>0 補太多囉！</b>請檢查被乘數與乘數末位共有幾個 0。';
+      errText = '⚠️ <b>0 補太多囉！</b>請檢查乘數末位共有幾個 0。';
     } else if (diag.code === 'BASE_FACT_ERROR') {
-      errText = '⚠️ <b>位值對了，但九九乘法算錯囉！</b>請檢查前方的基本乘法。';
+      errText = '⚠️ <b>位值對了，但乘法算錯囉！</b>請檢查前方的基本乘法。';
     } else {
       errText = '❌ <b>再算算看喔！</b>請利用下方的位值小撇步檢查。';
     }
@@ -1039,7 +1289,7 @@ function hSubmit(mode) {
 }
 
 function hNext(mode) {
-  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var prefix = mode;
   var subBtn = document.getElementById(prefix + 'SubmitBtn');
   subBtn.onclick = function() { hSubmit(mode); };
   hNewQuestion(mode);
@@ -1047,7 +1297,7 @@ function hNext(mode) {
 
 function hToggleHint(mode) {
   var s = H_STATE[mode];
-  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var prefix = mode;
   var hintBox = document.getElementById(prefix + 'HintBox');
   if (hintBox.style.display === 'none' || !hintBox.style.display) {
     hintBox.style.display = 'block';
@@ -1059,7 +1309,7 @@ function hToggleHint(mode) {
 
 function hUpdateStatsUI(mode) {
   var s = H_STATE[mode];
-  var prefix = (mode === 'h1') ? 'h1' : 'h2';
+  var prefix = mode;
   document.getElementById(prefix + 'Total').textContent = s.total;
   var acc = (s.total === 0) ? 100 : Math.round((s.correct / s.total) * 100);
   document.getElementById(prefix + 'Acc').textContent = acc + '%';
@@ -1076,16 +1326,16 @@ function hResetStats(mode) {
   hUpdateStatsUI(mode);
 }
 
-['h1Input', 'h2Input'].forEach(function(id) {
+['h1Input', 'h2Input', 'h3Input'].forEach(function(id) {
   var el = document.getElementById(id);
   if (el) {
     el.addEventListener('input', function() {
-      var mode = (id === 'h1Input') ? 'h1' : 'h2';
+      var mode = id.replace('Input', '');
       drawHVert(mode, el.value, false);
     });
     el.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
-        var mode = (id === 'h1Input') ? 'h1' : 'h2';
+        var mode = id.replace('Input', '');
         var s = H_STATE[mode];
         var subBtn = document.getElementById(mode + 'SubmitBtn');
         if (s.answered && subBtn.textContent.indexOf('下一題') !== -1) {

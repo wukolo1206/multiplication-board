@@ -85,6 +85,17 @@ def run(pg, errs):
     pg.click('#h2SubmitBtn'); pg.wait_for_timeout(120)
     ck('答對' in msg(pg, '#h2Msg'), '整十×整十答對回饋')
 
+    # 二三位數×整十橫式練習（強調位置，0固定在個位）
+    pg.click('#tabH3'); pg.wait_for_timeout(120)
+    ck(pg.eval_on_selector('#pH3', 'e=>e.classList.contains("on")'), '二三位數×整十分頁開啟')
+    ck(pg.eval_on_selector('#h3Vert .h3-vert-grid', 'e=>!!e'), '二三位數×整十直式與定位板顯示')
+    ck(pg.eval_on_selector('#h3Vert .fixed-zero', 'e=>!!e'), '直式答案列個位固定為 0')
+    ck(pg.eval_on_selector_all('#h3Vert .highlight-factor', 'e=>e.length >= 3'), '被乘數與乘數十位高亮強調')
+    pg.fill('#h3Input', '2520')
+    pg.click('#h3SubmitBtn'); pg.wait_for_timeout(120)
+    ck('答對' in msg(pg, '#h3Msg'), '二三位數×整十答對回饋')
+    ck(pg.eval_on_selector_all('#h3Vert .ans-box.ok', 'e=>e.length >= 3'), '答對後直式答案格亮綠色')
+
     pg.click('#tabCh'); pg.wait_for_timeout(120)
     opts = pg.eval_on_selector_all('#chOpts .opt', 'e=>e.map(x=>x.textContent)')
     ck(opts == ['甲', '甲、丙', '乙、丁', '甲、乙、丁'], '108-11 選項照考卷原題')

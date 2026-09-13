@@ -476,6 +476,64 @@
   }
 
   /**
+   * 生成「二、三位數 × 整十」題目物件。
+   * @param {number} [idx] 固定題號（0~4 依序為示範與課本題，>=5 隨機題）
+   * @param {number} [filterDigits] 2 (二位數×整十), 3 (三位數×整十), 或 undefined/空 (混合)
+   */
+  function generateMultiByTens(idx, filterDigits) {
+    var fixed = [
+      { a: 42, b: 60, tag: '示範題 42×60' },          // 截圖示範例題 (二位)
+      { a: 53, b: 80, tag: '課本 p25 活動二 問7' },   // 課本 p25 (二位)
+      { a: 605, b: 80, tag: '課本 p27 做做看' },      // 課本 p27 (三位中間0)
+      { a: 125, b: 40, tag: '重點進位題' },           // 三位進位
+      { a: 78, b: 50, tag: '二位數進位練習' }          // 二位進位
+    ];
+    var a, b, tag = '';
+    var validFixed = fixed.filter(function(item) {
+      if (filterDigits === 2) return item.a < 100;
+      if (filterDigits === 3) return item.a >= 100;
+      return true;
+    });
+
+    if (typeof idx === 'number' && idx >= 0 && idx < validFixed.length) {
+      a = validFixed[idx].a;
+      b = validFixed[idx].b;
+      tag = validFixed[idx].tag;
+    } else {
+      var useThreeDigit = (filterDigits === 3) ? true : (filterDigits === 2) ? false : (Math.random() < 0.5);
+      if (useThreeDigit) {
+        if (Math.random() < 0.35) {
+          var h = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+          var o = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+          a = h * 100 + o;
+        } else {
+          a = Math.floor(Math.random() * 880) + 110;
+        }
+      } else {
+        a = Math.floor(Math.random() * 87) + 12;
+      }
+      var bCore = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+      b = bCore * 10;
+      tag = (a >= 100 ? '三位數×整十' : '二位數×整十');
+    }
+    var bCoreActual = Math.floor(b / 10);
+    var baseProd = a * bCoreActual;
+    var ans = a * b;
+    return {
+      type: 'multi_by_tens',
+      a: a,
+      b: b,
+      bCore: bCoreActual,
+      ans: ans,
+      tag: tag,
+      baseFact: { a: a, b: bCoreActual, prod: baseProd },
+      zeros: 1,
+      digitsA: a >= 100 ? 3 : 2,
+      hint: '0 固定在個位；' + a + '×' + bCoreActual + '＝' + baseProd + '（' + baseProd + ' 個十），對齊十位往左記，也就是 ' + ans + '。'
+    };
+  }
+
+  /**
    * 診斷橫式作答：一位數×整十 或 整十×整十。
    */
   function diagnoseHorizontal(a, b, inputVal) {
@@ -541,6 +599,7 @@
     isStructuralError: isStructuralError,
     generateSingleByTens: generateSingleByTens,
     generateTensByTens: generateTensByTens,
+    generateMultiByTens: generateMultiByTens,
     diagnoseHorizontal: diagnoseHorizontal
   };
 });

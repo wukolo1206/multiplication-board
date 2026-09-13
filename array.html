@@ -109,8 +109,35 @@ h1{font-size:24px;margin:4px 0 4px}
 
 /* 變暗的數字 */
 .practice-cell.dim-digit{
-  opacity:0.2 !important;color:#94a3b8 !important;filter:grayscale(1);
-  transform:scale(0.92)
+  opacity:0.5 !important;color:#64748b !important;
+  transform:scale(0.96)
+}
+
+.practice-cell.carry-cell{
+  min-height:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  box-sizing:border-box;font-family:"Courier New",monospace
+}
+.carry-bubble{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:24px;height:24px;padding:0 4px;border-radius:99px;
+  font-size:13px;font-weight:800;line-height:1;
+  font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+  animation:pop .25s ease
+}
+.carry-bubble.r0{
+  background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;
+  box-shadow:0 0 6px rgba(245,158,11,0.45)
+}
+.carry-bubble.r1{
+  background:#ede9fe;color:#5b21b6;border:1.5px solid #8b5cf6;
+  box-shadow:0 0 6px rgba(139,92,246,0.45)
+}
+.carry-bubble.add{
+  background:#fee2e2;color:#991b1b;border:1.5px solid #ef4444;
+  box-shadow:0 0 6px rgba(239,68,68,0.45)
+}
+.carry-bubble.used{
+  opacity:0.35;text-decoration:line-through;box-shadow:none
 }
 
 /* 答案格子（替代 input） */
@@ -366,6 +393,11 @@ h1{font-size:24px;margin:4px 0 4px}
     <div class="card">
       <div class="practice-head">
         <span class="lv" id="lvTag">無限練習／已練習 0 題</span>
+        <div class="step-mode-switch" id="practiceStepStyleWrap" style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:14px;color:#64748b;font-weight:700">步驟：</span>
+          <button class="btn sm" id="btnPracticeMicro" onclick="setPracticeStepStyle('micro')">👣 逐位算（含進位）</button>
+          <button class="btn sm ghost" id="btnPracticeRow" onclick="setPracticeStepStyle('row')">⚡ 整列算</button>
+        </div>
         <label class="digit-select" for="digitsSelect">
           被乘數位數
           <select id="digitsSelect">
@@ -554,171 +586,164 @@ document.querySelectorAll('#s2 .vrow[data-r]').forEach(function(e){
 });
 
 /* ───────── 練習：步驟引導與點選填入（一次強調一個重點） ───────── */
-var practiceState={
+var practiceState = {
   digits: 2,
   completed: 0,
   question: null,
-  step: 1,       // 1: 第一步（第一列/個位列），2: 第二步（第二列/十位列），3: 第三步（合計），4: 完成
-  focusStep: 1   // 目前視覺強調的步驟（1、2、3 或 4）
+  stepStyle: 'micro', // 'micro' (預設，按一下就是一個微步含進位) 或 'row' (整列填入)
+  mSteps: [],
+  mIndex: 0,
+  step: 1, // for row mode: 1, 2, 3, 4
+  focusStep: 1
 };
 
-function practiceSpeech(q, step){
-  if(step === 1){
-    return '【第一步・個位列】先看個位 <b>'+q.onesDigit+'</b>，被乘數重複 <b>'+q.onesRepeats+
-      ' 次</b>；'+q.a+'×'+q.onesRepeats+'＝第一列。';
-  } else if(step === 2){
-    return '【第二步・十位列】再看十位 <b>'+q.tensDigit+'</b>，也就是 <b>'+q.tensDigit+
-      ' 個十</b>（重複 <b>'+q.tensRepeats+' 次</b>）；'+q.a+'×'+q.tensRepeats+
-      '＝第二列，答案對齊十位。';
-  } else if(step === 3){
-    return '【第三步・兩排相加】將個位列與十位列相加；最後確認重複次數：'+
-      q.onesRepeats+'＋'+q.tensRepeats+'＝'+q.repeatTotal+' 次。';
-  } else {
-    return '🎉 兩列直式計算完成！重複次數：'+q.onesRepeats+' 次 ＋ '+
-      q.tensRepeats+' 次 ＝ <b>'+q.repeatTotal+' 次</b>（共 '+q.b+' 倍）。';
-  }
-}
-
-function newPracticeQuestion(){
-  practiceState.question = C.generateArrayPracticeQuestion(practiceState.digits);
+function setPracticeStepStyle(style) {
+  practiceState.stepStyle = style;
+  var bMicro = document.getElementById('btnPracticeMicro');
+  var bRow = document.getElementById('btnPracticeRow');
+  if (bMicro) bMicro.classList.toggle('ghost', style !== 'micro');
+  if (bRow) bRow.classList.toggle('ghost', style !== 'row');
+  practiceState.mIndex = 0;
   practiceState.step = 1;
   practiceState.focusStep = 1;
   renderPracticeQuestion();
 }
 
-function practicePlaceCount(q){
-  return Math.max(3, String(q.a).length, String(q.secondRow).length, String(q.product).length);
+function newPracticeQuestion() {
+  var q = C.generateArrayPracticeQuestion(practiceState.digits);
+  practiceState.question = q;
+  practiceState.mSteps = C.multiDigitSteps(q.a, q.b);
+  practiceState.mIndex = 0;
+  practiceState.step = 1;
+  practiceState.focusStep = 1;
+  renderPracticeQuestion();
 }
 
-function practiceDigit(value, pos){
-  return Math.floor(value / Math.pow(10, pos)) % 10;
-}
-
-// 產生被乘數數字格
-function practiceMultiplicandCells(value, cols, isHighlight){
-  var h = '';
-  var len = String(value).length;
-  for(var pos = cols - 1; pos >= 0; pos--){
-    var hasDigit = (pos < len);
-    var d = hasDigit ? practiceDigit(value, pos) : '';
-    var cls = 'practice-cell operand-cell factor-a' + (hasDigit && isHighlight ? ' highlight-factor' : '');
-    h += '<div class="' + cls + '" data-pos="' + pos + '">' + d + '</div>';
+function practiceMicroActionText(st) {
+  if (!st) return '';
+  var pName = C.placeName(st.colPlace);
+  var s = pName + '位寫 ' + st.write;
+  if (st.carryOut > 0) {
+    s += '，' + C.placeName(st.colPlace + 1) + '位記進位 ' + st.carryOut;
   }
-  return h;
+  return s;
 }
 
-// 產生乘數數字格（含個位/十位區分高亮與變暗）
-function practiceMultiplierCells(q, cols, focus){
-  var h = '';
-  for(var pos = cols - 1; pos >= 0; pos--){
-    if(pos > 1){
-      h += '<div class="practice-cell operand-cell place-spacer" data-pos="' + pos + '"></div>';
-    } else if(pos === 1){
-      // 十位數
-      var cls = 'practice-cell operand-cell factor-b factor-b-tens';
-      if(focus === 1){
-        cls += ' dim-digit'; // 第一步時十位變暗！
-      } else if(focus === 2){
-        cls += ' highlight-factor'; // 第二步時十位高亮！
-      }
-      h += '<div class="' + cls + '" data-pos="1">' + q.tensDigit + '</div>';
-    } else if(pos === 0){
-      // 個位數
-      var cls = 'practice-cell operand-cell factor-b factor-b-ones';
-      if(focus === 1){
-        cls += ' highlight-factor'; // 第一步時個位高亮！
-      } else if(focus === 2){
-        cls += ' dim-digit'; // 第二步時個位變暗！
-      }
-      h += '<div class="' + cls + '" data-pos="0">' + q.onesDigit + '</div>';
+function practiceSpeech(q, focus, isMicro, curStep) {
+  if (isMicro && curStep) {
+    var p = curStep.phase;
+    if (p === 0) {
+      return '【第一列・乘以個位 <b>' + q.onesDigit + '</b>（重複 <b>' + q.onesRepeats + ' 次</b>）】' + curStep.desc;
+    } else if (p === 1) {
+      return '【第二列・乘以十位 <b>' + q.tensDigit + '</b>（重複 <b>' + q.tensRepeats + ' 次</b>）】' + curStep.desc;
+    } else if (p === 2) {
+      return '【第三步・兩排相加】' + curStep.desc;
     }
   }
-  return h;
-}
-
-// 產生答案格（點選填入式）
-function practiceAnswerCells(rowKey, value, cols, isFilled, isActive){
-  var h = '<div class="practice-cell answer-spacer"></div>';
-  var len = String(value).length;
-  var stepTarget = (rowKey === 'first') ? 1 : (rowKey === 'second') ? 2 : 3;
-  for(var pos = cols - 1; pos >= 0; pos--){
-    var d = '';
-    var cls = 'practice-cell answer-box';
-    var clickAttr = '';
-    if(isFilled){
-      if(pos < len){
-        var digitVal = practiceDigit(value, pos);
-        if(rowKey === 'second' && pos === 0 && digitVal === 0){
-          d = '<span class="dimzero">0</span>';
-        } else {
-          d = digitVal;
-        }
-      }
-      cls += ' filled';
-      clickAttr = ' onclick="reviewStep(' + stepTarget + ')" title="點此回顧第 ' + stepTarget + ' 步重點"';
-    } else {
-      cls += ' empty';
-      if(isActive){
-        cls += ' active-target';
-        clickAttr = ' onclick="applyPracticeStep(' + stepTarget + ')" title="點此填入第 ' + stepTarget + ' 步"';
-      }
-    }
-    h += '<div class="' + cls + '" data-pos="' + pos + '"' + clickAttr + '>' + d + '</div>';
+  if (focus === 1) {
+    return '【第一步・個位列】先看個位 <b>' + q.onesDigit + '</b>，被乘數重複 <b>' + q.onesRepeats +
+      ' 次</b>；' + q.a + '×' + q.onesRepeats + '＝第一列。';
+  } else if (focus === 2) {
+    return '【第二步・十位列】再看十位 <b>' + q.tensDigit + '</b>，也就是 <b>' + q.tensDigit +
+      ' 個十</b>（重複 <b>' + q.tensRepeats + ' 次</b>）；' + q.a + '×' + q.tensRepeats +
+      '＝第二列，答案對齊十位。';
+  } else if (focus === 3) {
+    return '【第三步・兩排相加】將個位列與十位列相加；最後確認重複次數：' +
+      q.onesRepeats + '＋' + q.tensRepeats + '＝' + q.repeatTotal + ' 次。';
+  } else {
+    return '🎉 兩列直式計算完成！重複次數：' + q.onesRepeats + ' 次 ＋ ' +
+      q.tensRepeats + ' 次 ＝ <b>' + q.repeatTotal + ' 次</b>（共 ' + q.b + ' 倍）。';
   }
-  return h;
 }
 
-function readPracticeRow(row){
-  var cells = document.querySelectorAll('[data-answer-row="' + row + '"] .answer-box.filled');
-  if(!cells.length) return null;
-  var q = practiceState.question;
-  if(row === 'first') return q.firstRow;
-  if(row === 'second') return q.secondRow;
-  if(row === 'total') return q.product;
-  return null;
+function applyPracticeMicroStep() {
+  if (!practiceState.mSteps || practiceState.mIndex >= practiceState.mSteps.length) return;
+  practiceState.mIndex++;
+  if (practiceState.mIndex >= practiceState.mSteps.length) {
+    practiceState.step = 4;
+    practiceState.focusStep = 4;
+    practiceState.completed++;
+  } else {
+    var cur = practiceState.mSteps[practiceState.mIndex];
+    practiceState.step = cur.phase + 1;
+    practiceState.focusStep = cur.phase + 1;
+  }
+  renderPracticeQuestion();
 }
 
-function applyPracticeStep(targetStep){
-  if(practiceState.step !== targetStep) return;
+function applyPracticeStep(targetStep) {
+  if (practiceState.stepStyle === 'micro') {
+    applyPracticeMicroStep();
+    return;
+  }
+  if (practiceState.step !== targetStep) return;
   practiceState.step = targetStep + 1;
   practiceState.focusStep = (practiceState.step <= 3) ? practiceState.step : 4;
-  if(practiceState.step > 3){
+  if (practiceState.step > 3) {
     practiceState.step = 4;
     practiceState.completed += 1;
   }
   renderPracticeQuestion();
 }
 
-function reviewStep(stepIndex){
+function reviewPracticeStep(stepIndex) {
   practiceState.focusStep = stepIndex;
   renderPracticeQuestion();
 }
+var reviewStep = reviewPracticeStep;
 
-function replayPractice(){
+function replayPractice() {
+  practiceState.mIndex = 0;
   practiceState.step = 1;
   practiceState.focusStep = 1;
   renderPracticeQuestion();
 }
 
-function renderPracticeQuestion(){
-  var q = practiceState.question;
-  var cols = practicePlaceCount(q);
-  var numCols = cols + 1;
-  var step = practiceState.step;
-  var focus = practiceState.focusStep;
-  var isDone = (step >= 4);
+function submitQ() {
+  if (practiceState.stepStyle === 'micro') {
+    applyPracticeMicroStep();
+  } else if (practiceState.step <= 3) {
+    applyPracticeStep(practiceState.step);
+  }
+}
 
-  var hiFactorA = (focus === 1 || focus === 2);
+function nextQ() {
+  newPracticeQuestion();
+}
+
+function readPracticeRow(row) {
+  var cells = document.querySelectorAll('[data-answer-row="' + row + '"] .answer-box.filled');
+  if (!cells.length) return null;
+  var q = practiceState.question;
+  if (row === 'first') return q.firstRow;
+  if (row === 'second') return q.secondRow;
+  if (row === 'total') return q.product;
+  return null;
+}
+
+function renderPracticeQuestion() {
+  var q = practiceState.question;
+  if (!q) return;
+  var cols = Math.max(3, String(q.a).length, String(q.secondRow).length, String(q.product).length);
+  var numCols = cols + 1;
+  var isMicro = (practiceState.stepStyle === 'micro');
+  var mSteps = practiceState.mSteps || [];
+  var mI = practiceState.mIndex;
+  var isDone = isMicro ? (mI >= mSteps.length) : (practiceState.step >= 4);
+  var curStep = (!isDone && isMicro && mSteps[mI]) ? mSteps[mI] : null;
+  var curPhase = curStep ? curStep.phase : (isDone ? 3 : practiceState.step - 1);
+  var focus = isMicro ? (curPhase + 1) : practiceState.focusStep;
 
   document.getElementById('lvTag').textContent = '無限練習／已練習 ' + practiceState.completed + ' 題';
   document.getElementById('qText').innerHTML = '請完成 <b>' + q.a + ' × ' + q.b + '</b> 的兩列直式。';
-  document.getElementById('qSpeech').innerHTML = practiceSpeech(q, focus);
+  document.getElementById('qSpeech').innerHTML = practiceSpeech(q, focus, isMicro, curStep);
 
   var m = document.getElementById('qMsg');
   var qNext = document.getElementById('qNext');
   var qBtn = document.getElementById('qBtn');
+  var qReplay = document.getElementById('qReplay');
 
-  if(isDone){
+  if (isDone) {
     m.className = 'msg ok show';
     m.style.display = 'block';
     m.innerHTML = '🎉 <b>答對了！</b><br>' +
@@ -726,97 +751,294 @@ function renderPracticeQuestion(){
       q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b>（第二列：十位重複 ' + q.tensRepeats + ' 次，對齊十位）<br>' +
       q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b>。<br>' +
       '重複次數合計：' + q.onesRepeats + ' ＋ ' + q.tensRepeats + ' ＝ <b>' + q.repeatTotal + ' 次</b>。';
-    var qReplay = document.getElementById('qReplay');
-    if(qBtn) qBtn.style.display = 'none';
-    if(qNext) qNext.style.display = '';
-    if(qReplay) qReplay.style.display = '';
+    if (qBtn) qBtn.style.display = 'none';
+    if (qNext) qNext.style.display = '';
+    if (qReplay) qReplay.style.display = '';
   } else {
     m.className = 'msg';
     m.style.display = 'none';
-    var qReplay = document.getElementById('qReplay');
-    if(qNext) qNext.style.display = 'none';
-    if(qReplay) qReplay.style.display = 'none';
-    if(qBtn){
+    if (qNext) qNext.style.display = 'none';
+    if (qReplay) qReplay.style.display = 'none';
+    if (qBtn) {
       qBtn.style.display = '';
-      if(step === 1) qBtn.textContent = '👉 填入第一列';
-      else if(step === 2) qBtn.textContent = '👉 填入第二列';
-      else if(step === 3) qBtn.textContent = '👉 填入合計';
+      if (isMicro) {
+        qBtn.innerHTML = '👉 填入：<b>' + practiceMicroActionText(curStep) + '</b>';
+      } else {
+        if (practiceState.step === 1) qBtn.textContent = '👉 填入第一列';
+        else if (practiceState.step === 2) qBtn.textContent = '👉 填入第二列';
+        else if (practiceState.step === 3) qBtn.textContent = '👉 填入兩排相加';
+      }
     }
   }
 
-  // 第一步按鈕卡 HTML
+  // 1. 計算進位氣泡 (Carries map: pos -> { val, type, used })
+  var carries = {};
+  if (isMicro && !isDone) {
+    if (curPhase === 0) {
+      for (var k = 0; k < mI; k++) {
+        if (mSteps[k].phase === 0 && mSteps[k].carryOut > 0) {
+          var pTarget = mSteps[k].colPlace + 1;
+          var isCur = (k === mI - 1);
+          carries[pTarget] = { val: mSteps[k].carryOut, type: 'r0', used: !isCur };
+        }
+      }
+    } else if (curPhase === 1) {
+      for (var k = 0; k < mI; k++) {
+        if (mSteps[k].phase === 1 && mSteps[k].carryOut > 0) {
+          var pTarget = mSteps[k].colPlace + 1;
+          var isCur = (k === mI - 1);
+          carries[pTarget] = { val: mSteps[k].carryOut, type: 'r1', used: !isCur };
+        }
+      }
+    } else if (curPhase === 2) {
+      for (var k = 0; k < mI; k++) {
+        if (mSteps[k].phase === 2 && mSteps[k].carryOut > 0) {
+          var pTarget = mSteps[k].colPlace + 1;
+          var isCur = (k === mI - 1);
+          carries[pTarget] = { val: mSteps[k].carryOut, type: 'add', used: !isCur };
+        }
+      }
+    }
+  }
+
+  // 2. 被乘數高亮邏輯
+  var hiPlaceA = -1;
+  if (isMicro && curStep && (curPhase === 0 || curPhase === 1)) {
+    hiPlaceA = curStep.place;
+  } else if (!isMicro && (focus === 1 || focus === 2)) {
+    hiPlaceA = 999;
+  }
+
+  function renderA(value, cols, hiPlace) {
+    var h = '';
+    var len = String(value).length;
+    for (var pos = cols - 1; pos >= 0; pos--) {
+      var hasDigit = (pos < len);
+      var d = hasDigit ? Math.floor(value / Math.pow(10, pos)) % 10 : '';
+      var isHi = hasDigit && (hiPlace === 999 || hiPlace === pos);
+      var cls = 'practice-cell operand-cell factor-a' + (isHi ? ' highlight-factor' : '');
+      h += '<div class="' + cls + '" data-pos="' + pos + '">' + d + '</div>';
+    }
+    return h;
+  }
+
+  function renderB(q, cols, focusPhase) {
+    var h = '';
+    for (var pos = cols - 1; pos >= 0; pos--) {
+      if (pos > 1) {
+        h += '<div class="practice-cell operand-cell place-spacer" data-pos="' + pos + '"></div>';
+      } else if (pos === 1) {
+        var cls = 'practice-cell operand-cell factor-b factor-b-tens';
+        if (focusPhase === 0) cls += ' dim-digit';
+        else if (focusPhase === 1) cls += ' highlight-factor';
+        h += '<div class="' + cls + '" data-pos="1">' + q.tensDigit + '</div>';
+      } else if (pos === 0) {
+        var cls = 'practice-cell operand-cell factor-b factor-b-ones';
+        if (focusPhase === 0) cls += ' highlight-factor';
+        else if (focusPhase === 1) cls += ' dim-digit';
+        h += '<div class="' + cls + '" data-pos="0">' + q.onesDigit + '</div>';
+      }
+    }
+    return h;
+  }
+
+  function renderAns(rowKey, rowVal, cols) {
+    var rIdx = (rowKey === 'first') ? 0 : (rowKey === 'second') ? 1 : 2;
+    var stepTarget = rIdx + 1;
+    var h = '<div class="practice-cell answer-spacer"></div>';
+    var len = String(rowVal).length;
+
+    var filledMap = {};
+    if (isMicro) {
+      for (var k = 0; k < mI; k++) {
+        if (mSteps[k].rowIndex === rIdx) {
+          filledMap[mSteps[k].colPlace] = mSteps[k].write;
+        }
+      }
+    }
+
+    for (var pos = cols - 1; pos >= 0; pos--) {
+      var d = '';
+      var cls = 'practice-cell answer-box';
+      var clickAttr = '';
+
+      if (isDone || (!isMicro && practiceState.step > stepTarget)) {
+        if (pos < len) {
+          var digitVal = Math.floor(rowVal / Math.pow(10, pos)) % 10;
+          if (rowKey === 'second' && pos === 0 && digitVal === 0) {
+            d = '<span class="dimzero">0</span>';
+          } else {
+            d = digitVal;
+          }
+        }
+        cls += ' filled';
+        clickAttr = ' onclick="reviewPracticeStep(' + stepTarget + ')" title="點此回顧第 ' + stepTarget + ' 步重點"';
+      } else if (isMicro) {
+        if (filledMap[pos] !== undefined) {
+          d = filledMap[pos];
+          cls += ' filled';
+        } else if (rIdx === 1 && pos === 0 && (curPhase >= 1 || isDone)) {
+          d = '<span class="dimzero">0</span>';
+          cls += ' filled';
+        } else if (!isDone && curStep && curStep.rowIndex === rIdx && curStep.colPlace === pos) {
+          cls += ' empty active-target';
+          clickAttr = ' onclick="applyPracticeMicroStep()" title="點此填入此格"';
+        } else {
+          cls += ' empty';
+        }
+      } else {
+        if (practiceState.step === stepTarget) {
+          cls += ' empty active-target';
+          clickAttr = ' onclick="applyPracticeStep(' + stepTarget + ')" title="點此填入第 ' + stepTarget + ' 步"';
+        } else {
+          cls += ' empty';
+        }
+      }
+
+      h += '<div class="' + cls + '" data-pos="' + pos + '"' + clickAttr + '>' + d + '</div>';
+    }
+    return h;
+  }
+
+  // 卡片 1 HTML
   var step1Card = '';
-  if(step === 1){
-    step1Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyPracticeStep(1);" aria-label="點選填入第一列">' +
-      '<div class="step-top-line"><span class="step-badge">第 1 步</span><span class="step-title">第一列：<b>' + q.a + ' × ' + q.onesRepeats + '</b> ＝ 個位列</span></div>' +
-      '<div class="step-action-hint">👉 點我填入 <b>' + q.firstRow + '</b></div>' +
-      '</button>';
+  if (isMicro) {
+    if (curPhase === 0 && !isDone) {
+      step1Card = '<div class="step-guide-btn active" onclick="applyPracticeMicroStep()" style="cursor:pointer">' +
+        '<div class="step-top-line"><span class="step-badge">第 1 步</span><span class="step-title">第一列：乘以個位 <b>' + q.onesDigit + '</b></span></div>' +
+        '<div class="step-sub-note" style="margin-top:2px">' + curStep.desc.replace(/^<b>.*?<\/b>：/, '') + '</div>' +
+        '<div class="step-action-hint" style="margin-top:4px">👉 點我填入：<b>' + practiceMicroActionText(curStep) + '</b></div>' +
+        '</div>';
+    } else {
+      step1Card = '<div class="step-guide-btn done' + (focus === 1 ? ' focused' : '') + '" onclick="reviewPracticeStep(1)">' +
+        '<div class="step-top-line"><span class="step-badge done">✓ 第 1 步</span><span class="step-title">第一列：' + q.a + ' × ' + q.onesRepeats + ' ＝ <b>' + q.firstRow + '</b></span></div>' +
+        '<div class="step-sub-note">（個位列）</div>' +
+        '</div>';
+    }
   } else {
-    step1Card = '<div class="step-guide-btn done' + (focus === 1 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewStep(1);" title="點此回顧第 1 步重點">' +
-      '<div class="step-top-line"><span class="step-badge done">✓ 第 1 步</span><span class="step-title">第一列：' + q.a + ' × ' + q.onesRepeats + ' ＝ <b>' + q.firstRow + '</b></span></div>' +
-      '<div class="step-sub-note">（個位列）</div>' +
-      '</div>';
+    if (practiceState.step === 1) {
+      step1Card = '<button class="step-guide-btn active" onclick="applyPracticeStep(1)">' +
+        '<div class="step-top-line"><span class="step-badge">第 1 步</span><span class="step-title">第一列：<b>' + q.a + ' × ' + q.onesRepeats + '</b> ＝ 個位列</span></div>' +
+        '<div class="step-action-hint">👉 點我填入 <b>' + q.firstRow + '</b></div>' +
+        '</button>';
+    } else {
+      step1Card = '<div class="step-guide-btn done' + (focus === 1 ? ' focused' : '') + '" onclick="reviewPracticeStep(1)">' +
+        '<div class="step-top-line"><span class="step-badge done">✓ 第 1 步</span><span class="step-title">第一列：' + q.a + ' × ' + q.onesRepeats + ' ＝ <b>' + q.firstRow + '</b></span></div>' +
+        '<div class="step-sub-note">（個位列）</div>' +
+        '</div>';
+    }
   }
 
-  // 第二步按鈕卡 HTML
+  // 卡片 2 HTML
   var step2Card = '';
-  if(step < 2){
-    step2Card = '<div class="step-guide-btn locked">' +
-      '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title muted">第二列：十位列（待第 1 步完成）</span></div>' +
-      '</div>';
-  } else if(step === 2){
-    step2Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyPracticeStep(2);" aria-label="點選填入第二列">' +
-      '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title">第二列：<b>' + q.a + ' × ' + q.tensRepeats + '</b> ＝ 十位列</span></div>' +
-      '<div class="step-warn-note">第二列不是 ×' + q.tensDigit + '，而是 ×' + q.tensRepeats + '（對齊十位）</div>' +
-      '<div class="step-action-hint">👉 點我填入 <b>' + q.secondRow + '</b></div>' +
-      '</button>';
+  if (isMicro) {
+    if (curPhase < 1) {
+      step2Card = '<div class="step-guide-btn locked">' +
+        '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title muted">第二列：十位列（待第 1 步完成）</span></div>' +
+        '</div>';
+    } else if (curPhase === 1 && !isDone) {
+      step2Card = '<div class="step-guide-btn active" onclick="applyPracticeMicroStep()" style="cursor:pointer">' +
+        '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title">第二列：乘以十位 <b>' + q.tensDigit + '</b>（代表 ' + q.tensRepeats + '）</span></div>' +
+        '<div class="step-warn-note">注意！這是乘 ' + q.tensRepeats + '，對齊十位往左寫</div>' +
+        '<div class="step-sub-note" style="margin-top:2px">' + curStep.desc.replace(/^<b>.*?<\/b>：/, '') + '</div>' +
+        '<div class="step-action-hint" style="margin-top:4px">👉 點我填入：<b>' + practiceMicroActionText(curStep) + '</b></div>' +
+        '</div>';
+    } else {
+      step2Card = '<div class="step-guide-btn done' + (focus === 2 ? ' focused' : '') + '" onclick="reviewPracticeStep(2)">' +
+        '<div class="step-top-line"><span class="step-badge done">✓ 第 2 步</span><span class="step-title">第二列：' + q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b></span></div>' +
+        '<div class="step-warn-note mini">對齊十位（是 ×' + q.tensRepeats + '）</div>' +
+        '</div>';
+    }
   } else {
-    step2Card = '<div class="step-guide-btn done' + (focus === 2 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewStep(2);" title="點此回顧第 2 步重點">' +
-      '<div class="step-top-line"><span class="step-badge done">✓ 第 2 步</span><span class="step-title">第二列：' + q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b></span></div>' +
-      '<div class="step-warn-note mini">對齊十位（是 ×' + q.tensRepeats + '）</div>' +
-      '</div>';
+    if (practiceState.step < 2) {
+      step2Card = '<div class="step-guide-btn locked"><div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title muted">第二列：十位列（待第 1 步完成）</span></div></div>';
+    } else if (practiceState.step === 2) {
+      step2Card = '<button class="step-guide-btn active" onclick="applyPracticeStep(2)">' +
+        '<div class="step-top-line"><span class="step-badge">第 2 步</span><span class="step-title">第二列：<b>' + q.a + ' × ' + q.tensRepeats + '</b> ＝ 十位列</span></div>' +
+        '<div class="step-warn-note">第二列不是 ×' + q.tensDigit + '，而是 ×' + q.tensRepeats + '（對齊十位）</div>' +
+        '<div class="step-action-hint">👉 點我填入 <b>' + q.secondRow + '</b></div>' +
+        '</button>';
+    } else {
+      step2Card = '<div class="step-guide-btn done' + (focus === 2 ? ' focused' : '') + '" onclick="reviewPracticeStep(2)">' +
+        '<div class="step-top-line"><span class="step-badge done">✓ 第 2 步</span><span class="step-title">第二列：' + q.a + ' × ' + q.tensRepeats + ' ＝ <b>' + q.secondRow + '</b></span></div>' +
+        '<div class="step-warn-note mini">對齊十位（是 ×' + q.tensRepeats + '）</div>' +
+        '</div>';
+    }
   }
 
-  // 第三步按鈕卡 HTML
+  // 卡片 3 HTML
   var step3Card = '';
-  if(step < 3){
-    step3Card = '<div class="step-guide-btn locked">' +
-      '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title muted">兩排相加（待前兩步完成）</span></div>' +
-      '</div>';
-  } else if(step === 3){
-    step3Card = '<button class="step-guide-btn active" onclick="event.stopPropagation();applyPracticeStep(3);" aria-label="點選填入合計">' +
-      '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title">兩排相加：<b>' + q.firstRow + ' ＋ ' + q.secondRow + '</b></span></div>' +
-      '<div class="step-action-hint">👉 點我填入 <b>' + q.product + '</b></div>' +
-      '</button>';
+  if (isMicro) {
+    if (curPhase < 2) {
+      step3Card = '<div class="step-guide-btn locked">' +
+        '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title muted">兩排相加（待前兩步完成）</span></div>' +
+        '</div>';
+    } else if (curPhase === 2 && !isDone) {
+      step3Card = '<div class="step-guide-btn active" onclick="applyPracticeMicroStep()" style="cursor:pointer">' +
+        '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title">兩排相加：<b>' + q.firstRow + ' ＋ ' + q.secondRow + '</b></span></div>' +
+        '<div class="step-sub-note" style="margin-top:2px">' + curStep.desc.replace(/^<b>.*?<\/b>：/, '') + '</div>' +
+        '<div class="step-action-hint" style="margin-top:4px">👉 點我填入：<b>' + practiceMicroActionText(curStep) + '</b></div>' +
+        '</div>';
+    } else {
+      step3Card = '<div class="step-guide-btn done' + (focus === 3 ? ' focused' : '') + '" onclick="reviewPracticeStep(3)">' +
+        '<div class="step-top-line"><span class="step-badge done">✓ 第 3 步</span><span class="step-title">兩排相加：' + q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b></span></div>' +
+        '</div>';
+    }
   } else {
-    step3Card = '<div class="step-guide-btn done' + (focus === 3 ? ' focused' : '') + '" onclick="event.stopPropagation();reviewStep(3);" title="點此回顧合計重點">' +
-      '<div class="step-top-line"><span class="step-badge done">✓ 第 3 步</span><span class="step-title">兩排相加：' + q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b></span></div>' +
-      '</div>';
+    if (practiceState.step < 3) {
+      step3Card = '<div class="step-guide-btn locked"><div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title muted">兩排相加（待前兩步完成）</span></div></div>';
+    } else if (practiceState.step === 3) {
+      step3Card = '<button class="step-guide-btn active" onclick="applyPracticeStep(3)">' +
+        '<div class="step-top-line"><span class="step-badge">第 3 步</span><span class="step-title">兩排相加：<b>' + q.firstRow + ' ＋ ' + q.secondRow + '</b></span></div>' +
+        '<div class="step-action-hint">👉 點我填入 <b>' + q.product + '</b></div>' +
+        '</button>';
+    } else {
+      step3Card = '<div class="step-guide-btn done' + (focus === 3 ? ' focused' : '') + '" onclick="reviewPracticeStep(3)">' +
+        '<div class="step-top-line"><span class="step-badge done">✓ 第 3 步</span><span class="step-title">兩排相加：' + q.firstRow + ' ＋ ' + q.secondRow + ' ＝ <b>' + q.product + '</b></span></div>' +
+        '</div>';
+    }
   }
 
-  // 組合整份直式網格 HTML
+  // 組合直式網格 HTML（含進位列）
   var gridHtml =
     '<div class="practice-vertical" id="practiceVertical">' +
       '<div class="practice-grid" style="--practice-number-cols:' + numCols + '">' +
         // 表頭
         '<div class="practice-cell place-spacer"></div>' +
-        (function(){
+        (function() {
           var s = '';
-          for(var pos = cols - 1; pos >= 0; pos--){
+          for (var pos = cols - 1; pos >= 0; pos--) {
             s += '<div class="practice-cell place-header" data-pos="' + pos + '">' + C.placeName(pos) + '位</div>';
           }
           return s;
         })() +
         '<div class="practice-step-col header-spacer"></div>' +
 
+        // 進位列
+        '<div class="practice-cell place-spacer"></div>' +
+        (function() {
+          var s = '';
+          for (var pos = cols - 1; pos >= 0; pos--) {
+            var cItem = carries[pos];
+            var inner = '';
+            if (cItem) {
+              inner = '<span class="carry-bubble ' + cItem.type + (cItem.used ? ' used' : '') + '">' +
+                (cItem.type === 'add' ? '+' : '') + cItem.val + '</span>';
+            }
+            s += '<div class="practice-cell carry-cell" data-carry-pos="' + pos + '">' + inner + '</div>';
+          }
+          return s;
+        })() +
+        '<div class="practice-step-col label-col"><span class="step-role-tag carry-tag" style="background:#fef3c7;color:#92400e;border-color:#fde68a;font-size:12px">進位</span></div>' +
+
         // 被乘數
         '<div class="practice-cell place-spacer"></div>' +
-        practiceMultiplicandCells(q.a, cols, hiFactorA) +
+        renderA(q.a, cols, hiPlaceA) +
         '<div class="practice-step-col label-col"><span class="step-role-tag">被乘數</span></div>' +
 
         // 乘數
         '<div class="practice-cell operand-op">×</div>' +
-        practiceMultiplierCells(q, cols, focus) +
+        renderB(q, cols, curPhase) +
         '<div class="practice-step-col label-col"><span class="step-role-tag">乘數</span></div>' +
 
         // 橫線 1
@@ -825,13 +1047,13 @@ function renderPracticeQuestion(){
 
         // 第一列（個位列）
         '<div class="practice-row first-row" data-shift="0" data-answer-row="first">' +
-          practiceAnswerCells('first', q.firstRow, cols, step > 1, step === 1) +
+          renderAns('first', q.firstRow, cols) +
           '<div class="practice-step-col" data-step-col="1">' + step1Card + '</div>' +
         '</div>' +
 
         // 第二列（十位列）
         '<div class="practice-row second-row" data-shift="1" data-answer-row="second">' +
-          practiceAnswerCells('second', q.secondRow, cols, step > 2, step === 2) +
+          renderAns('second', q.secondRow, cols) +
           '<div class="practice-step-col" data-step-col="2">' + step2Card + '</div>' +
         '</div>' +
 
@@ -841,7 +1063,7 @@ function renderPracticeQuestion(){
 
         // 合計列
         '<div class="practice-row total-row" data-answer-row="total">' +
-          practiceAnswerCells('total', q.product, cols, step > 3, step === 3) +
+          renderAns('total', q.product, cols) +
           '<div class="practice-step-col" data-step-col="3">' + step3Card + '</div>' +
         '</div>' +
       '</div>' +
@@ -861,14 +1083,23 @@ function renderPracticeQuestion(){
     '</div>';
 }
 
-function submitQ(){
-  if(practiceState.step <= 3){
+function replayPractice() {
+  practiceState.mIndex = 0;
+  practiceState.step = 1;
+  practiceState.focusStep = 1;
+  renderPracticeQuestion();
+}
+
+function submitQ() {
+  if (practiceState.stepStyle === 'micro') {
+    applyPracticeMicroStep();
+  } else if (practiceState.step <= 3) {
     applyPracticeStep(practiceState.step);
   }
 }
-function nextQ(){newPracticeQuestion();}
-document.getElementById('digitsSelect').addEventListener('change',function(){
-  practiceState.digits=Number(this.value);
+function nextQ() { newPracticeQuestion(); }
+document.getElementById('digitsSelect').addEventListener('change', function() {
+  practiceState.digits = Number(this.value);
   newPracticeQuestion();
 });
 newPracticeQuestion();

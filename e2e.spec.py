@@ -92,8 +92,15 @@ def run(pg, errs):
     ck(pg.eval_on_selector('#pQz2', 'e=>e.classList.contains("on")'), '兩列直式分頁開啟')
     ck(pg.eval_on_selector('#twoRowsPracticeView', 'e=>e.style.display !== "none"'), '兩列直式預設為分步點選練習')
     ck(pg.eval_on_selector('#twoRowsBody .practice-grid', 'e=>!!e'), '兩列直式顯示網格')
+    ck(pg.eval_on_selector('#twoRowsBody .carry-cell', 'e=>!!e'), '兩列直式顯示進位列')
+    ck('👉 填入：' in pg.inner_text('#twoRowsBtn'), '兩列直式微步模式提示微步動作')
+    pg.click('#twoRowsBtn'); pg.wait_for_timeout(120)
+    ck(pg.eval_on_selector('#twoRowsBody .answer-box.filled', 'e=>!!e'), '兩列直式微步填入成功')
+    pg.click('#btnTwoRowsRow'); pg.wait_for_timeout(120)
+    ck('👉 填入第一列' in pg.inner_text('#twoRowsBtn'), '整列算模式提示填入第一列')
     pg.click('#twoRowsBtn'); pg.wait_for_timeout(120)
     ck('填入第二列' in pg.inner_text('#twoRowsBtn'), '兩列直式第一步填入成功')
+    pg.click('#btnTwoRowsMicro'); pg.wait_for_timeout(120)
 
     # 兩列直式切換課本步驟演示
     pg.click('#btnTwoRowsDemo'); pg.wait_for_timeout(120)
@@ -184,21 +191,31 @@ def run(pg, errs):
         ck(abs(header_center - first_center) <= 1 and abs(header_center - second_center) <= 1,
            '%d位題目答案格共用十位欄位' % digits)
 
-    # 步驟一：強調要乘的被乘數與個位數，乘數十位變暗，第一列文字在第一列旁
+    # 步驟一：強調要乘的被乘數與個位數，乘數十位變暗，第一列文字在第一列旁，含進位列
     ck(len(pg.eval_on_selector_all('#practiceVertical .factor-a.highlight-factor', 'e=>e')) > 0,
        '步驟一被乘數高亮')
     ck(len(pg.eval_on_selector_all('#practiceVertical .factor-b-ones.highlight-factor', 'e=>e')) == 1,
        '步驟一乘數個位高亮')
     ck(len(pg.eval_on_selector_all('#practiceVertical .factor-b-tens.dim-digit', 'e=>e')) == 1,
        '步驟一乘數十位變暗')
+    ck(pg.eval_on_selector('#practiceVertical .carry-cell', 'e=>!!e'),
+       '練習頁直式包含進位列')
     ck(pg.eval_on_selector('#practiceVertical [data-step-col="1"] .step-guide-btn.active', 'e=>!!e'),
        '第一列引導卡顯示且在第一列旁')
 
+    # 微步模式：點選第一列填入一微步
+    pg.click('#practiceVertical [data-step-col="1"] .step-guide-btn.active')
+    pg.wait_for_timeout(100)
+    ck(pg.eval_on_selector('#practiceVertical [data-answer-row="first"] .answer-box.filled', 'e=>!!e'),
+       '微步點選後第一列答案填入')
+
+    # 切換整列算模式：點選填完整題
+    pg.click('#btnPracticeRow'); pg.wait_for_timeout(120)
     # 點選第一列填入
     pg.click('#practiceVertical [data-step-col="1"] .step-guide-btn.active')
     pg.wait_for_timeout(100)
     ck(pg.eval_on_selector('#practiceVertical [data-answer-row="first"] .answer-box.filled', 'e=>!!e'),
-       '點選後第一列答案填入')
+       '整列模式點選後第一列答案填入')
 
     # 步驟二：乘數十位高亮，乘數個位變暗，第二列引導卡在第二列旁
     ck(len(pg.eval_on_selector_all('#practiceVertical .factor-b-tens.highlight-factor', 'e=>e')) == 1,

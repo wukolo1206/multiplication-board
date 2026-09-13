@@ -2,9 +2,9 @@
 project: 乘法直式板（四上第二單元）
 category: 學科工具集
 status: 維護中
-version: "v1.1.4 steps.html 一鍵送出位值觀察與兩列直式分步練習分頁整合"
+version: "v1.1.5 兩列直式微步拆解含進位符號與調亮非焦點數字"
 url: https://wukolo1206.github.io/multiplication-board/
-next_action: 學校現場大屏與學生平板驗收二三位數×整十與兩列直式點選填入教學手感
+next_action: 學校現場大屏與學生平板驗收兩列直式微步進位手感
 updated: 2026-09-13
 ---
 

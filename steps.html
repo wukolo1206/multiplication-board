@@ -212,6 +212,68 @@ h1{font-size:24px;margin:4px 0 4px}
   color:#854d0e !important;font-weight:800;border-radius:10px;
   box-shadow:0 0 10px rgba(245,158,11,0.45);transform:scale(1.05);z-index:2
 }
+
+/* ── 被乘數整體外框（表示整個被乘數重複進行計算） ── */
+.practice-cell.factor-a-group,
+.vgrid .cell.factor-a-group {
+  border-top: 2.5px solid #f59e0b !important;
+  border-bottom: 2.5px solid #f59e0b !important;
+  background: #fffdf5;
+  color: #1e293b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+  box-sizing: border-box;
+  transform: none !important;
+  z-index: 1;
+}
+
+.practice-cell.factor-a-group.group-start,
+.vgrid .cell.factor-a-group.group-start {
+  border-left: 2.5px solid #f59e0b !important;
+  border-right: none !important;
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-right: -2px;
+  width: calc(100% + 2px);
+}
+
+.practice-cell.factor-a-group.group-mid,
+.vgrid .cell.factor-a-group.group-mid {
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  margin-left: -1px;
+  margin-right: -1px;
+  width: calc(100% + 2px);
+}
+
+.practice-cell.factor-a-group.group-end,
+.vgrid .cell.factor-a-group.group-end {
+  border-right: 2.5px solid #f59e0b !important;
+  border-left: none !important;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  margin-left: -1px;
+}
+
+.practice-cell.factor-a-group.group-single,
+.vgrid .cell.factor-a-group.group-single {
+  border: 2.5px solid #f59e0b !important;
+  border-radius: 10px !important;
+}
+
+/* 正在算的那一位才用底色（亮黃底色＋深琥珀粗體字） */
+.practice-cell.factor-a-group.active-calc,
+.vgrid .cell.factor-a-group.active-calc {
+  background: #fef08a !important;
+  color: #854d0e !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.45);
+  z-index: 2;
+}
 .practice-cell.dim-digit{
   opacity:0.5 !important;color:#64748b !important;
   transform:scale(0.96)
@@ -1335,11 +1397,16 @@ function drawHVert(mode, rawInput, isCorrect) {
   }
   h += '<div class="h-badge-col"></div>';
 
-  // 2. 被乘數 a (黃框高亮，右側標籤：被乘數)
+  // 2. 被乘數 a (黃框一起框起來，右側標籤：被乘數)
   h += '<div class="cell"></div>';
   for (var x = 0; x < numCols - dsA.length; x++) h += '<div class="cell"></div>';
   for (var j = dsA.length - 1; j >= 0; j--) {
-    h += '<div class="cell highlight-factor">' + dsA[j] + '</div>';
+    var grpCls = 'cell factor-a-group active-calc highlight-factor';
+    if (dsA.length === 1) grpCls += ' group-single';
+    else if (j === dsA.length - 1) grpCls += ' group-start';
+    else if (j === 0) grpCls += ' group-end';
+    else grpCls += ' group-mid';
+    h += '<div class="' + grpCls + '">' + dsA[j] + '</div>';
   }
   h += '<div class="h-badge-col"><span class="h-pill-badge multiplicand">被乘數</span></div>';
 
@@ -1885,23 +1952,41 @@ function renderTwoRowsQuestion() {
     }
   }
 
-  // 2. 被乘數高亮邏輯
+  // 2. 被乘數整體框起與當前位高亮邏輯
   var hiPlaceA = -1;
+  var isAActive = false;
   if (isMicro && curStep && (curPhase === 0 || curPhase === 1)) {
     hiPlaceA = curStep.place;
+    isAActive = true;
   } else if (!isMicro && (focus === 1 || focus === 2)) {
     hiPlaceA = 999;
+    isAActive = true;
   }
 
-  // 被乘數格子
-  function renderA(value, cols, hiPlace) {
+  // 被乘數格子（整個被乘數一起框起來，正在算的才用底色）
+  function renderA(value, cols, hiPlace, isActive) {
     var h = '';
     var len = String(value).length;
     for (var pos = cols - 1; pos >= 0; pos--) {
       var hasDigit = (pos < len);
       var d = hasDigit ? Math.floor(value / Math.pow(10, pos)) % 10 : '';
-      var isHi = hasDigit && (hiPlace === 999 || hiPlace === pos);
-      var cls = 'practice-cell operand-cell factor-a' + (isHi ? ' highlight-factor' : '');
+      var cls = 'practice-cell operand-cell factor-a';
+      if (hasDigit && isActive) {
+        cls += ' factor-a-group';
+        if (len === 1) {
+          cls += ' group-single';
+        } else if (pos === len - 1) {
+          cls += ' group-start';
+        } else if (pos === 0) {
+          cls += ' group-end';
+        } else {
+          cls += ' group-mid';
+        }
+        var isThisDigit = (hiPlace === 999 || hiPlace === pos);
+        if (isThisDigit) {
+          cls += ' active-calc highlight-factor';
+        }
+      }
       h += '<div class="' + cls + '" data-pos="' + pos + '">' + d + '</div>';
     }
     return h;
@@ -2120,7 +2205,7 @@ function renderTwoRowsQuestion() {
 
         // 3. 被乘數
         '<div class="practice-cell place-spacer"></div>' +
-        renderA(q.a, cols, hiPlaceA) +
+        renderA(q.a, cols, hiPlaceA, isAActive) +
         '<div class="practice-step-col label-col"><span class="step-role-tag">被乘數</span></div>' +
 
         // 4. 乘數

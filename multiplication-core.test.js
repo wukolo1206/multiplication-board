@@ -200,6 +200,37 @@ eq('整十×整十 漏補 1 個 0 (120)', C.diagnoseHorizontal(40, 30, 120).code
 eq('整十×整十 補多 0 (12000)', C.diagnoseHorizontal(40, 30, 12000).code, 'ZERO_TOO_MANY');
 eq('整十×整十 基本乘法錯 (1500)', C.diagnoseHorizontal(40, 30, 1500).code, 'BASE_FACT_ERROR');
 
+/* =============================================================
+ * 10. array 無限練習題資料
+ * =========================================================== */
+group('10. array 無限練習題資料');
+var p24 = C.arrayPracticeParts(24, 12);
+eq('24×12 個位列資料',
+  [p24.onesDigit, p24.onesRepeats, p24.firstRow], [2, 2, 48]);
+eq('24×12 十位列使用×10',
+  [p24.tensDigit, p24.tensRepeats, p24.secondRow], [1, 10, 240]);
+eq('24×12 完整積與重複次數',
+  [p24.product, p24.repeatTotal], [288, 12]);
+
+var p375 = C.arrayPracticeParts(375, 46);
+eq('375×46 兩列部分積',
+  [p375.firstRow, p375.secondRow, p375.product, p375.repeatTotal],
+  [2250, 15000, 17250, 46]);
+
+[1, 2, 3, 4].forEach(function (digits) {
+  var q = C.generateArrayPracticeQuestion(digits);
+  var min = digits === 1 ? 1 : Math.pow(10, digits - 1);
+  var max = Math.pow(10, digits) - 1;
+  eq(digits + '位被乘數範圍',
+    [q.a >= min && q.a <= max, String(q.a).length], [true, digits]);
+  eq(digits + '位題目的資料一致',
+    [q.b >= 11 && q.b <= 99, q.b % 10 > 0,
+      Math.floor(q.b / 10) > 0, q.secondRow,
+      q.a * q.b, q.repeatTotal],
+    [true, true, true, q.a * Math.floor(q.b / 10) * 10,
+      q.a * q.b, q.b]);
+});
+
 /* ---------------------------------------------------------- */
 console.log('\n' + '='.repeat(52));
 console.log('  通過 ' + pass + ' 項，失敗 ' + fail + ' 項');

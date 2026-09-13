@@ -252,6 +252,39 @@
     });
   }
 
+  /**
+   * 無限練習用的兩列部分積資料。
+   * 乘數的十位不是只乘一次，而是代表十位的實際重複次數。
+   */
+  function arrayPracticeParts(a, b) {
+    var onesDigit = b % 10;
+    var tensDigit = Math.floor(b / 10);
+    var tensRepeats = tensDigit * 10;
+    return {
+      a: a,
+      b: b,
+      onesDigit: onesDigit,
+      tensDigit: tensDigit,
+      onesRepeats: onesDigit,
+      tensRepeats: tensRepeats,
+      firstRow: a * onesDigit,
+      secondRow: a * tensRepeats,
+      product: a * b,
+      repeatTotal: onesDigit + tensRepeats
+    };
+  }
+
+  /** 產生一至四位被乘數、十位與個位皆非零的兩位數乘數。 */
+  function generateArrayPracticeQuestion(digits) {
+    var min = digits === 1 ? 1 : Math.pow(10, digits - 1);
+    var max = Math.pow(10, digits) - 1;
+    var a = Math.floor(Math.random() * (max - min + 1)) + min;
+    var tensDigit = Math.floor(Math.random() * 9) + 1;
+    var onesDigit = Math.floor(Math.random() * 9) + 1;
+    var b = tensDigit * 10 + onesDigit;
+    return arrayPracticeParts(a, b);
+  }
+
   /* ---------------------------------------------------------------
    * 四、逐位診斷（carry.html）
    * ------------------------------------------------------------- */
@@ -498,6 +531,8 @@
     breakdown: breakdown,
     areaBlocks: areaBlocks,
     blocksToRows: blocksToRows,
+    arrayPracticeParts: arrayPracticeParts,
+    generateArrayPracticeQuestion: generateArrayPracticeQuestion,
     diagnoseDigit: diagnoseDigit,
     diagnoseRow: diagnoseRow,
     diagnoseRowSum: diagnoseRowSum,

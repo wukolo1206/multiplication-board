@@ -149,17 +149,38 @@ def run(pg, errs):
            '%d位題目第二列使用實際十位值' % digits)
         ck(pg.eval_on_selector('#practiceVertical .second-row',
            'e=>e.dataset.shift') == '1',
-           '%d位題目第二列標記左移一位' % digits)
+           '%d位題目第二列標記對齊十位' % digits)
+        ck(len(pg.eval_on_selector_all('#practiceVertical .place-header',
+           'e=>e.map(x=>x.textContent)')) >= 3,
+           '%d位題目有定位板欄位' % digits)
+        header_center = pg.eval_on_selector(
+            '#practiceVertical .place-header[data-pos="1"]',
+            'e=>e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2')
+        first_center = pg.eval_on_selector(
+            '#practiceVertical [data-answer-row="first"] .answer-input[data-pos="1"]',
+            'e=>e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2')
+        second_center = pg.eval_on_selector(
+            '#practiceVertical [data-answer-row="second"] .answer-input[data-pos="1"]',
+            'e=>e.getBoundingClientRect().left + e.getBoundingClientRect().width / 2')
+        ck(abs(header_center - first_center) <= 1 and abs(header_center - second_center) <= 1,
+           '%d位題目答案格共用十位欄位' % digits)
 
     q = pg.evaluate('practiceState.question')
-    pg.fill('#firstRowIn', str(q['firstRow']))
-    pg.fill('#secondRowIn', str(q['firstRow']))
-    pg.fill('#totalIn', str(q['product']))
+    def fill_practice_row(row, value):
+        inputs = pg.locator('#practiceVertical [data-answer-row="%s"] .answer-input' % row)
+        digits = str(value)
+        start = inputs.count() - len(digits)
+        for i, digit in enumerate(digits):
+            inputs.nth(start + i).fill(digit)
+
+    fill_practice_row('first', q['firstRow'])
+    fill_practice_row('second', q['firstRow'])
+    fill_practice_row('total', q['product'])
     pg.click('#qBtn'); pg.wait_for_timeout(120)
     ck('十位' in msg(pg, '#qMsg') and str(q['tensRepeats']) in msg(pg, '#qMsg'),
        '第二列錯誤會提示十位實際重複次數')
 
-    pg.fill('#secondRowIn', str(q['secondRow']))
+    fill_practice_row('second', q['secondRow'])
     pg.click('#qBtn'); pg.wait_for_timeout(120)
     ck('答對' in msg(pg, '#qMsg'), '三個答案都正確時通過')
     ck(pg.eval_on_selector('#qNext', 'e=>e.style.display') != 'none',

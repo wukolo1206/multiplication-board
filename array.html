@@ -87,30 +87,33 @@ h1{font-size:24px;margin:4px 0 4px}
 .practice-guidance{flex:1;min-width:240px;font-size:clamp(17px,2.8vw,22px);line-height:1.8;
                    color:#7c2d12;font-weight:700}
 .practice-guidance div{padding:8px 10px;margin-bottom:8px;background:#fff7ed;border-radius:10px}
-.practice-vertical{display:inline-flex;flex-direction:column;align-items:flex-end;gap:3px;
-                   padding:16px 20px;background:#fff7ed;border:3px solid #fed7aa;border-radius:16px;
-                   font-family:"Courier New",monospace;font-size:clamp(34px,6vw,58px);line-height:1.2;
-                   font-variant-numeric:tabular-nums;max-width:100%;overflow-x:auto}
-.practice-number{min-width:5.4em;text-align:right;white-space:nowrap}
-.practice-number.multiplier:before{content:'×';margin-right:.15em}
-.practice-line{width:100%;border-top:4px solid #1f2937;margin:4px 0}
-.practice-row{display:flex;align-items:center;justify-content:flex-end;min-width:100%}
-.practice-row.second-row{padding-right:1.05em}
-.practice-row .row-label{font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
-                         font-size:clamp(16px,2.5vw,21px);font-weight:700;color:#92400e;
-                         margin-right:14px;white-space:nowrap}
-.practice-row .row-input{width:clamp(130px,25vw,210px);min-height:58px;font-size:clamp(28px,5vw,44px);
-                         text-align:right;border:3px solid #cbd5e1;border-radius:12px;
-                         font-family:"Courier New",monospace;padding:0 10px}
-.practice-row .row-input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px #ede9fe}
-.practice-answer{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;
-                 font-size:clamp(18px,3vw,24px);font-weight:700}
+.practice-vertical{display:inline-block;padding:16px 20px;background:#fff7ed;border:3px solid #fed7aa;
+                   border-radius:16px;font-family:"Courier New",monospace;max-width:100%;overflow-x:auto;
+                   --practice-cell:clamp(42px,8vw,58px)}
+.practice-grid{display:grid;grid-template-columns:repeat(var(--practice-col-count),var(--practice-cell));
+               gap:2px;align-items:center;justify-content:start}
+.practice-cell{width:var(--practice-cell);min-height:58px;display:flex;align-items:center;justify-content:center;
+               font-size:clamp(30px,5.5vw,52px);line-height:1.2;font-variant-numeric:tabular-nums}
+.practice-cell.place-header{min-height:34px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+                            font-size:clamp(13px,2vw,17px);font-weight:700;color:#0e7490;
+                            background:#cffafe;border:2px solid #a5f3fc;border-radius:8px 8px 0 0}
+.practice-cell.place-spacer,.practice-cell.answer-spacer{background:transparent}
+.practice-cell.operand-op{color:#64748b;font-size:clamp(26px,5vw,44px)}
+.practice-line{grid-column:1/-1;border-top:4px solid #1f2937;height:0;margin:4px 0;width:100%}
+.practice-row{display:contents}
+.practice-cell.answer-cell{min-height:66px}
+.practice-cell .answer-input{width:calc(var(--practice-cell) - 8px);height:58px;font-size:clamp(28px,5vw,44px);
+                             text-align:center;border:3px solid #cbd5e1;border-radius:12px;
+                             font-family:"Courier New",monospace;padding:0;background:#fff}
+.practice-cell .answer-input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px #ede9fe}
+.practice-cell .answer-input.ok{border-color:#16a34a;background:#f0fdf4}
+.practice-cell .answer-input.bad{border-color:#dc2626;background:#fef2f2}
 .repeat-total{padding:11px 14px;background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;
               font-size:clamp(18px,3vw,24px);line-height:1.6;font-weight:700;color:#92400e}
 @media(max-width:640px){.card{padding:12px}.speech{font-size:17px}
   .practice-work{display:block}.practice-guidance{margin-top:12px;min-width:0}
-  .practice-row{justify-content:flex-start}.practice-row.second-row{padding-right:0}
-  .practice-row .row-label{font-size:16px;margin-right:8px}.practice-row .row-input{width:145px}}
+  .practice-vertical{padding:12px 14px}.practice-cell{min-height:50px}
+  .practice-cell.answer-cell{min-height:58px}.practice-cell .answer-input{height:50px}}
 .lv{display:inline-block;font-size:13px;background:#ede9fe;color:#5b21b6;padding:3px 10px;
     border-radius:99px;font-weight:700;margin-bottom:8px}
 .warn{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 14px;
@@ -465,8 +468,43 @@ function newPracticeQuestion(){
   practiceState.locked=false;
   renderPracticeQuestion();
 }
+function practicePlaceCount(q){
+  return Math.max(3,String(q.a).length,String(q.secondRow).length,String(q.product).length);
+}
+function practiceDigit(value,pos){
+  return Math.floor(value/Math.pow(10,pos))%10;
+}
+function practiceNumberCells(value,cols,cls){
+  var h='';
+  for(var pos=cols-1;pos>=0;pos--){
+    h+='<div class="practice-cell '+cls+'" data-pos="'+pos+'">'+
+      (pos<String(value).length?practiceDigit(value,pos):'')+'</div>';
+  }
+  return h;
+}
+function practiceAnswerCells(row,cols){
+  var h='<div class="practice-cell answer-spacer"></div>';
+  for(var pos=cols-1;pos>=0;pos--){
+    h+='<div class="practice-cell answer-cell" data-pos="'+pos+'">'+
+      '<input class="answer-input" data-pos="'+pos+'" maxlength="1" inputmode="numeric" pattern="[0-9]"'+
+      ' aria-label="'+row+'答案第'+pos+'位"></div>';
+  }
+  return h;
+}
+function readPracticeRow(row){
+  var inputs=document.querySelectorAll('[data-answer-row="'+row+'"] .answer-input');
+  var raw=[],first=-1;
+  for(var i=0;i<inputs.length;i++){
+    raw.push(String(inputs[i].value||'').replace(/[^0-9]/g,''));
+    if(raw[i] && first<0) first=i;
+  }
+  if(first<0) return null;
+  for(var j=first;j<raw.length;j++) if(!raw[j]) return null;
+  return Number(raw.slice(first).join(''));
+}
 function renderPracticeQuestion(){
   var q=practiceState.question;
+  var cols=practicePlaceCount(q);
   document.getElementById('lvTag').textContent='無限練習／已練習 '+practiceState.completed+' 題';
   document.getElementById('qText').innerHTML='請完成 <b>'+q.a+' × '+q.b+'</b> 的兩列直式。';
   document.getElementById('qSpeech').innerHTML=practiceSpeech(q);
@@ -477,18 +515,22 @@ function renderPracticeQuestion(){
     '<div class="practice-layout">'+
       '<div class="practice-work">'+
         '<div class="practice-vertical" id="practiceVertical">'+
-          '<div class="practice-number">'+q.a+'</div>'+
-          '<div class="practice-number multiplier">'+q.b+'</div>'+
-          '<div class="practice-line"></div>'+
-          '<div class="practice-row first-row" data-shift="0">'+
-            '<input class="row-input" id="firstRowIn" type="number" inputmode="numeric" aria-label="第一列部分積">'+
-          '</div>'+
-          '<div class="practice-row second-row" data-shift="1">'+
-            '<input class="row-input" id="secondRowIn" type="number" inputmode="numeric" aria-label="第二列部分積">'+
-          '</div>'+
-          '<div class="practice-line"></div>'+
-          '<div class="practice-row total-row">'+
-            '<input class="row-input" id="totalIn" type="number" inputmode="numeric" aria-label="最後答案">'+
+          '<div class="practice-grid" style="--practice-col-count:'+(cols+1)+'">'+
+            '<div class="practice-cell place-spacer"></div>'+
+            (function(){var s='';for(var pos=cols-1;pos>=0;pos--)s+='<div class="practice-cell place-header" data-pos="'+pos+'">'+C.placeName(pos)+'位</div>';return s;})()+
+            '<div class="practice-cell place-spacer"></div>'+practiceNumberCells(q.a,cols,'operand-cell')+
+            '<div class="practice-cell operand-op">×</div>'+practiceNumberCells(q.b,cols,'operand-cell')+
+            '<div class="practice-line"></div>'+
+            '<div class="practice-row first-row" data-shift="0" data-answer-row="first">'+
+              practiceAnswerCells('第一列',cols)+
+            '</div>'+
+            '<div class="practice-row second-row" data-shift="1" data-answer-row="second">'+
+              practiceAnswerCells('第二列',cols)+
+            '</div>'+
+            '<div class="practice-line"></div>'+
+            '<div class="practice-row total-row" data-answer-row="total">'+
+              practiceAnswerCells('最後',cols)+
+            '</div>'+
           '</div>'+
         '</div>'+
         '<div class="practice-guidance">'+
@@ -504,25 +546,25 @@ function renderPracticeQuestion(){
 function submitQ(){
   if(practiceState.locked) return;
   var q=practiceState.question;
-  var firstEl=document.getElementById('firstRowIn');
-  var secondEl=document.getElementById('secondRowIn');
-  var totalEl=document.getElementById('totalIn');
   var m=document.getElementById('qMsg');
-  if(!firstEl.value || !secondEl.value || !totalEl.value){
+  var first=readPracticeRow('first');
+  var second=readPracticeRow('second');
+  var total=readPracticeRow('total');
+  if(first===null || second===null || total===null){
     m.className='msg no show'; m.textContent='三個答案都填好，再按檢查答案。'; return;
   }
-  if(Number(firstEl.value)!==q.firstRow){
+  if(first!==q.firstRow){
     m.className='msg no show';
     m.innerHTML='先看個位，個位是 '+q.onesDigit+'，請計算被乘數重複 '+q.onesRepeats+' 次。';
     return;
   }
-  if(Number(secondEl.value)!==q.secondRow){
+  if(second!==q.secondRow){
     m.className='msg no show';
     m.innerHTML='十位的數字 '+q.tensDigit+' 是 '+q.tensDigit+' 個十，也就是重複 '+
       q.tensRepeats+' 次；請計算被乘數×'+q.tensRepeats+'，並對齊十位。';
     return;
   }
-  if(Number(totalEl.value)!==q.product){
+  if(total!==q.product){
     m.className='msg no show'; m.innerHTML='兩列部分積都對了，請再把第一列和第二列相加。'; return;
   }
   practiceState.locked=true;

@@ -63,4 +63,12 @@ L1/L2/L3 對 `carry.html` 是對的，照抄到 `array.html` 會讓它失去面�
 在包含 `justify-items: center` 的 CSS Grid 容器中，如果橫線元素 `<div class="hr"></div>` 未指定 `justify-self: stretch` 與 `width: 100%`，其預設寬度會縮減為 0，導致直式下方的橫線在畫面上完全消失。
 **教訓**：跨欄格線元素（`grid-column: 1/-1`）在 Grid 容器中必須明確聲明 `width: 100%; justify-self: stretch;`。
 
+## P11　固定寬度輸入框加 padding 不能取代定位板欄位
+
+**現象**：第二列輸入框雖然設定 `padding-right`，看起來像左移，但沒有和百、十、個位的固定欄位共用中心線；不同位數時對齊不可靠。
+**原因**：整列只有一個固定寬度輸入框，版面只移動輸入框盒子，沒有建立每個位值的 DOM 欄位。
+**解法**：改成共用 CSS Grid，標題與所有答案列使用相同 `data-pos` 欄位，每格輸入一個數字，再由 `readPracticeRow()` 組回答案。
+**未來避免**：凡是教學要求「對齊某一位」，必須以共用 Grid 欄位驗收中心線，不用 padding 或 magic number 模擬。
+
+---
 

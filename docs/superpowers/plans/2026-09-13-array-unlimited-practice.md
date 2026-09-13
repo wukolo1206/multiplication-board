@@ -320,6 +320,8 @@ Expected: 核心測試通過；array.html 端到端測試在 #digitsSelect 等�
 
 第二列主算式只能串接 q.tensRepeats；不得串接 q.tensDigit，以免把 24×1 當成主要提示。
 
+**實作修正（依視覺驗收補充）：** 練習直式不是每列一個固定寬度輸入框，而是使用共用的 CSS Grid 定位板。每個答案列以 `data-pos` 對應百、十、個位等欄位，每格輸入一個數字；`readPracticeRow()` 由右側連續欄位組回部分積，再沿用原本的答案驗證。
+
 - [ ] Step 2: 建立 newPracticeQuestion 與 renderPracticeQuestion。render 時產生以下固定 selector：
 
     function newPracticeQuestion() {

@@ -127,19 +127,57 @@ def run(pg, errs):
     hi = pg.eval_on_selector_all('#rect2 .blk.hi', 'e=>e.map(x=>x.dataset.b).sort()')
     ck(hi == ['3', '4'], '點 240 亮起 ③④ 兩塊（2:1 對應）')
 
-    # 練習 L3：沒有圖也要答得出來
+    # 練習：可選被乘數位數、口語提示、無限出題
     pg.click('#tabQz'); pg.wait_for_timeout(120)
-    for need in [['1', '2'], ['3', '4'], ['1', '2']]:
-        for n in need:
-            pg.click('#qBody .blk[data-b="%s"]' % n)
-        pg.click('#qBtn'); pg.wait_for_timeout(150)
-        pg.click('#qNext'); pg.wait_for_timeout(150)
-    ck(pg.eval_on_selector_all('#qBody .rect', 'e=>e.length') == 0, 'L3 沒有方格圖')
-    opts = pg.eval_on_selector_all('#qBody .opt', 'e=>e.map(x=>x.textContent)')
-    ck(opts == ['28 × 7', '20 × 70', '28 × 70'], 'L3 反思題選項正確')
-    pg.click('#qBody .opt[data-i="2"]'); pg.click('#qBtn'); pg.wait_for_timeout(150)
-    ck('答對' in msg(pg), '196 代表 28×70')
-    ck('古氏積木' in pg.eval_on_selector('#qWarn', 'e=>e.textContent'), '結尾要求回到實體積木')
+    ck('無限練習' in pg.eval_on_selector('#lvTag', 'e=>e.textContent'),
+       '練習頁標示無限練習')
+    ck(pg.eval_on_selector_all('#digitsSelect option',
+       'e=>e.map(x=>x.value)'), ['1', '2', '3', '4'],
+       '被乘數位數有一至四位可選')
+
+    for digits in [1, 2, 3, 4]:
+        pg.select_option('#digitsSelect', str(digits))
+        pg.wait_for_timeout(80)
+        q = pg.evaluate('practiceState.question')
+        ck(len(str(q['a'])) == digits,
+           '%d位選擇產生%d位被乘數' % (digits, digits))
+        speech = pg.eval_on_selector(
+            '#qSpeech', 'e=>e.textContent').replace(' ', '')
+        ck(('重複%d次' % q['tensRepeats']) in speech,
+           '%d位題目說明十位重複次數' % digits)
+        ck(('×%d' % q['tensRepeats']) in speech,
+           '%d位題目第二列使用實際十位值' % digits)
+        ck(pg.eval_on_selector('#practiceVertical .second-row',
+           'e=>e.dataset.shift') == '1',
+           '%d位題目第二列標記左移一位' % digits)
+
+    q = pg.evaluate('practiceState.question')
+    pg.fill('#firstRowIn', str(q['firstRow']))
+    pg.fill('#secondRowIn', str(q['firstRow']))
+    pg.fill('#totalIn', str(q['product']))
+    pg.click('#qBtn'); pg.wait_for_timeout(120)
+    ck('十位' in msg(pg, '#qMsg') and str(q['tensRepeats']) in msg(pg, '#qMsg'),
+       '第二列錯誤會提示十位實際重複次數')
+
+    pg.fill('#secondRowIn', str(q['secondRow']))
+    pg.click('#qBtn'); pg.wait_for_timeout(120)
+    ck('答對' in msg(pg, '#qMsg'), '三個答案都正確時通過')
+    ck(pg.eval_on_selector('#qNext', 'e=>e.style.display') != 'none',
+       '答對後出現下一題')
+    pg.click('#qNext'); pg.wait_for_timeout(100)
+    ck('已練習 1 題' in pg.eval_on_selector(
+       '#lvTag', 'e=>e.textContent'), '下一題可繼續且累計已練習題數')
+
+    pg.set_viewport_size({'width': 390, 'height': 844})
+    pg.reload(); pg.wait_for_load_state('networkidle')
+    pg.click('#tabQz'); pg.wait_for_timeout(100)
+    ck(pg.eval_on_selector('#qSpeech',
+       'e=>e.getBoundingClientRect().width <= 360'),
+       '窄版口語提示不超出卡片')
+    ck(pg.eval_on_selector('#practiceVertical',
+       'e=>e.getBoundingClientRect().right <= window.innerWidth'),
+       '窄版放大直式不超出視窗')
+    pg.set_viewport_size({'width': 1100, 'height': 900})
 
     # ═════════ carry ═════════
     print('== carry.html')

@@ -50,7 +50,7 @@ generateArrayPracticeQuestion(digits) 依 digits 產生 1、2、3 或 4 位數�
 
 - [ ] Step 2: 在既有測試的最終 pass/fail 區塊前加入下列測試，不先新增 production code。
 
-    group('7. array 無限練習題資料');
+    group('10. array 無限練習題資料');
     var p24 = C.arrayPracticeParts(24, 12);
     eq('24×12 個位列資料',
       [p24.onesDigit, p24.onesRepeats, p24.firstRow], [2, 2, 48]);
@@ -181,8 +181,8 @@ Expected: 原有測試及 Task 1 新增測試全部 PASS，失敗數為 0。
     pg.fill('#secondRowIn', str(q['firstRow']))
     pg.fill('#totalIn', str(q['product']))
     pg.click('#qBtn'); pg.wait_for_timeout(120)
-    ck('十位' in msg(pg, '#qMsg') and '10' in msg(pg, '#qMsg'),
-       '第二列錯誤會提示十位代表10倍')
+    ck('十位' in msg(pg, '#qMsg') and str(q['tensRepeats']) in msg(pg, '#qMsg'),
+       '第二列錯誤會提示十位實際重複次數')
 
     pg.fill('#secondRowIn', str(q['secondRow']))
     pg.click('#qBtn'); pg.wait_for_timeout(120)
@@ -192,6 +192,17 @@ Expected: 原有測試及 Task 1 新增測試全部 PASS，失敗數為 0。
     pg.click('#qNext'); pg.wait_for_timeout(100)
     ck('已練習 1 題' in pg.eval_on_selector(
        '#lvTag', 'e=>e.textContent'), '下一題可繼續且累計已練習題數')
+
+    pg.set_viewport_size({'width': 390, 'height': 844})
+    pg.reload(); pg.wait_for_load_state('networkidle')
+    pg.click('#tabQz'); pg.wait_for_timeout(100)
+    ck(pg.eval_on_selector('#qSpeech',
+       'e=>e.getBoundingClientRect().width <= 360'),
+       '窄版口語提示不超出卡片')
+    ck(pg.eval_on_selector('#practiceVertical',
+       'e=>e.getBoundingClientRect().right <= window.innerWidth'),
+       '窄版放大直式不超出視窗')
+    pg.set_viewport_size({'width': 1100, 'height': 900})
 
 - [ ] Step 3: 執行 python run-tests.py。
 
@@ -299,7 +310,7 @@ Expected: 核心測試通過；array.html 端到端測試在 #digitsSelect 等�
         '先看個位，第一排。個位是 ' + q.onesDigit + '，被乘數重複 ' +
           q.onesRepeats + ' 次；' + q.a + '×' + q.onesRepeats + '＝第一列。',
         '再看十位，左移一位。十位是 ' + q.tensDigit +
-          '，也就是 1 個十，也就是重複 ' + q.tensRepeats +
+          '，也就是 ' + q.tensDigit + ' 個十，也就是重複 ' + q.tensRepeats +
           ' 次；' + q.a + '×' + q.tensRepeats +
           '＝第二列，答案要對齊十位。',
         '兩排相加，答案出現。最後確認：' + q.onesRepeats + '＋' +
@@ -490,7 +501,7 @@ Expected: 核心測試、原有探索與挑戰測試、新增無限練習測試�
 ## 最終驗收清單
 
 - [ ] node multiplication-core.test.js 通過。
-- [ ] python run-tests.py 通過，無 pageerror 或 console error。
+- [ ] Python Playwright `run-tests.py` 通過，無 pageerror 或 console error（若環境未安裝套件，改以 Node Playwright 等效驗收並記錄限制）。
 - [ ] 一至四位數選擇會產生相符位數的被乘數。
 - [ ] 第一列使用乘數個位。
 - [ ] 第二列顯示並計算 ×10、×20 等實際十位值，不顯示主要的 ×1。

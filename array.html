@@ -76,6 +76,41 @@ h1{font-size:24px;margin:4px 0 4px}
 .msg.no{background:#fee2e2;color:#991b1b}
 .msg.tip{background:#e0f2fe;color:#075985}
 .q{font-size:18px;font-weight:700;margin:0 0 10px;line-height:1.6}
+.practice-head{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.digit-select{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;color:#334155}
+.digit-select select{min-height:48px;padding:0 12px;border:2px solid #cbd5e1;border-radius:12px;
+                     font-size:17px;font-family:inherit;background:#fff;color:#1f2937}
+.speech{margin:10px 0 14px;padding:13px 16px;border-left:5px solid #0ea5e9;
+        background:#f0f9ff;color:#075985;font-size:19px;line-height:1.8;font-weight:700}
+.practice-layout{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.practice-work{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;width:100%}
+.practice-guidance{flex:1;min-width:240px;font-size:clamp(17px,2.8vw,22px);line-height:1.8;
+                   color:#7c2d12;font-weight:700}
+.practice-guidance div{padding:8px 10px;margin-bottom:8px;background:#fff7ed;border-radius:10px}
+.practice-vertical{display:inline-flex;flex-direction:column;align-items:flex-end;gap:3px;
+                   padding:16px 20px;background:#fff7ed;border:3px solid #fed7aa;border-radius:16px;
+                   font-family:"Courier New",monospace;font-size:clamp(34px,6vw,58px);line-height:1.2;
+                   font-variant-numeric:tabular-nums;max-width:100%;overflow-x:auto}
+.practice-number{min-width:5.4em;text-align:right;white-space:nowrap}
+.practice-number.multiplier:before{content:'×';margin-right:.15em}
+.practice-line{width:100%;border-top:4px solid #1f2937;margin:4px 0}
+.practice-row{display:flex;align-items:center;justify-content:flex-end;min-width:100%}
+.practice-row.second-row{padding-right:1.05em}
+.practice-row .row-label{font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+                         font-size:clamp(16px,2.5vw,21px);font-weight:700;color:#92400e;
+                         margin-right:14px;white-space:nowrap}
+.practice-row .row-input{width:clamp(130px,25vw,210px);min-height:58px;font-size:clamp(28px,5vw,44px);
+                         text-align:right;border:3px solid #cbd5e1;border-radius:12px;
+                         font-family:"Courier New",monospace;padding:0 10px}
+.practice-row .row-input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px #ede9fe}
+.practice-answer{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;
+                 font-size:clamp(18px,3vw,24px);font-weight:700}
+.repeat-total{padding:11px 14px;background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;
+              font-size:clamp(18px,3vw,24px);line-height:1.6;font-weight:700;color:#92400e}
+@media(max-width:640px){.card{padding:12px}.speech{font-size:17px}
+  .practice-work{display:block}.practice-guidance{margin-top:12px;min-width:0}
+  .practice-row{justify-content:flex-start}.practice-row.second-row{padding-right:0}
+  .practice-row .row-label{font-size:16px;margin-right:8px}.practice-row .row-input{width:145px}}
 .lv{display:inline-block;font-size:13px;background:#ede9fe;color:#5b21b6;padding:3px 10px;
     border-radius:99px;font-weight:700;margin-bottom:8px}
 .warn{background:#fff7ed;border:2px solid #fdba74;border-radius:12px;padding:12px 14px;
@@ -224,16 +259,27 @@ h1{font-size:24px;margin:4px 0 4px}
   <!-- ═══════════ 練習 ═══════════ -->
   <div class="panel" id="pQz">
     <div class="card">
-      <span class="lv" id="lvTag">第 1 關／共 4 關</span>
+      <div class="practice-head">
+        <span class="lv" id="lvTag">無限練習／已練習 0 題</span>
+        <label class="digit-select" for="digitsSelect">
+          被乘數位數
+          <select id="digitsSelect">
+            <option value="1">一位數</option>
+            <option value="2" selected>兩位數</option>
+            <option value="3">三位數</option>
+            <option value="4">四位數</option>
+          </select>
+        </label>
+      </div>
       <p class="q" id="qText"></p>
+      <div class="speech" id="qSpeech" aria-live="polite"></div>
       <div id="qBody"></div>
       <div class="msg" id="qMsg"></div>
       <div class="row">
-        <button class="btn" id="qBtn" onclick="submitQ()">確定</button>
-        <button class="btn ghost" id="qNext" style="display:none" onclick="nextQ()">下一關 →</button>
+        <button class="btn" id="qBtn" onclick="submitQ()">檢查答案</button>
+        <button class="btn ghost" id="qNext" style="display:none" onclick="nextQ()">下一題 →</button>
       </div>
     </div>
-    <div class="warn" id="qWarn" style="display:none"></div>
   </div>
 
   <!-- ═══════════ 挑戰 ═══════════ -->
@@ -401,102 +447,100 @@ document.querySelectorAll('#s2 .vrow[data-r]').forEach(function(e){
   });
 });
 
-/* ───────── 練習：表徵提示遞減 L1→L3 ─────────
- * 這裡遞減的是「表徵提示」，不是計算格線。
- * 不可換成 carry.html 的格線／進位格遞減，那會讓這一頁失去面積模型的意義。
- * 註：三關固定，沒有依學生表現調整，所以不叫鷹架，叫協助遞減。
- */
-var QS=[
-  { lv:'L1 完整方格', a:24,b:12,
-    q:'直式中的 <b>48</b> 是哪兩塊方格的面積合起來的？點選兩塊。',
-    mode:'pick', need:['1','2'], show:'full',
-    tip:'48 是第一行（重複個位數 2 次，4 個一×2 ＋ 2 個十×2），先看哪兩塊的邊長合起來是 24×2。'},
-  { lv:'L1 完整方格', a:24,b:12,
-    q:'那 <b>240</b> 呢？點選兩塊。',
-    mode:'pick', need:['3','4'], show:'full',
-    tip:'240 是第二行（重複次數是十次：10 次 ＝ 24 個十），要找高是 10 的那兩塊（24×10）。'},
-  { lv:'L2 只有外框', a:28,b:74,
-    q:'28×74 的直式第一行是 <b>112</b>。這一行代表長方形的哪一塊？點選。',
-    mode:'pick', need:['1','2'], show:'frame',
-    tip:'112 ＝ 28×4，是第一行：重複個位數 4 次（112 個一），看乘數 74 的個位 4 那一部分。'},
-  { lv:'L3 沒有圖', a:28,b:74,
-    q:'28×74 的直式第二行寫 <b>196</b>。這一行代表哪兩個數相乘？',
-    mode:'opt', opts:['28 × 7','20 × 70','28 × 70'], ans:2,
-    tip:'第二行代表重複次數是十次（重複 70 次），實際值是 196 個十（1960），所以對齊十位往左移一位。'}
-];
-var qi=0;
-function renderQ(){
-  var c=QS[qi];
-  document.getElementById('lvTag').textContent=c.lv+'　（第 '+(qi+1)+' 關／共 '+QS.length+' 關）';
-  document.getElementById('qText').innerHTML=c.q;
+/* ───────── 練習：無限兩列部分積與口語提示 ───────── */
+var practiceState={digits:2,completed:0,question:null,locked:false};
+function practiceSpeech(q){
+  return [
+    '先看個位，第一排。個位是 '+q.onesDigit+'，被乘數重複 '+q.onesRepeats+
+      ' 次；'+q.a+'×'+q.onesRepeats+'＝第一列。',
+    '再看十位，左移一位。十位是 '+q.tensDigit+'，也就是 '+q.tensDigit+
+      ' 個十，也就是重複 '+q.tensRepeats+' 次；'+q.a+'×'+q.tensRepeats+
+      '＝第二列，答案要對齊十位。',
+    '兩排相加，答案出現。最後確認：'+q.onesRepeats+'＋'+q.tensRepeats+
+      '＝'+q.repeatTotal+' 次。'
+  ].join('<br>');
+}
+function newPracticeQuestion(){
+  practiceState.question=C.generateArrayPracticeQuestion(practiceState.digits);
+  practiceState.locked=false;
+  renderPracticeQuestion();
+}
+function renderPracticeQuestion(){
+  var q=practiceState.question;
+  document.getElementById('lvTag').textContent='無限練習／已練習 '+practiceState.completed+' 題';
+  document.getElementById('qText').innerHTML='請完成 <b>'+q.a+' × '+q.b+'</b> 的兩列直式。';
+  document.getElementById('qSpeech').innerHTML=practiceSpeech(q);
   document.getElementById('qMsg').className='msg';
   document.getElementById('qBtn').style.display='';
   document.getElementById('qNext').style.display='none';
-  document.getElementById('qWarn').style.display='none';
-  var body=document.getElementById('qBody'); body.innerHTML='';
-  if(c.mode==='pick'){
-    var bl=C.areaBlocks(c.a,c.b);
-    var aT=Math.floor(c.a/10)*10,aO=c.a%10,bT=Math.floor(c.b/10)*10,bO=c.b%10;
-    var order=[4,3,2,1];
-    var html='<div class="rectwrap"><div class="lbl-top"><span>'+aT+'</span><span>'+aO+'</span></div>'+
-      '<div class="lbl-left"><span>'+bT+'</span><span>'+bO+'</span></div>'+
-      '<div class="rect" id="qrect" style="grid-template-columns:'+aT+'fr '+aO+'fr;'+
-      'grid-template-rows:'+bT+'fr '+bO+'fr;aspect-ratio:'+c.a+'/'+c.b+'">';
-    order.forEach(function(n){
-      var b=bl[n-1];
-      // L2「只有外框」：不顯示標號與面積，學生只能靠位置推理，
-      // 這正是這一層要撤掉的表徵提示。
-      var inner = c.show==='full'
-        ? '<span class="bl">'+LABELS[n]+'</span><span class="bv">'+b.x+'×'+b.y+'＝'+b.area+'</span>'
-        : '';
-      html+='<div class="blk" data-b="'+n+'">'+inner+'</div>';
-    });
-    html+='</div></div>';
-    body.innerHTML=html;
-    body.querySelectorAll('.blk').forEach(function(e){
-      e.addEventListener('click',function(){ e.classList.toggle('pick'); });
-    });
-  }else{
-    c.opts.forEach(function(o,i){
-      var b=document.createElement('button');
-      b.className='opt'; b.textContent=o; b.dataset.i=i;
-      b.onclick=function(){
-        body.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel');});
-        b.classList.add('sel');
-      };
-      body.appendChild(b);
-    });
-  }
+  document.getElementById('qBody').innerHTML=
+    '<div class="practice-layout">'+
+      '<div class="practice-work">'+
+        '<div class="practice-vertical" id="practiceVertical">'+
+          '<div class="practice-number">'+q.a+'</div>'+
+          '<div class="practice-number multiplier">'+q.b+'</div>'+
+          '<div class="practice-line"></div>'+
+          '<div class="practice-row first-row" data-shift="0">'+
+            '<input class="row-input" id="firstRowIn" type="number" inputmode="numeric" aria-label="第一列部分積">'+
+          '</div>'+
+          '<div class="practice-row second-row" data-shift="1">'+
+            '<input class="row-input" id="secondRowIn" type="number" inputmode="numeric" aria-label="第二列部分積">'+
+          '</div>'+
+          '<div class="practice-line"></div>'+
+          '<div class="practice-row total-row">'+
+            '<input class="row-input" id="totalIn" type="number" inputmode="numeric" aria-label="最後答案">'+
+          '</div>'+
+        '</div>'+
+        '<div class="practice-guidance">'+
+          '<div>第一列：'+q.a+' × '+q.onesRepeats+' ＝ 個位列</div>'+
+          '<div>第二列：'+q.a+' × '+q.tensRepeats+' ＝ 十位列（對齊十位）</div>'+
+          '<div>第二列不是 ×'+q.tensDigit+'，而是 ×'+q.tensRepeats+'。</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="repeat-total">重複次數：'+q.onesRepeats+' 次 ＋ '+
+        q.tensRepeats+' 次 ＝ '+q.repeatTotal+' 次</div>'+
+    '</div>';
 }
 function submitQ(){
-  var c=QS[qi], m=document.getElementById('qMsg'), ok;
-  if(c.mode==='pick'){
-    var got=[].slice.call(document.querySelectorAll('#qBody .blk.pick'))
-              .map(function(e){return e.dataset.b;}).sort().join();
-    if(!got){ m.className='msg no show'; m.textContent='先點選方格再按確定。'; return; }
-    ok = got===c.need.slice().sort().join();
-  }else{
-    var sel=document.querySelector('#qBody .opt.sel');
-    if(!sel){ m.className='msg no show'; m.textContent='先選一個答案再按確定。'; return; }
-    ok = Number(sel.dataset.i)===c.ans;
+  if(practiceState.locked) return;
+  var q=practiceState.question;
+  var firstEl=document.getElementById('firstRowIn');
+  var secondEl=document.getElementById('secondRowIn');
+  var totalEl=document.getElementById('totalIn');
+  var m=document.getElementById('qMsg');
+  if(!firstEl.value || !secondEl.value || !totalEl.value){
+    m.className='msg no show'; m.textContent='三個答案都填好，再按檢查答案。'; return;
   }
-  if(ok){
-    m.className='msg ok show'; m.innerHTML='答對了。';
-    document.getElementById('qBtn').style.display='none';
-    if(qi<QS.length-1) document.getElementById('qNext').style.display='';
-    else{
-      m.innerHTML='答對了。<br><b>四關都完成了。</b>'+
-        '最後一關沒有圖也答得出來，表示你是<b>想出來</b>的，不是看圖看出來的。';
-      var w=document.getElementById('qWarn');
-      w.style.display='block';
-      w.innerHTML='🧱 <b>最後一件事</b>：拿古氏積木把 28×74 的其中一塊排出來，'+
-        '跟你剛才選的對照一下。螢幕上的圖不等於實際排過。';
-    }
-  }else{
-    m.className='msg no show'; m.innerHTML='還不對。'+(c.tip?'<br>'+c.tip:'');
+  if(Number(firstEl.value)!==q.firstRow){
+    m.className='msg no show';
+    m.innerHTML='先看個位，個位是 '+q.onesDigit+'，請計算被乘數重複 '+q.onesRepeats+' 次。';
+    return;
   }
+  if(Number(secondEl.value)!==q.secondRow){
+    m.className='msg no show';
+    m.innerHTML='十位的數字 '+q.tensDigit+' 是 '+q.tensDigit+' 個十，也就是重複 '+
+      q.tensRepeats+' 次；請計算被乘數×'+q.tensRepeats+'，並對齊十位。';
+    return;
+  }
+  if(Number(totalEl.value)!==q.product){
+    m.className='msg no show'; m.innerHTML='兩列部分積都對了，請再把第一列和第二列相加。'; return;
+  }
+  practiceState.locked=true;
+  practiceState.completed+=1;
+  m.className='msg ok show';
+  m.innerHTML='答對了。<br>'+q.a+'×'+q.onesRepeats+'＝'+q.firstRow+'；'+
+    q.a+'×'+q.tensRepeats+'＝'+q.secondRow+'；'+q.firstRow+'＋'+q.secondRow+
+    '＝<b>'+q.product+'</b>。<br>'+q.onesRepeats+'＋'+q.tensRepeats+'＝'+
+    q.repeatTotal+' 次。';
+  document.getElementById('qBtn').style.display='none';
+  document.getElementById('qNext').style.display='';
 }
-function nextQ(){ qi++; renderQ(); }
+function nextQ(){newPracticeQuestion();}
+document.getElementById('digitsSelect').addEventListener('change',function(){
+  practiceState.digits=Number(this.value);
+  newPracticeQuestion();
+});
+newPracticeQuestion();
 
 /* ───────── 挑戰 ───────── */
 // 選項一律照考卷原題，不可自己算誘答填進去。
@@ -534,7 +578,6 @@ function checkCh(){
   }
 }
 
-renderQ();
 </script>
 </body>
 </html>
